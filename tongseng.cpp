@@ -258,6 +258,7 @@ int main(int argc, char** argv)
 	std::cout << "Host: " << host << std::endl;
 	std::cout << "Port: " << port << std::endl;
 	std::cout << "Verbose: " << verbose << std::endl;
+	std::cout << "Press Ctrl+C to end this program." << std::endl;
 
 	mt_init();
 	tuio_start();
