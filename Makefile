@@ -1,19 +1,33 @@
 
+CSRC=mt.c
+CPPSRC=TuioPad.cpp \
+	TUIO/TuioClient.cpp \
+	TUIO/TuioServer.cpp \
+	TUIO/TuioTime.cpp \
+	oscpack/ip/IpEndpointName.cpp \
+	oscpack/ip/posix/NetworkingUtils.cpp \
+	oscpack/ip/posix/UdpSocket.cpp \
+	oscpack/osc/OscOutboundPacketStream.cpp \
+	oscpack/osc/OscPrintReceivedElements.cpp \
+	oscpack/osc/OscReceivedElements.cpp \
+	oscpack/osc/OscTypes.cpp
+
+OBJS=$(CPPSRC:.cpp=.o) $(CSRC:.c=.o)
 CPPFLAGS=-ITUIO -Ioscpack
 CFLAGS=
 LIBS=-F/System/Library/PrivateFrameworks -framework MultitouchSupport
 
 all : TuioPad
 
-mt.o : mt.c
-	gcc -c $(CFLAGS) $?
+.cpp.o :
+	g++ -c $(CPPFLAGS) $< -o $@
 
-TuioPad.o : TuioPad.cpp
-	g++ -c $(CPPFLAGS) $?
+.c.o :
+	gcc -c $(CFLAGS) $< -o $@
 
-TuioPad : TuioPad.o mt.o TUIO/*.cpp oscpack/osc/*.cpp oscpack/ip/*.cpp oscpack/ip/posix/*.cpp
-	g++ -o $@ $(LIBS) $(CPPFLAGS) $^
+TuioPad : $(OBJS)
+	g++ -o $@ $(LIBS) $^
 
 clean :
-	rm -f TuioPad mt.o TuioPad.o
+	rm -f $(OBJS) $(LIBOBJ)
 
