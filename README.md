@@ -9,9 +9,11 @@ application!
 Usage
 -----
 
-1. Retrieve the code
+1. Retrieve the code. Using git
 
         $ git clone git://github.com/fajran/tongseng.git
+    
+    or by clicking the download button.
 
 2. Compile it
 
@@ -21,11 +23,11 @@ Usage
 3. Run it!
 
         $ ./tongseng
-   
-   Touch your touchpad and tongseng will send TUIO/OSC messages to localhost
-   port 3333, as usual. To use another host/port, mention them in the
-   arguments.
-   
+    
+    Touch your touchpad and tongseng will send TUIO/OSC messages to localhost
+    port 3333, as usual. To use another host/port, mention them in the
+    arguments.
+    
         $ ./tongseng host port
 
 Have fun!
