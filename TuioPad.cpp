@@ -207,8 +207,58 @@ static void tuio_stop()
 	delete server;
 }
 
-int main()
+static void show_help()
 {
+	std::cout << "Usage: TuioPad [options] [host] [port]" << std::endl;
+	std::cout << "        -v verbose" << std::endl;
+	std::cout << "        -h show help" << std::endl;
+}
+
+static void init(int argc, char** argv)
+{
+	int aflag = 0;
+	int bflag = 0;
+	char *cvalue = NULL;
+	int index;
+	int c;
+
+	opterr = 0;
+
+	while ((c = getopt(argc, argv, "v")) != -1) {
+		switch (c) {
+			case 'v':
+				verbose = true;
+				break;
+			case 'h':
+				show_help();
+				exit(0);
+			default:
+				show_help();
+				exit(1);
+		}
+	}
+
+	for (index=optind, c=0; index < argc; index++, c++) {
+		switch (c) {
+			case 0:
+				host = argv[index];
+				break;
+			case 1:
+				port = atoi(argv[index]);
+				break;
+			default:
+				break;
+		}
+	}
+}
+
+int main(int argc, char** argv)
+{
+	init(argc, argv);
+	std::cout << "Host: " << host << std::endl;
+	std::cout << "Port: " << port << std::endl;
+	std::cout << "Verbose: " << verbose << std::endl;
+
 	mt_init();
 	tuio_start();
 	while (1) { };
