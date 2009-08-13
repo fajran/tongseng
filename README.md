@@ -8,7 +8,7 @@ application!
 Usage
 -----
 
-1. Download [the binary file](http://cloud.github.com/downloads/fajran/tongseng/tongseng-0.2.zip)
+1. Download [the binary file](http://cloud.github.com/downloads/fajran/tongseng/tongseng-0.2.zip) (Intel only)
 2. Extract it
 3. Run the `tongseng` file
 
@@ -22,7 +22,6 @@ port 3333.  If you want to use another host/port, mention them in the
 parameter.
 
     $ ./tongseng host port
-
 
 Compilation
 -----------
