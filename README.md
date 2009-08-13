@@ -21,7 +21,7 @@ Usage
 3. Run it!
 
         $ ./tongseng
-
+   
    Touch your touchpad and tongseng will send TUIO/OSC messages to localhost
    port 3333, as usual. To use another host/port, mention them in the
    arguments.
