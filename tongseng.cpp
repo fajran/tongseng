@@ -262,8 +262,13 @@ int main(int argc, char** argv)
 
 	mt_init();
 	tuio_start();
-	while (1) { };
-	tuio_stop();
+
+	// Loop forever
+	while (1) { 
+		usleep(1000);
+	};
+
+	// tuio_stop();
 	return 0;
 }
 
