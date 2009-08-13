@@ -1,6 +1,6 @@
 
 CSRC=mt.c
-CPPSRC=TuioPad.cpp \
+CPPSRC=tongseng.cpp \
 	TUIO/TuioClient.cpp \
 	TUIO/TuioServer.cpp \
 	TUIO/TuioTime.cpp \
@@ -16,8 +16,9 @@ OBJS=$(CPPSRC:.cpp=.o) $(CSRC:.c=.o)
 CPPFLAGS=-ITUIO -Ioscpack
 CFLAGS=
 LIBS=-F/System/Library/PrivateFrameworks -framework MultitouchSupport
+BIN=tongseng
 
-all : TuioPad
+all : $(BIN)
 
 .cpp.o :
 	g++ -c $(CPPFLAGS) $< -o $@
@@ -25,9 +26,9 @@ all : TuioPad
 .c.o :
 	gcc -c $(CFLAGS) $< -o $@
 
-TuioPad : $(OBJS)
+$(BIN) : $(OBJS)
 	g++ -o $@ $(LIBS) $^
 
 clean :
-	rm -f $(OBJS) $(LIBOBJ)
+	rm -f $(BIN) $(OBJS) $(LIBOBJ)
 
