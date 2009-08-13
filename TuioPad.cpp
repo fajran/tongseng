@@ -28,6 +28,11 @@
 #include <set>
 #include <map>
 
+#define D(s) /* std::cout << s << std::endl; */
+
+#define EXISTS(c, v) ((c).find(v) != (c).end())
+#define FOREACH(c, i) for (i=(c).begin(); i!=(c).end(); i++)
+
 extern "C" {
 int mt_callback(int device, Finger *data, int nFingers, double timestamp, int frame);
 }
@@ -36,11 +41,6 @@ static TUIO::TuioServer* server;
 static bool verbose = false;
 static std::string host("localhost");
 static int port = 3333;
-
-#define D(s) /* std::cout << s << std::endl; */
-
-#define EXISTS(c, v) ((c).find(v) != (c).end())
-#define FOREACH(c, i) for (i=(c).begin(); i!=(c).end(); i++)
 
 // Sensitivity
 #define MIN_DISTANCE 0.00001f
