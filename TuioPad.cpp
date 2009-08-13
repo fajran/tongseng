@@ -33,6 +33,9 @@ int mt_callback(int device, Finger *data, int nFingers, double timestamp, int fr
 }
 
 static TUIO::TuioServer* server;
+static bool verbose = false;
+static std::string host("localhost");
+static int port = 3333;
 
 #define D(s) /* std::cout << s << std::endl; */
 
@@ -195,8 +198,8 @@ int mt_callback(int device, Finger *data, int nFingers, double timestamp, int fr
 
 static void tuio_start()
 {
-	server = new TUIO::TuioServer();
-	// server->setVerbose(true);
+	server = new TUIO::TuioServer((char*)host.c_str(), port);
+	server->setVerbose(verbose);
 }
 
 static void tuio_stop()
