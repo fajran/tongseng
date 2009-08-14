@@ -207,9 +207,10 @@ static void tuio_start()
 
 static void tuio_stop(int param)
 {
+	std::cout << "cleaning up.." << std::endl;
+
 	running = false;
-	printf("\ncleaning up ...\n");
-	if (server!=NULL) {
+	if (server != NULL) {
 		delete server;
 	}
 }
@@ -267,10 +268,10 @@ int main(int argc, char** argv)
 	std::cout << "Verbose: " << verbose << std::endl;
 	std::cout << "Press Ctrl+C to end this program." << std::endl;
 
-	signal(SIGINT,tuio_stop);
-	signal(SIGHUP,tuio_stop);
-	signal(SIGQUIT,tuio_stop);
-	signal(SIGTERM,tuio_stop);
+	signal(SIGINT, tuio_stop);
+	signal(SIGHUP, tuio_stop);
+	signal(SIGQUIT, tuio_stop);
+	signal(SIGTERM, tuio_stop);
 
 	mt_init();
 	tuio_start();
