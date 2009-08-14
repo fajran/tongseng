@@ -25,7 +25,9 @@ typedef int (*MTContactCallbackFunction)(int,Finger*,int,double,int);
 
 MTDeviceRef MTDeviceCreateDefault();
 void MTRegisterContactFrameCallback(MTDeviceRef, MTContactCallbackFunction);
+void MTUnregisterContactFrameCallback(MTDeviceRef, MTContactCallbackFunction);
 void MTDeviceStart(MTDeviceRef);
+void MTDeviceStop(MTDeviceRef);
 
 static MTDeviceRef dev;
 
@@ -37,8 +39,10 @@ void mt_start()
 	MTDeviceStart(dev);
 }
 
+// Stop
 void mt_stop()
 {
-
+	MTUnregisterContactFrameCallback(dev, mt_callback);
+	MTDeviceStop(dev);
 }
 
