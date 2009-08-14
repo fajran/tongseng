@@ -211,6 +211,7 @@ static void tuio_stop(int param)
 
 	running = false;
 	if (server != NULL) {
+		tuio_frame_end();
 		delete server;
 	}
 }
