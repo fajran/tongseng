@@ -30,5 +30,5 @@ $(BIN) : $(OBJS)
 	g++ -o $@ $(LIBS) $^
 
 clean :
-	rm -f $(BIN) $(OBJS) $(LIBOBJ)
+	rm -f $(BIN) $(OBJS)
 
