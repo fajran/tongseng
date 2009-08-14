@@ -217,7 +217,7 @@ static void tuio_stop(int param)
 
 static void show_help()
 {
-	std::cout << "Usage: TuioPad [options] [host] [port]" << std::endl;
+	std::cout << "Usage: tongseng [options] [host] [port]" << std::endl;
 	std::cout << "        -v verbose" << std::endl;
 	std::cout << "        -h show help" << std::endl;
 }
