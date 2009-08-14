@@ -20,6 +20,7 @@
 #include <iostream>
 #include <math.h>
 #include <unistd.h>
+#include <signal.h>
 
 #include <TuioServer.h>
 #include <TuioCursor.h>
@@ -38,6 +39,7 @@ int mt_callback(int device, Finger *data, int nFingers, double timestamp, int fr
 }
 
 static TUIO::TuioServer* server;
+static bool running = false;
 static bool verbose = false;
 static std::string host("localhost");
 static int port = 3333;
@@ -110,6 +112,7 @@ static void touch_remove(int id)
 // Event dispatch guard
 static bool tuio_frame_begin()
 {
+	if (!running) return false;
 	TUIO::TuioTime currentTime = TUIO::TuioTime::getSessionTime();
 	long dsec = currentTime.getSeconds() - lastFrameTimeSec;
 	long dusec = currentTime.getMicroseconds() - lastFrameTimeUsec;
@@ -202,9 +205,13 @@ static void tuio_start()
 	server->setVerbose(verbose);
 }
 
-static void tuio_stop()
+static void tuio_stop(int param)
 {
-	delete server;
+	running = false;
+	printf("\ncleaning up ...\n");
+	if (server!=NULL) {
+		delete server;
+	}
 }
 
 static void show_help()
@@ -260,15 +267,20 @@ int main(int argc, char** argv)
 	std::cout << "Verbose: " << verbose << std::endl;
 	std::cout << "Press Ctrl+C to end this program." << std::endl;
 
+	signal(SIGINT,tuio_stop);
+	signal(SIGHUP,tuio_stop);
+	signal(SIGQUIT,tuio_stop);
+	signal(SIGTERM,tuio_stop);
+
 	mt_init();
 	tuio_start();
 
 	// Loop forever
-	while (1) { 
+	running = true;
+	while (running) { 
 		usleep(1000);
 	};
 
-	// tuio_stop();
 	return 0;
 }
 
