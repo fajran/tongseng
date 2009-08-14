@@ -27,10 +27,12 @@ MTDeviceRef MTDeviceCreateDefault();
 void MTRegisterContactFrameCallback(MTDeviceRef, MTContactCallbackFunction);
 void MTDeviceStart(MTDeviceRef);
 
+static MTDeviceRef dev;
+
 // Start grabbing multitouch events
 void mt_start()
 {
-	MTDeviceRef dev = MTDeviceCreateDefault();
+	dev = MTDeviceCreateDefault();
 	MTRegisterContactFrameCallback(dev, mt_callback);
 	MTDeviceStart(dev);
 }
