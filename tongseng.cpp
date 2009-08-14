@@ -274,7 +274,7 @@ int main(int argc, char** argv)
 	signal(SIGQUIT, tuio_stop);
 	signal(SIGTERM, tuio_stop);
 
-	mt_init();
+	mt_start();
 	tuio_start();
 
 	// Loop forever
