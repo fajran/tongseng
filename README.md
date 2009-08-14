@@ -1,8 +1,8 @@
 Tongseng
 ========
 
-TUIO wrapper for Mac OS X multitouch events. Now you can use the
-multitouch touch pad to send TUIO events to your multitouch
+Tongseng is a TUIO wrapper for Mac OS X multitouch events. Now you can
+use the multitouch touch pad to send TUIO events to your multitouch
 application!
 
 Usage
@@ -17,9 +17,9 @@ Then..
 1. Run your TUIO-based multitouch application
 2. Start touching your touchpad!
 
-By default, `tongseng` will send the TUIO messages to localhost at
-port 3333.  If you want to use another host/port, mention them in the
-parameter.
+By default, Tongseng will send the TUIO messages to localhost at port
+3333. If you want to use another host/port, mention them in the 
+parameters.
 
     $ ./tongseng host port
 
