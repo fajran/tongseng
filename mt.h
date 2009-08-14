@@ -42,6 +42,7 @@ typedef struct {
 extern int mt_callback(int device, Finger *data, int nFingers, double timestamp, int frame);
 
 void mt_start();
+void mt_stop();
 
 #ifdef __cplusplus
 }

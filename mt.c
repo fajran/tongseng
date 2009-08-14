@@ -35,3 +35,8 @@ void mt_start()
 	MTDeviceStart(dev);
 }
 
+void mt_stop()
+{
+
+}
+
