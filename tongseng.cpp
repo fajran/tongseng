@@ -110,9 +110,8 @@ static void touch_remove(int id)
 }
 
 // Event dispatch guard
-static bool tuio_frame_begin()
+static bool sampling_interval_passed()
 {
-	if (!running) return false;
 	TUIO::TuioTime currentTime = TUIO::TuioTime::getSessionTime();
 	long dsec = currentTime.getSeconds() - lastFrameTimeSec;
 	long dusec = currentTime.getMicroseconds() - lastFrameTimeUsec;
@@ -134,11 +133,13 @@ static bool tuio_frame_begin()
 		}
 	}
 
-	if (res) {
-		server->initFrame(currentTime);
-	}
-
 	return res;
+}
+
+void tuio_frame_begin()
+{
+	TUIO::TuioTime currentTime = TUIO::TuioTime::getSessionTime();
+	server->initFrame(currentTime);
 }
 
 // Flush events
@@ -151,9 +152,11 @@ static void tuio_frame_end()
 // Process incoming events
 static void update(int device, Finger *data, int nFingers, double timestamp, int frame)
 {
-	if (!tuio_frame_begin()) {
+	if (!running || !sampling_interval_passed()) {
 		return;
 	}
+
+	tuio_frame_begin();
 
 	std::set<int> fingers;
 
@@ -205,15 +208,22 @@ static void tuio_start()
 	server->setVerbose(verbose);
 }
 
-static void tuio_stop(int param)
+static void release_all_fingers()
 {
-	std::cout << "cleaning up.." << std::endl;
+	tuio_frame_begin();
 
-	running = false;
-	if (server != NULL) {
-		tuio_frame_end();
-		delete server;
+	std::set<int>::iterator iter;
+	FOREACH(currentFingers, iter) {
+		touch_remove(*iter);
 	}
+
+	tuio_frame_end();
+}
+
+static void tuio_stop()
+{
+	release_all_fingers();
+	delete server;
 }
 
 static void show_help()
@@ -261,6 +271,11 @@ static void init(int argc, char** argv)
 	}
 }
 
+static void stop(int param)
+{
+	running = false;
+}
+
 int main(int argc, char** argv)
 {
 	init(argc, argv);
@@ -269,19 +284,26 @@ int main(int argc, char** argv)
 	std::cout << "Verbose: " << verbose << std::endl;
 	std::cout << "Press Ctrl+C to end this program." << std::endl;
 
-	signal(SIGINT, tuio_stop);
-	signal(SIGHUP, tuio_stop);
-	signal(SIGQUIT, tuio_stop);
-	signal(SIGTERM, tuio_stop);
+	signal(SIGINT, stop);
+	signal(SIGHUP, stop);
+	signal(SIGQUIT, stop);
+	signal(SIGTERM, stop);
 
 	mt_start();
 	tuio_start();
 
-	// Loop forever
+	// Loop until the program is stopped.
 	running = true;
 	while (running) { 
 		usleep(1000);
 	};
+
+	std::cout << "Cleaning up.." << std::endl;
+
+	tuio_stop();
+	mt_stop();
+
+	std::cout << "Program stopped." << std::endl;
 
 	return 0;
 }
