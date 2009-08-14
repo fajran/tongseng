@@ -8,7 +8,7 @@ application!
 Usage
 -----
 
-1. Download [the binary file](http://cloud.github.com/downloads/fajran/tongseng/tongseng-0.2.zip) (Intel only)
+1. Download [the binary file](http://cloud.github.com/downloads/fajran/tongseng/tongseng-0.2.1.zip) (Intel only)
 2. Extract it
 3. Run the `tongseng` file
 
