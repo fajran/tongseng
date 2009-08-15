@@ -1,5 +1,6 @@
 
-SRC=tongseng.cpp \
+SRC=main.cpp \
+	tongseng.cpp \
 	TUIO/TuioServer.cpp \
 	TUIO/TuioTime.cpp \
 	oscpack/ip/posix/NetworkingUtils.cpp \

@@ -21,7 +21,6 @@
 #include <iostream>
 #include <math.h>
 #include <unistd.h>
-#include <signal.h>
 
 #include <TuioServer.h>
 #include <TuioCursor.h>
@@ -221,56 +220,6 @@ static void tuio_stop()
 	delete server;
 }
 
-static void show_help()
-{
-	std::cout << "Usage: tongseng [options] [host] [port]" << std::endl;
-	std::cout << "        -v verbose" << std::endl;
-	std::cout << "        -h show help" << std::endl;
-}
-
-static void init(int argc, char** argv)
-{
-	int aflag = 0;
-	int bflag = 0;
-	char *cvalue = NULL;
-	int index;
-	int c;
-
-	opterr = 0;
-
-	while ((c = getopt(argc, argv, "v")) != -1) {
-		switch (c) {
-			case 'v':
-				verbose = true;
-				break;
-			case 'h':
-				show_help();
-				exit(0);
-			default:
-				show_help();
-				exit(1);
-		}
-	}
-
-	for (index=optind, c=0; index < argc; index++, c++) {
-		switch (c) {
-			case 0:
-				host = argv[index];
-				break;
-			case 1:
-				port = atoi(argv[index]);
-				break;
-			default:
-				break;
-		}
-	}
-}
-
-static void stop(int param)
-{
-	running = false;
-}
-
 void mt_start()
 {
 	dev = MTDeviceCreateDefault();
@@ -284,38 +233,6 @@ void mt_stop()
 	MTUnregisterContactFrameCallback(dev, callback);
 	MTDeviceStop(dev);
 	MTDeviceRelease(dev);
-}
-
-int main(int argc, char** argv)
-{
-	init(argc, argv);
-	std::cout << "Host: " << host << std::endl;
-	std::cout << "Port: " << port << std::endl;
-	std::cout << "Verbose: " << verbose << std::endl;
-	std::cout << "Press Ctrl+C to end this program." << std::endl;
-
-	signal(SIGINT, stop);
-	signal(SIGHUP, stop);
-	signal(SIGQUIT, stop);
-	signal(SIGTERM, stop);
-
-	mt_start();
-	tuio_start();
-
-	// Loop until the program is stopped.
-	running = true;
-	while (running) { 
-		usleep(1000);
-	};
-
-	std::cout << "Cleaning up.." << std::endl;
-
-	tuio_stop();
-	mt_stop();
-
-	std::cout << "Program stopped." << std::endl;
-
-	return 0;
 }
 
 void tongseng_set_hostname_and_port(const char* _hostname, int _port)
@@ -333,10 +250,12 @@ void tongseng_start()
 {
 	mt_start();
 	tuio_start();
+	running = true;
 }
 
 void tongseng_stop()
 {
+	running = false;
 	tuio_stop();
 	mt_stop();
 }
