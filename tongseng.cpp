@@ -133,13 +133,14 @@ static bool sampling_interval_passed()
 	return res;
 }
 
+// Start creating TUIO messages
 void tuio_frame_begin()
 {
 	TUIO::TuioTime currentTime = TUIO::TuioTime::getSessionTime();
 	server->initFrame(currentTime);
 }
 
-// Flush events
+// Flush TUIO messages
 static void tuio_frame_end()
 {
 	server->stopUntouchedMovingCursors();
@@ -196,12 +197,14 @@ static int callback(int device, Finger *data, int nFingers, double timestamp, in
 	return 0;
 }
 
+// Start TUIO server
 static void tuio_start()
 {
 	server = new TUIO::TuioServer((char*)host.c_str(), port);
 	server->setVerbose(verbose);
 }
 
+// Release all active fingers
 static void release_all_fingers()
 {
 	tuio_frame_begin();
@@ -214,12 +217,14 @@ static void release_all_fingers()
 	tuio_frame_end();
 }
 
+// Stop TUIO server
 static void tuio_stop()
 {
 	release_all_fingers();
 	delete server;
 }
 
+// Start handling multitouch events
 void mt_start()
 {
 	dev = MTDeviceCreateDefault();
@@ -227,7 +232,7 @@ void mt_start()
 	MTDeviceStart(dev);
 }
 
-// Stop
+// Stop handling multitouch events
 void mt_stop()
 {
 	MTUnregisterContactFrameCallback(dev, callback);
