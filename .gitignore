@@ -1,3 +1,5 @@
 *.o
 tongseng
 *.swp
+TongsengApp/build
+TongsengApp/TongsengApp.xcodeproj/iang.*
