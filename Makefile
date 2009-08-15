@@ -1,6 +1,5 @@
 
-CSRC=mt.c
-CPPSRC=tongseng.cpp \
+SRC=tongseng.cpp \
 	TUIO/TuioServer.cpp \
 	TUIO/TuioTime.cpp \
 	oscpack/ip/posix/NetworkingUtils.cpp \
@@ -8,9 +7,8 @@ CPPSRC=tongseng.cpp \
 	oscpack/osc/OscOutboundPacketStream.cpp \
 	oscpack/osc/OscTypes.cpp
 
-OBJS=$(CPPSRC:.cpp=.o) $(CSRC:.c=.o)
+OBJS=$(SRC:.cpp=.o)
 CPPFLAGS=-ITUIO -Ioscpack
-CFLAGS=
 LIBS=-F/System/Library/PrivateFrameworks -framework MultitouchSupport
 BIN=tongseng
 
@@ -18,9 +16,6 @@ all : $(BIN)
 
 .cpp.o :
 	g++ -c $(CPPFLAGS) $< -o $@
-
-.c.o :
-	gcc -c $(CFLAGS) $< -o $@
 
 $(BIN) : $(OBJS)
 	g++ -o $@ $(LIBS) $^

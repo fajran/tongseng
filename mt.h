@@ -19,6 +19,8 @@
 #ifndef MT_H_
 #define MT_H_
 
+#include <CoreFoundation/CoreFoundation.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -39,10 +41,17 @@ typedef struct {
   float unk2;
 } Finger;
 
-extern int mt_callback(int device, Finger *data, int nFingers, double timestamp, int frame);
+typedef int MTDeviceRef;
+typedef int (*MTContactCallbackFunction)(int,Finger*,int,double,int);
 
-void mt_start();
-void mt_stop();
+MTDeviceRef MTDeviceCreateDefault();
+void MTRegisterContactFrameCallback(MTDeviceRef, MTContactCallbackFunction);
+void MTUnregisterContactFrameCallback(MTDeviceRef, MTContactCallbackFunction);
+void MTDeviceStart(MTDeviceRef);
+void MTDeviceStop(MTDeviceRef);
+void MTDeviceRelease(MTDeviceRef);
+
+int mt_callback(int device, Finger *data, int nFingers, double timestamp, int frame);
 
 #ifdef __cplusplus
 }

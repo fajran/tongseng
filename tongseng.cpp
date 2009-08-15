@@ -34,10 +34,7 @@
 #define EXISTS(c, v) ((c).find(v) != (c).end())
 #define FOREACH(c, i) for (i=(c).begin(); i!=(c).end(); i++)
 
-extern "C" {
-int mt_callback(int device, Finger *data, int nFingers, double timestamp, int frame);
-}
-
+static MTDeviceRef dev;
 static TUIO::TuioServer* server;
 static bool running = false;
 static bool verbose = false;
@@ -274,6 +271,21 @@ static void init(int argc, char** argv)
 static void stop(int param)
 {
 	running = false;
+}
+
+void mt_start()
+{
+	dev = MTDeviceCreateDefault();
+	MTRegisterContactFrameCallback(dev, mt_callback);
+	MTDeviceStart(dev);
+}
+
+// Stop
+void mt_stop()
+{
+	MTUnregisterContactFrameCallback(dev, mt_callback);
+	MTDeviceStop(dev);
+	MTDeviceRelease(dev);
 }
 
 int main(int argc, char** argv)
