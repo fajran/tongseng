@@ -240,17 +240,20 @@ static void mt_stop()
 	MTDeviceRelease(dev);
 }
 
+// Set hostname and port that will be used by TUIO server
 void tongseng_set_hostname_and_port(const char* _hostname, int _port)
 {
 	host = _hostname;
 	port = _port;
 }
 
+// Set TUIO server verbosity
 void tongseng_set_verbose(int _verbose)
 {
 	verbose = _verbose != 0;
 }
 
+// Start Tongseng
 void tongseng_start()
 {
 	mt_start();
@@ -258,6 +261,7 @@ void tongseng_start()
 	running = true;
 }
 
+// Stop Tongseng
 void tongseng_stop()
 {
 	running = false;
