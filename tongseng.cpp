@@ -134,7 +134,7 @@ static bool sampling_interval_passed()
 }
 
 // Start creating TUIO messages
-void tuio_frame_begin()
+static void tuio_frame_begin()
 {
 	TUIO::TuioTime currentTime = TUIO::TuioTime::getSessionTime();
 	server->initFrame(currentTime);
@@ -225,7 +225,7 @@ static void tuio_stop()
 }
 
 // Start handling multitouch events
-void mt_start()
+static void mt_start()
 {
 	dev = MTDeviceCreateDefault();
 	MTRegisterContactFrameCallback(dev, callback);
@@ -233,7 +233,7 @@ void mt_start()
 }
 
 // Stop handling multitouch events
-void mt_stop()
+static void mt_stop()
 {
 	MTUnregisterContactFrameCallback(dev, callback);
 	MTDeviceStop(dev);
