@@ -7,5 +7,7 @@
 	IBOutlet NSButton *_button;
 	bool _running;
 }
+- (IBAction)stop:(id)sender;
+- (IBAction)start:(id)sender;
 - (IBAction)startstop:(id)sender;
 @end
