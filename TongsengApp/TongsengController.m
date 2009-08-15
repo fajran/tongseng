@@ -12,6 +12,7 @@
 
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)app
 {
+	[self stop:app];
 	return YES;
 }
 
