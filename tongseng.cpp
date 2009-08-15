@@ -16,6 +16,7 @@
 
 // Based on multitouch code from http://www.steike.com/code/multitouch/
 
+#include "tongseng.h"
 #include "mt.h"
 #include <iostream>
 #include <math.h>
@@ -315,5 +316,28 @@ int main(int argc, char** argv)
 	std::cout << "Program stopped." << std::endl;
 
 	return 0;
+}
+
+void tongseng_set_hostname_and_port(const char* _hostname, int _port)
+{
+	host = _hostname;
+	port = _port;
+}
+
+void tongseng_set_verbose(int _verbose)
+{
+	verbose = _verbose != 0;
+}
+
+void tongseng_start()
+{
+	mt_start();
+	tuio_start();
+}
+
+void tongseng_stop()
+{
+	tuio_stop();
+	mt_stop();
 }
 
