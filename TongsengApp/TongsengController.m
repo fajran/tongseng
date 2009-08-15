@@ -10,6 +10,11 @@
 	return self;
 }
 
+- (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)app
+{
+	return YES;
+}
+
 - (IBAction)start:(id)sender {
 	const char *hostname = [[_hostname stringValue] UTF8String];
 	const char *strPort = [[_port stringValue] UTF8String];

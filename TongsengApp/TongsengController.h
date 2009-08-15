@@ -7,6 +7,9 @@
 	IBOutlet NSButton *_button;
 	bool _running;
 }
+
+- (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)app;
+
 - (IBAction)stop:(id)sender;
 - (IBAction)start:(id)sender;
 - (IBAction)startstop:(id)sender;
