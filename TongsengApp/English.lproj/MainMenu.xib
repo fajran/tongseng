@@ -165,7 +165,7 @@
 				<int key="NSWindowBacking">2</int>
 				<string key="NSWindowRect">{{529, 329}, {290, 153}}</string>
 				<int key="NSWTFlags">1954021376</int>
-				<string key="NSWindowTitle">Window</string>
+				<string key="NSWindowTitle">TongsengApp</string>
 				<string key="NSWindowClass">NSWindow</string>
 				<nil key="NSViewClass"/>
 				<string key="NSWindowContentMaxSize">{3.40282e+38, 3.40282e+38}</string>
@@ -773,8 +773,8 @@
 					<reference ref="9"/>
 					<string>{74, 862}</string>
 					<string>{{6, 978}, {478, 20}}</string>
-					<string>{{196, 527}, {290, 153}}</string>
-					<string>{{196, 527}, {290, 153}}</string>
+					<string>{{196, 529}, {290, 153}}</string>
+					<string>{{196, 529}, {290, 153}}</string>
 					<reference ref="9"/>
 					<string>{{33, 99}, {480, 360}}</string>
 					<string>{3.40282e+38, 3.40282e+38}</string>
