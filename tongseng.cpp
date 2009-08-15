@@ -264,8 +264,10 @@ void tongseng_start()
 // Stop Tongseng
 void tongseng_stop()
 {
-	running = false;
-	tuio_stop();
-	mt_stop();
+	if (running) {
+		running = false;
+		tuio_stop();
+		mt_stop();
+	}
 }
 
