@@ -16,6 +16,7 @@
 		3F6CB4061037541700CFF31E /* TuioServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F6CB3FD1037541700CFF31E /* TuioServer.cpp */; };
 		3F6CB4081037541700CFF31E /* TuioTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F6CB4001037541700CFF31E /* TuioTime.cpp */; };
 		3F6CB41F103754BC00CFF31E /* MultitouchSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F6CB41E103754BC00CFF31E /* MultitouchSupport.framework */; };
+		3F6CB43A10375A6000CFF31E /* TongsengController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F6CB43810375A6000CFF31E /* TongsengController.m */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
@@ -40,6 +41,8 @@
 		3F6CB3FD1037541700CFF31E /* TuioServer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TuioServer.cpp; sourceTree = "<group>"; };
 		3F6CB4001037541700CFF31E /* TuioTime.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TuioTime.cpp; sourceTree = "<group>"; };
 		3F6CB41E103754BC00CFF31E /* MultitouchSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MultitouchSupport.framework; path = /System/Library/PrivateFrameworks/MultitouchSupport.framework; sourceTree = "<absolute>"; };
+		3F6CB43810375A6000CFF31E /* TongsengController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TongsengController.m; sourceTree = "<group>"; };
+		3F6CB43910375A6000CFF31E /* TongsengController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TongsengController.h; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* TongsengApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TongsengApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -60,6 +63,8 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				3F6CB43810375A6000CFF31E /* TongsengController.m */,
+				3F6CB43910375A6000CFF31E /* TongsengController.h */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -245,6 +250,7 @@
 				3F6CB3CD10374FB900CFF31E /* OscTypes.cpp in Sources */,
 				3F6CB4061037541700CFF31E /* TuioServer.cpp in Sources */,
 				3F6CB4081037541700CFF31E /* TuioTime.cpp in Sources */,
+				3F6CB43A10375A6000CFF31E /* TongsengController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
