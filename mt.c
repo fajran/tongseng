@@ -28,6 +28,7 @@ void MTRegisterContactFrameCallback(MTDeviceRef, MTContactCallbackFunction);
 void MTUnregisterContactFrameCallback(MTDeviceRef, MTContactCallbackFunction);
 void MTDeviceStart(MTDeviceRef);
 void MTDeviceStop(MTDeviceRef);
+void MTDeviceRelease(MTDeviceRef);
 
 static MTDeviceRef dev;
 
@@ -44,5 +45,6 @@ void mt_stop()
 {
 	MTUnregisterContactFrameCallback(dev, mt_callback);
 	MTDeviceStop(dev);
+	MTDeviceRelease(dev);
 }
 
