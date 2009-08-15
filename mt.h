@@ -51,8 +51,6 @@ void MTDeviceStart(MTDeviceRef);
 void MTDeviceStop(MTDeviceRef);
 void MTDeviceRelease(MTDeviceRef);
 
-int mt_callback(int device, Finger *data, int nFingers, double timestamp, int frame);
-
 #ifdef __cplusplus
 }
 #endif

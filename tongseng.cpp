@@ -147,10 +147,10 @@ static void tuio_frame_end()
 }
 
 // Process incoming events
-static void update(int device, Finger *data, int nFingers, double timestamp, int frame)
+static int callback(int device, Finger *data, int nFingers, double timestamp, int frame)
 {
 	if (!running || !sampling_interval_passed()) {
-		return;
+		return 0;
 	}
 
 	tuio_frame_begin();
@@ -192,11 +192,8 @@ static void update(int device, Finger *data, int nFingers, double timestamp, int
 	currentFingers.insert(fingers.begin(), fingers.end());
 
 	tuio_frame_end();
-}
 
-// Multitouch events handler
-int mt_callback(int device, Finger *data, int nFingers, double timestamp, int frame) {
-	update(device, data, nFingers, timestamp, frame);
+	return 0;
 }
 
 static void tuio_start()
@@ -276,14 +273,14 @@ static void stop(int param)
 void mt_start()
 {
 	dev = MTDeviceCreateDefault();
-	MTRegisterContactFrameCallback(dev, mt_callback);
+	MTRegisterContactFrameCallback(dev, callback);
 	MTDeviceStart(dev);
 }
 
 // Stop
 void mt_stop()
 {
-	MTUnregisterContactFrameCallback(dev, mt_callback);
+	MTUnregisterContactFrameCallback(dev, callback);
 	MTDeviceStop(dev);
 	MTDeviceRelease(dev);
 }
