@@ -9,6 +9,7 @@
 }
 
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)app;
+- (void)applicationWillTerminate:(NSApplication *)app;
 
 - (IBAction)stop:(id)sender;
 - (IBAction)start:(id)sender;
