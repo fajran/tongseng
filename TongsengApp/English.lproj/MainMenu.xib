@@ -8,8 +8,8 @@
 		<string key="IBDocument.HIToolboxVersion">353.00</string>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="498"/>
 			<integer value="372"/>
+			<integer value="498"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -59,7 +59,7 @@
 							<string key="NSTitle">TongsengApp</string>
 							<object class="NSMutableArray" key="NSMenuItems">
 								<bool key="EncodedWithXMLCoder">YES</bool>
-								<object class="NSMenuItem" id="677392542">
+								<object class="NSMenuItem" id="983180041">
 									<reference key="NSMenu" ref="110575045"/>
 									<string key="NSTitle">About Tongseng</string>
 									<string key="NSKeyEquiv"/>
@@ -67,7 +67,7 @@
 									<reference key="NSOnImage" ref="35465992"/>
 									<reference key="NSMixedImage" ref="502551668"/>
 								</object>
-								<object class="NSMenuItem" id="539621788">
+								<object class="NSMenuItem" id="981988397">
 									<reference key="NSMenu" ref="110575045"/>
 									<bool key="NSIsDisabled">YES</bool>
 									<bool key="NSIsSeparator">YES</bool>
@@ -419,10 +419,10 @@
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
 						<string key="label">orderFrontStandardAboutPanel:</string>
-						<reference key="source" ref="1021"/>
-						<reference key="destination" ref="677392542"/>
+						<reference key="source" ref="1050"/>
+						<reference key="destination" ref="983180041"/>
 					</object>
-					<int key="connectionID">500</int>
+					<int key="connectionID">501</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -483,8 +483,8 @@
 							<reference ref="632727374"/>
 							<reference ref="1056857174"/>
 							<reference ref="342932134"/>
-							<reference ref="677392542"/>
-							<reference ref="539621788"/>
+							<reference ref="983180041"/>
+							<reference ref="981988397"/>
 						</object>
 						<reference key="parent" ref="694149608"/>
 					</object>
@@ -643,12 +643,12 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">498</int>
-						<reference key="object" ref="677392542"/>
+						<reference key="object" ref="983180041"/>
 						<reference key="parent" ref="110575045"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">499</int>
-						<reference key="object" ref="539621788"/>
+						<reference key="object" ref="981988397"/>
 						<reference key="parent" ref="110575045"/>
 					</object>
 				</object>
@@ -776,7 +776,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">500</int>
+			<int key="maxID">501</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
