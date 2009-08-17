@@ -10,37 +10,38 @@ Visit [TUIO.org](http://tuio.org) for more information about TUIO.
 Usage
 -----
 
-1. Download [the binary file](http://cloud.github.com/downloads/fajran/tongseng/tongseng-0.2.1.zip) (Intel only)
-2. Extract it
-3. Run the `tongseng` file
+1. Download [the application package](http://cloud.github.com/downloads/fajran/tongseng/tongseng-0.3.93) (Intel only)
+2. Open it
+3. Run Tongseng
+    
+    ![Tongseng](http://fajran.github.com/tongseng/img/tongseng.png)
+    
+4. Click the Start button to activate Tongseng
 
 Then..
 
 1. Run your TUIO-based multitouch application
 2. Start touching your touchpad!
 
-By default, Tongseng will send the TUIO messages to localhost at port
-3333. If you want to use another host/port, mention them in the 
-parameters.
-
-    $ ./tongseng host port
-
-Screenshot
-----------
-
-![Tongseng](http://fajran.github.com/tongseng/img/tongseng.png)
-
 Compilation
 -----------
+
+### GUI Application
 
 1. Retrieve the code. Using git
 
         $ git clone git://github.com/fajran/tongseng.git
     
-    or by clicking the download button.
+    or by clicking [the download
+	button](http://github.com/fajran/tongseng/tarball/tuio-1.1).
 
-2. Compile it
+2. Open `TongsengApp/TongsengApp.xcodeproj` with Xcode.
+3. Build the project.
 
-        $ cd tongseng
-        $ make
+### Command line application
+
+1. Retrieve the code
+2. Go to the source directory
+3. Type `make` and return.
+
 
