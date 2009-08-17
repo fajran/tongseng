@@ -25,6 +25,11 @@ parameters.
 
     $ ./tongseng host port
 
+Screenshot
+----------
+
+![Tongseng](http://fajran.github.com/tongseng/img/tongseng.png)
+
 Compilation
 -----------
 
