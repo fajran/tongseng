@@ -204,6 +204,7 @@ static void tuio_start()
 	oscSender = new TUIO::UdpSender((char*)host.c_str(), port);
 	server = new TUIO::TuioServer(oscSender);
 	server->setVerbose(verbose);
+	server->setSourceName("Tongseng");
 }
 
 // Release all active fingers
