@@ -19,34 +19,34 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "TuioTime.h"
+
+#include "FlashSender.h"
+
 using namespace TUIO;
-	
-long TuioTime::start_seconds = 0;
-long TuioTime::start_micro_seconds = 0;
 
-void TuioTime::initSession() {
-	TuioTime startTime = TuioTime::getSystemTime();
-	start_seconds = startTime.getSeconds();
-	start_micro_seconds = startTime.getMicroseconds();
+FlashSender::FlashSender() {
+	try {
+		local = true;
+		//socket = new FlashTransmitSocket();
+		buffer_size = MAX_FLASH_SIZE;
+	} catch (std::exception &e) { 
+		std::cout << "could not create connection" << std::endl;
+		//socket = NULL;
+	}
 }
 
-TuioTime TuioTime::getSessionTime() {
-	return  (getSystemTime() - getStartTime());
+FlashSender::~FlashSender() {
+	//delete socket;		
 }
 
-TuioTime TuioTime::getStartTime() {
-	return TuioTime(start_seconds,start_micro_seconds);
+bool FlashSender::isConnected() { 
+	//if (socket==NULL) return false; 
+	return true;
 }
 
-TuioTime TuioTime::getSystemTime() {
-#ifdef WIN32
-	TuioTime systemTime(GetTickCount());
-#else
-	struct timeval tv;
-	struct timezone tz;
-	gettimeofday(&tv,&tz);
-	TuioTime systemTime(tv.tv_sec,tv.tv_usec);
-#endif	
-	return systemTime;
+bool FlashSender::sendOSC (osc::OutboundPacketStream *bundle) {
+	//if (socket==NULL) return false; 
+	if ( bundle->Size() > buffer_size ) return false;
+	//socket->Send( bundle->Data(), bundle->Size() );
+	return true;
 }

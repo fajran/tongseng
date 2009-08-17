@@ -2,8 +2,6 @@
  TUIO C++ Library - part of the reacTIVision project
  http://reactivision.sourceforge.net/
  
- Copyright (c) 2005-2009 Martin Kaltenbrunner <martin@tuio.org>
- 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation; either version 2 of the License, or
@@ -19,34 +17,20 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "TuioTime.h"
-using namespace TUIO;
-	
-long TuioTime::start_seconds = 0;
-long TuioTime::start_micro_seconds = 0;
+#ifndef INCLUDED_LIBEXPORT_H
+#define INCLUDED_LIBEXPORT_H
 
-void TuioTime::initSession() {
-	TuioTime startTime = TuioTime::getSystemTime();
-	start_seconds = startTime.getSeconds();
-	start_micro_seconds = startTime.getMicroseconds();
-}
-
-TuioTime TuioTime::getSessionTime() {
-	return  (getSystemTime() - getStartTime());
-}
-
-TuioTime TuioTime::getStartTime() {
-	return TuioTime(start_seconds,start_micro_seconds);
-}
-
-TuioTime TuioTime::getSystemTime() {
 #ifdef WIN32
-	TuioTime systemTime(GetTickCount());
+	#pragma warning(disable: 4251) // disable annoying template exporting warnings
+	#pragma warning(disable: 4275) // disable warning caused by not exported OSC classes
+
+	#ifdef LIB_EXPORT
+		#define LIBDECL __declspec(dllexport)
+	#else
+		#define LIBDECL __declspec(dllimport)
+	#endif
 #else
-	struct timeval tv;
-	struct timezone tz;
-	gettimeofday(&tv,&tz);
-	TuioTime systemTime(tv.tv_sec,tv.tv_usec);
-#endif	
-	return systemTime;
-}
+	#define LIBDECL
+#endif
+
+#endif

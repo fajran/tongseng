@@ -2,7 +2,7 @@
  TUIO C++ Library - part of the reacTIVision project
  http://reactivision.sourceforge.net/
  
- Copyright (c) 2005-2009 Martin Kaltenbrunner <mkalten@iua.upf.edu>
+ Copyright (c) 2005-2009 Martin Kaltenbrunner <martin@tuio.org>
  
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -21,6 +21,8 @@
 
 #ifndef INCLUDED_TUIOTIME_H
 #define INCLUDED_TUIOTIME_H
+
+#include "LibExport.h"
 
 #ifndef WIN32
 #include <pthread.h>
@@ -45,11 +47,13 @@ namespace TUIO {
 	 * @author Martin Kaltenbrunner
 	 * @version 1.4
 	 */ 
-	class TuioTime {
+	class LIBDECL TuioTime {
 		
 	private:
-		long seconds, micro_seconds;
-		static long start_seconds, start_micro_seconds;
+		long seconds;
+		long micro_seconds;
+		static long start_seconds;
+		static long start_micro_seconds;
 		
 	public:
 
@@ -197,7 +201,7 @@ namespace TUIO {
 		 * Returns the TuioTime Seconds component.
 		 * @return the TuioTime Seconds component
 		 */	
-		long getSeconds() {
+		long getSeconds() const{
 			return seconds;
 		};
 		
@@ -205,7 +209,7 @@ namespace TUIO {
 		 * Returns the TuioTime Microseconds component.
 		 * @return the TuioTime Microseconds component
 		 */	
-		long getMicroseconds() {
+		long getMicroseconds() const{
 			return micro_seconds;
 		};
 		
@@ -213,7 +217,7 @@ namespace TUIO {
 		 * Returns the total TuioTime in Milliseconds.
 		 * @return the total TuioTime in Milliseconds
 		 */	
-		long getTotalMilliseconds() {
+		long getTotalMilliseconds() const{
 			return seconds*MSEC_SECOND+micro_seconds/MSEC_SECOND;
 		};
 		

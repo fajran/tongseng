@@ -2,7 +2,7 @@
  TUIO C++ Library - part of the reacTIVision project
  http://reactivision.sourceforge.net/
  
- Copyright (c) 2005-2009 Martin Kaltenbrunner <mkalten@iua.upf.edu>
+ Copyright (c) 2005-2009 Martin Kaltenbrunner <martin@tuio.org>
  
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 
 #include "TuioObject.h"
 #include "TuioCursor.h"
+#include "TuioBlob.h"
 
 namespace TUIO {
 	
@@ -44,7 +45,7 @@ namespace TUIO {
 	 * @author Martin Kaltenbrunner
 	 * @version 1.4
 	 */
-	class TuioListener { 
+	class LIBDECL TuioListener { 
 		
 	public:
 		/**
@@ -93,6 +94,27 @@ namespace TUIO {
 		 * @param  tcur  the TuioCursor reference associated to the removeTuioCursor event
 		 */
 		virtual void removeTuioCursor(TuioCursor *tcur)=0;
+
+		/**
+		 * This callback method is invoked by the TuioClient when a new TuioBlob is added to the session.   
+		 *
+		 * @param  tcur  the TuioBlob reference associated to the addTuioBlob event
+		 */
+		virtual void addTuioBlob(TuioBlob *tblb)=0;
+		
+		/**
+		 * This callback method is invoked by the TuioClient when an existing TuioBlob is updated during the session.   
+		 *
+		 * @param  tblb  the TuioBlob reference associated to the updateTuioBlob event
+		 */
+		virtual void updateTuioBlob(TuioBlob *tblb)=0;
+		
+		/**
+		 * This callback method is invoked by the TuioClient when an existing TuioBlob is removed from the session.   
+		 *
+		 * @param  tblb  the TuioBlob reference associated to the removeTuioBlob event
+		 */
+		virtual void removeTuioBlob(TuioBlob *tblb)=0;
 		
 		/**
 		 * This callback method is invoked by the TuioClient to mark the end of a received TUIO message bundle.   
