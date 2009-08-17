@@ -3,6 +3,8 @@ SRC=main.cpp \
 	tongseng.cpp \
 	TUIO/TuioServer.cpp \
 	TUIO/TuioTime.cpp \
+	TUIO/TuioManager.cpp \
+	TUIO/UdpSender.cpp \
 	oscpack/ip/posix/NetworkingUtils.cpp \
 	oscpack/ip/posix/UdpSocket.cpp \
 	oscpack/osc/OscOutboundPacketStream.cpp \

@@ -36,6 +36,7 @@
 
 static MTDeviceRef dev;
 static TUIO::TuioServer* server;
+static TUIO::OscSender* oscSender;
 static bool running = false;
 static bool verbose = false;
 static std::string host("localhost");
@@ -200,7 +201,8 @@ static int callback(int device, Finger *data, int nFingers, double timestamp, in
 // Start TUIO server
 static void tuio_start()
 {
-	server = new TUIO::TuioServer((char*)host.c_str(), port);
+	oscSender = new TUIO::UdpSender((char*)host.c_str(), port);
+	server = new TUIO::TuioServer(oscSender);
 	server->setVerbose(verbose);
 }
 
@@ -222,6 +224,7 @@ static void tuio_stop()
 {
 	release_all_fingers();
 	delete server;
+	delete oscSender;
 }
 
 // Start handling multitouch events
