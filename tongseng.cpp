@@ -205,6 +205,9 @@ static void tuio_start()
 	server = new TUIO::TuioServer(oscSender);
 	server->setVerbose(verbose);
 	server->setSourceName("Tongseng");
+	server->enableObjectProfile(false);
+	server->enableBlobProfile(false);
+	server->enableCursorProfile(true);
 }
 
 // Release all active fingers
