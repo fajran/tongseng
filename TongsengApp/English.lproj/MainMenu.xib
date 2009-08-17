@@ -8,7 +8,7 @@
 		<string key="IBDocument.HIToolboxVersion">353.00</string>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="372"/>
+			<integer value="371"/>
 			<integer value="498"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
@@ -200,7 +200,7 @@
 											<object class="NSTextFieldCell" key="NSCell" id="772193255">
 												<int key="NSCellFlags">68288064</int>
 												<int key="NSCellFlags2">71304192</int>
-												<string key="NSContents">Port:</string>
+												<string key="NSContents">UDP port:</string>
 												<reference key="NSSupport" ref="383916157"/>
 												<reference key="NSControlView" ref="247566183"/>
 												<reference key="NSBackgroundColor" ref="689539504"/>
@@ -725,8 +725,8 @@
 					<reference ref="9"/>
 					<string>{74, 862}</string>
 					<string>{{6, 978}, {478, 20}}</string>
-					<string>{{349, 386}, {269, 190}}</string>
-					<string>{{349, 386}, {269, 190}}</string>
+					<string>{{355, 419}, {269, 190}}</string>
+					<string>{{355, 419}, {269, 190}}</string>
 					<reference ref="9"/>
 					<string>{{33, 99}, {480, 360}}</string>
 					<string>{3.40282e+38, 3.40282e+38}</string>
