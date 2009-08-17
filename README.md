@@ -10,7 +10,7 @@ Visit [TUIO.org](http://tuio.org) for more information about TUIO.
 Usage
 -----
 
-1. Download [the application package](http://cloud.github.com/downloads/fajran/tongseng/tongseng-0.4.dmg) (Intel only)
+1. Download [the application package](http://cloud.github.com/downloads/fajran/tongseng/Tongseng-0.4.dmg) (Intel only)
 2. Open it
 3. Run Tongseng
     
