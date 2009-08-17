@@ -1,9 +1,9 @@
 Tongseng
 ========
 
-Tongseng is a TUIO wrapper for Mac OS X multitouch events. Now you can
-use the multitouch touch pad to send TUIO events to your multitouch
-application!
+Tongseng is a [TUIO](http://tuio.org) wrapper for Mac OS X multitouch
+events.  Now you can use the multitouch touch pad to send TUIO events to
+your multitouch application!
 
 Visit [TUIO.org](http://tuio.org) for more information about TUIO.
 
