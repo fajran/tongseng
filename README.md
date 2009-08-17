@@ -10,7 +10,7 @@ Visit [TUIO.org](http://tuio.org) for more information about TUIO.
 Usage
 -----
 
-1. Download [the application package](http://cloud.github.com/downloads/fajran/tongseng/tongseng-0.3.93) (Intel only)
+1. Download [the application package](http://cloud.github.com/downloads/fajran/tongseng/tongseng-0.4.dmg) (Intel only)
 2. Open it
 3. Run Tongseng
     
@@ -33,7 +33,7 @@ Compilation
         $ git clone git://github.com/fajran/tongseng.git
     
     or by clicking [the download
-	button](http://github.com/fajran/tongseng/tarball/tuio-1.1).
+	button](http://github.com/fajran/tongseng/tarball/master).
 
 2. Open `TongsengApp/TongsengApp.xcodeproj` with Xcode.
 3. Build the project.
