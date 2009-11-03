@@ -229,7 +229,7 @@ static void mt_start()
 {
 	dev = MTDeviceCreateDefault();
 	MTRegisterContactFrameCallback(dev, callback);
-	MTDeviceStart(dev);
+	MTDeviceStart(dev, 0);
 }
 
 // Stop handling multitouch events

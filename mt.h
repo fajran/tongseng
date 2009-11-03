@@ -41,13 +41,13 @@ typedef struct {
   float unk2;
 } Finger;
 
-typedef int MTDeviceRef;
+typedef void* MTDeviceRef;
 typedef int (*MTContactCallbackFunction)(int,Finger*,int,double,int);
 
 MTDeviceRef MTDeviceCreateDefault();
 void MTRegisterContactFrameCallback(MTDeviceRef, MTContactCallbackFunction);
 void MTUnregisterContactFrameCallback(MTDeviceRef, MTContactCallbackFunction);
-void MTDeviceStart(MTDeviceRef);
+void MTDeviceStart(MTDeviceRef, int);
 void MTDeviceStop(MTDeviceRef);
 void MTDeviceRelease(MTDeviceRef);
 
