@@ -9,8 +9,8 @@ SRC=main.cpp \
 	oscpack/osc/OscTypes.cpp
 
 OBJS=$(SRC:.cpp=.o)
-CPPFLAGS=-ITUIO -Ioscpack
-LIBS=-F/System/Library/PrivateFrameworks -framework MultitouchSupport
+CPPFLAGS=-ITUIO -Ioscpack -m32
+LIBS=-F/System/Library/PrivateFrameworks -framework MultitouchSupport -m32
 BIN=tongseng
 
 all : $(BIN)
