@@ -2,7 +2,7 @@
  TUIO C++ Library - part of the reacTIVision project
  http://reactivision.sourceforge.net/
  
- Copyright (c) 2005-2009 Martin Kaltenbrunner <mkalten@iua.upf.edu>
+ Copyright (c) 2005-2009 Martin Kaltenbrunner <martin@tuio.org>
  
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -22,12 +22,7 @@
 #ifndef INCLUDED_TUIOCLIENT_H
 #define INCLUDED_TUIOCLIENT_H
 
-#ifndef WIN32
-#include <pthread.h>
-#include <sys/time.h>
-#else
-#include <windows.h>
-#endif
+#include "TuioDispatcher.h"
 
 #include <iostream>
 #include <list>
@@ -36,13 +31,8 @@
 
 #include "osc/OscReceivedElements.h"
 #include "osc/OscPrintReceivedElements.h"
-
 #include "ip/UdpSocket.h"
 #include "ip/PacketListener.h"
-
-#include "TuioListener.h"
-#include "TuioObject.h"
-#include "TuioCursor.h"
 
 namespace TUIO {
 	
@@ -59,7 +49,7 @@ namespace TUIO {
 	 * @author Martin Kaltenbrunner
 	 * @version 1.4
 	 */ 
-	class TuioClient : public PacketListener { 
+	class LIBDECL TuioClient : public TuioDispatcher, PacketListener { 
 		
 	public:
 		/**
@@ -92,41 +82,6 @@ namespace TUIO {
 		 * @return	true if this TuioClient is currently connected
 		 */
 		bool isConnected() { return connected; }
-				
-		/**
-		 * Adds the provided TuioListener to the list of registered TUIO event listeners
-		 *
-		 * @param  listener  the TuioListener to add
-		 */
-		void addTuioListener(TuioListener *listener);
-
-		/**
-		 * Removes the provided TuioListener from the list of registered TUIO event listeners
-		 *
-		 * @param  listener  the TuioListener to remove
-		 */
-		void removeTuioListener(TuioListener *listener);
-
-		/**
-		 * Removes all TuioListener from the list of registered TUIO event listeners
-		 */
-		void removeAllTuioListeners() {	
-			listenerList.clear();
-		}
-
-		/**
-		 * Returns a List of all currently active TuioObjects
-		 *
-		 * @return  a List of all currently active TuioObjects
-		 */
-		std::list<TuioObject*> getTuioObjects();
-		
-		/**
-		 * Returns a List of all currently active TuioCursors
-		 *
-		 * @return  a List of all currently active TuioCursors
-		 */
-		std::list<TuioCursor*> getTuioCursors();
 
 		/**
 		 * Returns the TuioObject corresponding to the provided Session ID
@@ -134,36 +89,57 @@ namespace TUIO {
 		 *
 		 * @return  an active TuioObject corresponding to the provided Session ID or NULL
 		 */
-		TuioObject* getTuioObject(long s_id);
-
+		TuioObject* getTuioObject(long s_id) {
+			return getTuioObject(0,s_id);
+		};
+		
+		/**
+		 * Returns the TuioObject corresponding to the provided Session ID
+		 * which is associated to the given Source ID
+		 * or NULL if the Session ID does not refer to an active TuioObject
+		 *
+		 * @return  an active TuioObject corresponding to the provided Session ID or NULL
+		 */
+		TuioObject* getTuioObject(int src_id, long s_id);
+		
 		/**
 		 * Returns the TuioCursor corresponding to the provided Session ID
 		 * or NULL if the Session ID does not refer to an active TuioCursor
 		 *
 		 * @return  an active TuioCursor corresponding to the provided Session ID or NULL
 		 */
-		TuioCursor* getTuioCursor(long s_id);
-
+		TuioCursor* getTuioCursor(long s_id) {
+			return getTuioCursor(0,s_id);
+		};
+		
 		/**
-		 * Locks the TuioObject list in order to avoid updates during access
+		 * Returns the TuioCursor corresponding to the provided Session ID
+		 * which is associated to the given Source ID
+		 * or NULL if the Session ID does not refer to an active TuioCursor
+		 *
+		 * @return  an active TuioCursor corresponding to the provided Session ID or NULL
 		 */
-		void lockObjectList();
-
+		TuioCursor* getTuioCursor(int src_id, long s_id);
+		
 		/**
-		 * Releases the lock of the TuioObject list
+		 * Returns the TuioBlob corresponding to the provided Session ID
+		 * or NULL if the Session ID does not refer to an active TuioBlob
+		 *
+		 * @return  an active TuioBlob corresponding to the provided Session ID or NULL
 		 */
-		void unlockObjectList();
-
+		TuioBlob* getTuioBlob(long s_id) {
+			return getTuioBlob(0,s_id);
+		};
+		
 		/**
-		 * Locks the TuioCursor list in order to avoid updates during access
+		 * Returns the TuioBlob corresponding to the provided Session ID
+		 * which is associated to the given Source ID
+		 * or NULL if the Session ID does not refer to an active TuioBlob
+		 *
+		 * @return  an active TuioBlob corresponding to the provided Session ID or NULL
 		 */
-		void lockCursorList();
-
-		/**
-		 * Releases the lock of the TuioCursor list
-		 */
-		void unlockCursorList();
-
+		TuioBlob* getTuioBlob(int src_id, long s_id);
+		
 		void ProcessPacket( const char *data, int size, const IpEndpointName &remoteEndpoint );
 		UdpListeningReceiveSocket *socket;
 				
@@ -180,28 +156,31 @@ namespace TUIO {
 		void ProcessMessage( const osc::ReceivedMessage& message, const IpEndpointName& remoteEndpoint);
 		
 	private:
-		std::list<TuioListener*> listenerList;
-		
-		std::list<TuioObject*> objectList, frameObjects;
-		std::list<long> aliveObjectList, objectBuffer;
-		std::list<TuioCursor*> cursorList, frameCursors;
-		std::list<long> aliveCursorList, cursorBuffer;
+		std::list<TuioObject*> frameObjects;
+		std::list<long> aliveObjectList;
+		std::list<TuioCursor*> frameCursors;
+		std::list<long> aliveCursorList;
+		std::list<TuioBlob*> frameBlobs;
+		std::list<long> aliveBlobList;
 		
 		osc::int32 currentFrame;
 		TuioTime currentTime;
 			
 		std::list<TuioCursor*> freeCursorList, freeCursorBuffer;
-		int maxCursorID;
+		int maxCursorID[256];
+
+		std::list<TuioBlob*> freeBlobList, freeBlobBuffer;
+		int maxBlobID[256];
+		
+		std::list<std::string> sourceList;
+		char *source_name;
+		char *source_addr;
+		int source_id;
 		
 #ifndef WIN32
 		pthread_t thread;
-		pthread_mutex_t objectMutex;
-		pthread_mutex_t cursorMutex;
-		//pthread_mutexattr_t attr_p;
 #else
 		HANDLE thread;
-		HANDLE objectMutex;
-		HANDLE cursorMutex;
 #endif	
 				
 		bool locked;

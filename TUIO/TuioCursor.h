@@ -2,7 +2,7 @@
  TUIO C++ Library - part of the reacTIVision project
  http://reactivision.sourceforge.net/
  
- Copyright (c) 2005-2009 Martin Kaltenbrunner <mkalten@iua.upf.edu>
+ Copyright (c) 2005-2009 Martin Kaltenbrunner <martin@tuio.org>
  
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@
 #ifndef INCLUDED_TUIOCURSOR_H
 #define INCLUDED_TUIOCURSOR_H
 
-#include <math.h>
 #include "TuioContainer.h"
 
 namespace TUIO {
@@ -33,7 +32,7 @@ namespace TUIO {
 	 * @author Martin Kaltenbrunner
 	 * @version 1.4
 	 */ 
-	class TuioCursor: public TuioContainer {
+	class LIBDECL TuioCursor: public TuioContainer {
 		
 	protected:
 		/**
@@ -42,6 +41,8 @@ namespace TUIO {
 		int cursor_id;
 		
 	public:
+		using TuioContainer::update;
+		
 		/**
 		 * This constructor takes a TuioTime argument and assigns it along with the provided 
 		 * Session ID, Cursor ID, X and Y coordinate to the newly created TuioCursor.
@@ -88,7 +89,7 @@ namespace TUIO {
 		 * Returns the Cursor ID of this TuioCursor.
 		 * @return	the Cursor ID of this TuioCursor
 		 */
-		int getCursorID() {
+		int getCursorID() const{
 			return cursor_id;
 		};
 	};
