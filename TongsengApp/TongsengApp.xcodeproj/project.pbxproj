@@ -8,6 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1DDD58140DA1D0A300B32029 /* MainMenu.xib */; };
+		3F45D5AA10A0FEEB00139241 /* TuioBlob.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F45D5A410A0FEEB00139241 /* TuioBlob.cpp */; };
+		3F45D5AB10A0FEEB00139241 /* TuioContainer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F45D5A510A0FEEB00139241 /* TuioContainer.cpp */; };
+		3F45D5AC10A0FEEB00139241 /* TuioCursor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F45D5A610A0FEEB00139241 /* TuioCursor.cpp */; };
+		3F45D5AD10A0FEEB00139241 /* TuioDispatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F45D5A710A0FEEB00139241 /* TuioDispatcher.cpp */; };
+		3F45D5AE10A0FEEB00139241 /* TuioObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F45D5A810A0FEEB00139241 /* TuioObject.cpp */; };
+		3F45D5AF10A0FEEB00139241 /* TuioPoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F45D5A910A0FEEB00139241 /* TuioPoint.cpp */; };
 		3F6CB36A10374F0C00CFF31E /* tongseng.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F6CB36810374F0C00CFF31E /* tongseng.cpp */; };
 		3F6CB3C010374FB900CFF31E /* NetworkingUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F6CB39010374FB900CFF31E /* NetworkingUtils.cpp */; };
 		3F6CB3C210374FB900CFF31E /* UdpSocket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3F6CB39210374FB900CFF31E /* UdpSocket.cpp */; };
@@ -33,6 +39,12 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* TongsengApp_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TongsengApp_Prefix.pch; sourceTree = "<group>"; };
+		3F45D5A410A0FEEB00139241 /* TuioBlob.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TuioBlob.cpp; sourceTree = "<group>"; };
+		3F45D5A510A0FEEB00139241 /* TuioContainer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TuioContainer.cpp; sourceTree = "<group>"; };
+		3F45D5A610A0FEEB00139241 /* TuioCursor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TuioCursor.cpp; sourceTree = "<group>"; };
+		3F45D5A710A0FEEB00139241 /* TuioDispatcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TuioDispatcher.cpp; sourceTree = "<group>"; };
+		3F45D5A810A0FEEB00139241 /* TuioObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TuioObject.cpp; sourceTree = "<group>"; };
+		3F45D5A910A0FEEB00139241 /* TuioPoint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TuioPoint.cpp; sourceTree = "<group>"; };
 		3F6CB36810374F0C00CFF31E /* tongseng.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tongseng.cpp; path = ../tongseng.cpp; sourceTree = SOURCE_ROOT; };
 		3F6CB36910374F0C00CFF31E /* tongseng.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tongseng.h; path = ../tongseng.h; sourceTree = SOURCE_ROOT; };
 		3F6CB36B10374F1600CFF31E /* mt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mt.h; path = ../mt.h; sourceTree = SOURCE_ROOT; };
@@ -184,6 +196,12 @@
 		3F6CB3F31037541700CFF31E /* TUIO */ = {
 			isa = PBXGroup;
 			children = (
+				3F45D5A410A0FEEB00139241 /* TuioBlob.cpp */,
+				3F45D5A510A0FEEB00139241 /* TuioContainer.cpp */,
+				3F45D5A610A0FEEB00139241 /* TuioCursor.cpp */,
+				3F45D5A710A0FEEB00139241 /* TuioDispatcher.cpp */,
+				3F45D5A810A0FEEB00139241 /* TuioObject.cpp */,
+				3F45D5A910A0FEEB00139241 /* TuioPoint.cpp */,
 				3FAF0800103963CD006DF045 /* TuioManager.cpp */,
 				3FAF0801103963CD006DF045 /* UdpSender.cpp */,
 				3F6CB3FD1037541700CFF31E /* TuioServer.cpp */,
@@ -259,6 +277,12 @@
 				3F6CB43A10375A6000CFF31E /* TongsengController.m in Sources */,
 				3FAF0802103963CD006DF045 /* TuioManager.cpp in Sources */,
 				3FAF0803103963CD006DF045 /* UdpSender.cpp in Sources */,
+				3F45D5AA10A0FEEB00139241 /* TuioBlob.cpp in Sources */,
+				3F45D5AB10A0FEEB00139241 /* TuioContainer.cpp in Sources */,
+				3F45D5AC10A0FEEB00139241 /* TuioCursor.cpp in Sources */,
+				3F45D5AD10A0FEEB00139241 /* TuioDispatcher.cpp in Sources */,
+				3F45D5AE10A0FEEB00139241 /* TuioObject.cpp in Sources */,
+				3F45D5AF10A0FEEB00139241 /* TuioPoint.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
