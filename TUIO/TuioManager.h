@@ -24,22 +24,13 @@
 
 #include "TuioDispatcher.h"
 
-#ifndef WIN32
-#include <pthread.h>
-#include <sys/time.h>
-#else
-#include <windows.h>
-#endif
-
 #include <iostream>
 #include <list>
 #include <algorithm>
 
-#define IP_MTU_SIZE 1500
-#define MAX_UDP_SIZE 65536
-#define MIN_UDP_SIZE 576
-#define OBJ_MESSAGE_SIZE 108	// setMessage + seqMessage size
+#define OBJ_MESSAGE_SIZE 108	// setMessage + fseqMessage size
 #define CUR_MESSAGE_SIZE 88
+#define BLB_MESSAGE_SIZE 116
 
 namespace TUIO {
 	/**
@@ -69,7 +60,7 @@ namespace TUIO {
 	 * </code></p>
 	 *
 	 * @author Martin Kaltenbrunner
-	 * @version 1.4
+	 * @version 1.5
 	 */ 
 	class LIBDECL TuioManager : public TuioDispatcher { 
 	
@@ -375,7 +366,6 @@ namespace TUIO {
 		void resetTuioBlobs();		
 		
 	protected:
-		
 		std::list<TuioCursor*> freeCursorList;
 		std::list<TuioCursor*> freeCursorBuffer;
 
@@ -397,5 +387,5 @@ namespace TUIO {
 		bool invert_y;
 		bool invert_a;
 	};
-};
+}
 #endif /* INCLUDED_TUIOMANAGER_H */

@@ -43,7 +43,7 @@ namespace TUIO {
 	 * </code></p>
 	 *
 	 * @author Martin Kaltenbrunner
-	 * @version 1.4
+	 * @version 1.5
 	 */
 	class LIBDECL TuioListener { 
 		
@@ -123,5 +123,5 @@ namespace TUIO {
 		 */
 		virtual void refresh(TuioTime ftime)=0;
 	};
-};
+}
 #endif /* INCLUDED_TUIOLISTENER_H */

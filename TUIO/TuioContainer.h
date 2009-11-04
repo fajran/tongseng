@@ -24,13 +24,15 @@
 
 #include "TuioPoint.h"
 #include <list>
+#include <string>
 
-#define TUIO_ADDED 0
-#define TUIO_ACCELERATING 1
-#define TUIO_DECELERATING 2
-#define TUIO_STOPPED 3
-#define TUIO_REMOVED 4
-#define TUIO_ROTATING 5
+#define TUIO_IDLE 0
+#define TUIO_ADDED 1
+#define TUIO_ACCELERATING 2
+#define TUIO_DECELERATING 3
+#define TUIO_ROTATING 4
+#define TUIO_STOPPED 5
+#define TUIO_REMOVED 6
 
 namespace TUIO {
 	
@@ -38,7 +40,7 @@ namespace TUIO {
 	 * The abstract TuioContainer class defines common attributes that apply to both subclasses {@link TuioObject} and {@link TuioCursor}.
 	 *
 	 * @author Martin Kaltenbrunner
-	 * @version 1.4
+	 * @version 1.5
 	 */ 
 	class LIBDECL TuioContainer: public TuioPoint {
 		
@@ -72,17 +74,18 @@ namespace TUIO {
 		 */ 
 		int state;
 		/**
+		 * The ID of the TUIO source
+		 */ 
+		int source_id;	
+		/**
 		 * The name of the TUIO source
 		 */ 
-		const char *source_name;
+		std::string source_name;
 		/**
 		 * The address of the TUIO source
 		 */ 
-		const char *source_addr;
-		/**
-		 * The ID of the TUIO source
-		 */ 
-		int source_id;		
+		std::string source_addr;
+	
 	public:
 		using TuioPoint::update;
 		
@@ -95,19 +98,7 @@ namespace TUIO {
 		 * @param	xp	the X coordinate to assign
 		 * @param	yp	the Y coordinate to assign
 		 */
-		TuioContainer (TuioTime ttime, long si, float xp, float yp):TuioPoint(ttime, xp,yp) {
-			session_id = si;
-			x_speed = 0.0f;
-			y_speed = 0.0f;
-			motion_speed = 0.0f;
-			motion_accel = 0.0f;			
-			TuioPoint p(currentTime,xpos,ypos);
-			path.push_back(p);
-			
-			state = TUIO_ADDED;
-			source_name = "local";
-			source_addr = "127.0.0.1";
-		};
+		TuioContainer (TuioTime ttime, long si, float xp, float yp);
 
 		/**
 		 * This constructor takes the provided Session ID, X and Y coordinate 
@@ -117,19 +108,7 @@ namespace TUIO {
 		 * @param	xp	the X coordinate to assign
 		 * @param	yp	the Y coordinate to assign
 		 */
-		TuioContainer (long si, float xp, float yp):TuioPoint(xp,yp) {
-			session_id = si;
-			x_speed = 0.0f;
-			y_speed = 0.0f;
-			motion_speed = 0.0f;
-			motion_accel = 0.0f;			
-			TuioPoint p(currentTime,xpos,ypos);
-			path.push_back(p);
-			
-			state = TUIO_ADDED;
-			source_name = "local";
-			source_addr = "127.0.0.1";
-		};
+		TuioContainer (long si, float xp, float yp);
 		
 		/**
 		 * This constructor takes the atttibutes of the provided TuioContainer 
@@ -137,19 +116,7 @@ namespace TUIO {
 		 *
 		 * @param	tcon	the TuioContainer to assign
 		 */
-		TuioContainer (TuioContainer *tcon):TuioPoint(tcon) {
-			session_id = tcon->getSessionID();
-			x_speed = 0.0f;
-			y_speed = 0.0f;
-			motion_speed = 0.0f;
-			motion_accel = 0.0f;
-			TuioPoint p(currentTime,xpos,ypos);
-			path.push_back(p);
-			
-			state = TUIO_ADDED;
-			source_name = "local";
-			source_addr = "127.0.0.1";
-		};
+		TuioContainer (TuioContainer *tcon);
 		
 		/**
 		 * The destructor is doing nothing in particular. 
@@ -157,34 +124,28 @@ namespace TUIO {
 		virtual ~TuioContainer(){};
 
 		/**
-		 * Sets the name and address of the TUIO source 
+		 * Sets the ID, name and address of the TUIO source 
+		 *
+		 * @param	src_id		the ID of the TUIO source
+		 * @param	src_name	the name of the TUIO source
+		 * @param	src_addr	the address of the TUIO source
 		 */
-		virtual void setTuioSource(int src_id, const char *src_name, const char *src_addr) {
-			source_id = src_id;
-			source_name = src_name;
-			source_addr = src_addr;
-		};
+		virtual void setTuioSource(int src_id, const char *src_name, const char *src_addr);
 
 		/**
 		 * Returns the name of the TUIO source 
 		 */
-		virtual const char* getTuioSourceName() const{
-			return source_name;
-		};
+		virtual const char* getTuioSourceName() const;
 
 		/**
 		 * Returns the address of the TUIO source 
 		 */
-		virtual const char* getTuioSourceAddress() const{
-			return source_addr;
-		};
+		virtual const char* getTuioSourceAddress() const;
 		
 		/**
 		 * Returns the ID of the TUIO source 
 		 */
-		virtual int getTuioSourceID() const{
-			return source_id;
-		};
+		virtual int getTuioSourceID() const;
 		
 		/**
 		 * Takes a TuioTime argument and assigns it along with the provided 
@@ -195,38 +156,13 @@ namespace TUIO {
 		 * @param	xp	the X coordinate to assign
 		 * @param	yp	the Y coordinate to assign
 		 */
-		virtual void update (TuioTime ttime, float xp, float yp) {
-			TuioPoint lastPoint = path.back();
-			TuioPoint::update(ttime,xp, yp);
-			
-			TuioTime diffTime = currentTime - lastPoint.getTuioTime();
-			float dt = diffTime.getTotalMilliseconds()/1000.0f;
-			float dx = xpos - lastPoint.getX();
-			float dy = ypos - lastPoint.getY();
-			float dist = sqrt(dx*dx+dy*dy);
-			float last_motion_speed = motion_speed;
-			
-			x_speed = dx/dt;
-			y_speed = dy/dt;
-			motion_speed = dist/dt;
-			motion_accel = (motion_speed - last_motion_speed)/dt;
-			
-			TuioPoint p(currentTime,xpos,ypos);
-			path.push_back(p);
-			
-			if (motion_accel>0) state = TUIO_ACCELERATING;
-			else if (motion_accel<0) state = TUIO_DECELERATING;
-			else state = TUIO_STOPPED;
-		};
-
+		virtual void update (TuioTime ttime, float xp, float yp);
 		
 		/**
 		 * This method is used to calculate the speed and acceleration values of
 		 * TuioContainers with unchanged positions.
 		 */
-		virtual void stop(TuioTime ttime) {
-			update(ttime,xpos,ypos);
-		};
+		virtual void stop(TuioTime ttime);
 
 		/**
 		 * Takes a TuioTime argument and assigns it along with the provided 
@@ -240,20 +176,7 @@ namespace TUIO {
 		 * @param	ys	the Y velocity to assign
 		 * @param	ma	the acceleration to assign
 		 */
-		virtual void update (TuioTime ttime, float xp, float yp, float xs, float ys, float ma) {
-			TuioPoint::update(ttime,xp, yp);
-			x_speed = xs;
-			y_speed = ys;
-			motion_speed = (float)sqrt(x_speed*x_speed+y_speed*y_speed);
-			motion_accel = ma;
-			
-			TuioPoint p(currentTime,xpos,ypos);
-			path.push_back(p);
-			
-			if (motion_accel>0) state = TUIO_ACCELERATING;
-			else if (motion_accel<0) state = TUIO_DECELERATING;
-			else state = TUIO_STOPPED;
-		};
+		virtual void update (TuioTime ttime, float xp, float yp, float xs, float ys, float ma);
 		
 		/**
 		 * Assigns the provided X and Y coordinate, X and Y velocity and acceleration
@@ -265,21 +188,7 @@ namespace TUIO {
 		 * @param	ys	the Y velocity to assign
 		 * @param	ma	the acceleration to assign
 		 */
-		virtual void update (float xp, float yp, float xs, float ys, float ma) {
-			TuioPoint::update(xp,yp);
-			x_speed = xs;
-			y_speed = ys;
-			motion_speed = (float)sqrt(x_speed*x_speed+y_speed*y_speed);
-			motion_accel = ma;
-			
-			path.pop_back();
-			TuioPoint p(currentTime,xpos,ypos);
-			path.push_back(p);
-			
-			if (motion_accel>0) state = TUIO_ACCELERATING;
-			else if (motion_accel<0) state = TUIO_DECELERATING;
-			else state = TUIO_STOPPED;
-		};
+		virtual void update (float xp, float yp, float xs, float ys, float ma);
 		
 		/**
 		 * Takes the atttibutes of the provided TuioContainer 
@@ -288,20 +197,7 @@ namespace TUIO {
 		 *
 		 * @param	tcon	the TuioContainer to assign
 		 */
-		virtual void update (TuioContainer *tcon) {
-			TuioPoint::update(tcon);
-			x_speed = tcon->getXSpeed();
-			y_speed =  tcon->getYSpeed();
-			motion_speed =  tcon->getMotionSpeed();
-			motion_accel = tcon->getMotionAccel();
-			
-			TuioPoint p(tcon->getTuioTime(),xpos,ypos);
-			path.push_back(p);
-			
-			if (motion_accel>0) state = TUIO_ACCELERATING;
-			else if (motion_accel<0) state = TUIO_DECELERATING;
-			else state = TUIO_STOPPED;
-		};
+		virtual void update (TuioContainer *tcon);
 		
 		/**
 		 * Assigns the REMOVE state to this TuioContainer and sets
@@ -309,84 +205,67 @@ namespace TUIO {
 		 *
 		 * @param	ttime	the TuioTime to assign
 		 */
-		virtual void remove(TuioTime ttime) {
-			currentTime = ttime;
-			state = TUIO_REMOVED;
-		}
+		virtual void remove(TuioTime ttime);
 
 		/**
 		 * Returns the Session ID of this TuioContainer.
 		 * @return	the Session ID of this TuioContainer
 		 */
-		virtual long getSessionID() const{ 
-			return session_id;
-		};
+		virtual long getSessionID() const;
+
+		/**
+		 * Sets the Session ID of this TuioContainer.
+		 * @param s_id	the new Session ID for this TuioContainer
+		 */
+		virtual void setSessionID(long s_id);
 		
 		/**
 		 * Returns the X velocity of this TuioContainer.
 		 * @return	the X velocity of this TuioContainer
 		 */
-		virtual float getXSpeed() const{ 
-			return x_speed;
-		};
+		virtual float getXSpeed() const;
 
 		/**
 		 * Returns the Y velocity of this TuioContainer.
 		 * @return	the Y velocity of this TuioContainer
 		 */
-		virtual float getYSpeed() const{ 
-			return y_speed;
-		};
+		virtual float getYSpeed() const;
 		
 		/**
 		 * Returns the position of this TuioContainer.
 		 * @return	the position of this TuioContainer
 		 */
-		virtual TuioPoint getPosition() const{
-			TuioPoint p(xpos,ypos);
-			return p;
-		};
+		virtual TuioPoint getPosition() const;
 		
 		/**
 		 * Returns the path of this TuioContainer.
 		 * @return	the path of this TuioContainer
 		 */
-		virtual std::list<TuioPoint> getPath() const{
-			return path;
-		};
+		virtual std::list<TuioPoint> getPath() const;
 		
 		/**
 		 * Returns the motion speed of this TuioContainer.
 		 * @return	the motion speed of this TuioContainer
 		 */
-		virtual float getMotionSpeed() const{
-			return motion_speed;
-		};
+		virtual float getMotionSpeed() const;
 		
 		/**
 		 * Returns the motion acceleration of this TuioContainer.
 		 * @return	the motion acceleration of this TuioContainer
 		 */
-		virtual float getMotionAccel() const{
-			return motion_accel;
-		};
+		virtual float getMotionAccel() const;
 		
 		/**
 		 * Returns the TUIO state of this TuioContainer.
 		 * @return	the TUIO state of this TuioContainer
 		 */
-		virtual int getTuioState() const{ 
-			return state;
-		};	
+		virtual int getTuioState() const;	
 		
 		/**
 		 * Returns true of this TuioContainer is moving.
 		 * @return	true of this TuioContainer is moving
 		 */
-		virtual bool isMoving() const{ 
-			if ((state==TUIO_ACCELERATING) || (state==TUIO_DECELERATING)) return true;
-			else return false;
-		};
+		virtual bool isMoving() const;
 	};
-};
+}
 #endif

@@ -23,7 +23,19 @@
 #define INCLUDED_TCPSENDER_H
 
 #include "OscSender.h"
-//#include "ip/TcpSocket.h"
+
+#ifdef WIN32
+#include <winsock.h>
+#include <io.h>
+typedef int socklen_t;
+#else
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#endif
 
 #define MAX_TCP_SIZE 65536
 
@@ -33,7 +45,7 @@ namespace TUIO {
 	 * The TcpSender implements the TCP transport method for OSC
 	 *
 	 * @author Martin Kaltenbrunner
-	 * @version 1.4
+	 * @version 1.5
 	 */ 
 	class LIBDECL TcpSender : public OscSender {
 				
@@ -53,6 +65,13 @@ namespace TUIO {
 		TcpSender(const char *host, int port);		
 
 		/**
+		 * This constructor creates a TcpSender that listens to the provided port
+		 *
+		 * @param  port  the incoming TUIO TCP port number
+		 */
+		TcpSender(int port);	
+		
+		/**
 		 * The destructor closes the socket. 
 		 */
 		~TcpSender();
@@ -64,7 +83,7 @@ namespace TUIO {
 		 * @return true if the data was delivered successfully
 		 */
 		
-		bool sendOSC (osc::OutboundPacketStream *bundle);
+		bool sendOscPacket (osc::OutboundPacketStream *bundle);
 
 		/**
 		 * This method returns the connection state
@@ -72,9 +91,25 @@ namespace TUIO {
 		 * @return true if the connection is alive
 		 */
 		bool isConnected ();
+
 		
+#ifdef WIN32
+		SOCKET tcp_socket, tcp_client_connection;
+#else
+		int tcp_socket, tcp_client_connection;
+#endif
+
+		bool connected;
 	private:
-		//TcpTransmitSocket *socket;
+		char data_size[4];
+		
+
+#ifdef WIN32
+		HANDLE server_thread;
+#else
+		pthread_t server_thread;
+#endif
+		
 	};
-};
+}
 #endif /* INCLUDED_TCPSENDER_H */

@@ -28,6 +28,30 @@
 
 using namespace TUIO;
 
+TuioDispatcher::TuioDispatcher() {
+#ifndef WIN32	
+	pthread_mutex_init(&cursorMutex,NULL);
+	pthread_mutex_init(&objectMutex,NULL);	
+	pthread_mutex_init(&blobMutex,NULL);	
+#else
+	cursorMutex = CreateMutex(NULL,FALSE,"cursorMutex");
+	objectMutex = CreateMutex(NULL,FALSE,"objectMutex");
+	blobMutex = CreateMutex(NULL,FALSE,"blobMutex");
+#endif	
+}
+
+TuioDispatcher::~TuioDispatcher() {
+#ifndef WIN32	
+	pthread_mutex_destroy(&cursorMutex);
+	pthread_mutex_destroy(&objectMutex);
+	pthread_mutex_destroy(&blobMutex);
+#else
+	CloseHandle(cursorMutex);
+	CloseHandle(objectMutex);
+	CloseHandle(blobMutex);
+#endif		
+}
+
 void TuioDispatcher::lockObjectList() {
 #ifndef WIN32	
 	pthread_mutex_lock(&objectMutex);
@@ -83,6 +107,10 @@ void TuioDispatcher::addTuioListener(TuioListener *listener) {
 void TuioDispatcher::removeTuioListener(TuioListener *listener) {
 	std::list<TuioListener*>::iterator result = find(listenerList.begin(),listenerList.end(),listener);
 	if (result!=listenerList.end()) listenerList.remove(listener);
+}
+
+void TuioDispatcher::removeAllTuioListeners() {	
+	listenerList.clear();
 }
 
 TuioObject* TuioDispatcher::getTuioObject(long s_id) {
@@ -141,3 +169,40 @@ std::list<TuioBlob*> TuioDispatcher::getTuioBlobs() {
 	unlockBlobList();
 	return listBuffer;
 }
+
+std::list<TuioObject> TuioDispatcher::copyTuioObjects() {
+	lockObjectList();
+	std::list<TuioObject> listBuffer;
+	for (std::list<TuioObject*>::iterator iter=objectList.begin(); iter != objectList.end(); iter++) {
+		TuioObject *tobj = (*iter);
+		listBuffer.push_back(*tobj);
+	}	
+	unlockObjectList();
+	return listBuffer;
+}
+
+std::list<TuioCursor> TuioDispatcher::copyTuioCursors() {
+	lockCursorList();
+	std::list<TuioCursor> listBuffer;
+	for (std::list<TuioCursor*>::iterator iter=cursorList.begin(); iter != cursorList.end(); iter++) {
+		TuioCursor *tcur = (*iter);
+		listBuffer.push_back(*tcur);
+	}
+	unlockCursorList();
+
+	return listBuffer;
+}
+
+std::list<TuioBlob> TuioDispatcher::copyTuioBlobs() {
+	lockBlobList();
+	std::list<TuioBlob> listBuffer;
+	for (std::list<TuioBlob*>::iterator iter=blobList.begin(); iter != blobList.end(); iter++) {
+		TuioBlob *tblb = (*iter);
+		listBuffer.push_back(*tblb);
+	}	
+	unlockBlobList();
+	return listBuffer;
+}
+
+
+

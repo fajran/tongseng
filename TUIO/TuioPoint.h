@@ -36,7 +36,7 @@ namespace TUIO {
 	 * on the other hand the TuioPoint is the base class for the TuioCursor and TuioObject classes.
 	 *
 	 * @author Martin Kaltenbrunner
-	 * @version 1.4
+	 * @version 1.5
 	 */ 
 	class LIBDECL TuioPoint {
 		
@@ -63,12 +63,7 @@ namespace TUIO {
 		 * The default constructor takes no arguments and sets   
 		 * its coordinate attributes to zero and its time stamp to the current session time.
 		 */
-		TuioPoint (float xp, float yp) {
-			xpos = xp;
-			ypos = yp;
-			currentTime = TuioTime::getSessionTime();
-			startTime = currentTime;
-		};
+		TuioPoint (float xp, float yp);
 	
 		/**
 		 * This constructor takes a TuioTime object and two floating point coordinate arguments and sets   
@@ -78,12 +73,7 @@ namespace TUIO {
 		 * @param	xp	the X coordinate to assign
 		 * @param	yp	the Y coordinate to assign
 		 */
-		TuioPoint (TuioTime ttime, float xp, float yp) {
-			xpos = xp;
-			ypos = yp;
-			currentTime = ttime;
-			startTime = currentTime;
-		};
+		TuioPoint (TuioTime ttime, float xp, float yp);
 		
 		/**
 		 * This constructor takes a TuioPoint argument and sets its coordinate attributes 
@@ -91,12 +81,7 @@ namespace TUIO {
 		 *
 		 * @param	tpoint	the TuioPoint to assign
 		 */
-		TuioPoint (TuioPoint *tpoint) {
-			xpos = tpoint->getX();
-			ypos = tpoint->getY();
-			currentTime = TuioTime::getSessionTime();
-			startTime = currentTime;
-		};
+		TuioPoint (TuioPoint *tpoint);
 		
 		/**
 		 * The destructor is doing nothing in particular. 
@@ -109,10 +94,7 @@ namespace TUIO {
 		 *
 		 * @param	tpoint	the TuioPoint to assign
 		 */
-		void update (TuioPoint *tpoint) {
-			xpos = tpoint->getX();
-			ypos = tpoint->getY();
-		};
+		void update (TuioPoint *tpoint);
 		
 		/**
 		 * Takes two floating point coordinate arguments and updates its coordinate attributes 
@@ -121,10 +103,7 @@ namespace TUIO {
 		 * @param	xp	the X coordinate to assign
 		 * @param	yp	the Y coordinate to assign
 		 */		
-		void update (float xp, float yp) {
-			xpos = xp;
-			ypos = yp;
-		};		
+		void update (float xp, float yp);		
 		
 		/**
 		 * Takes a TuioTime object and two floating point coordinate arguments and updates its coordinate attributes 
@@ -134,28 +113,20 @@ namespace TUIO {
 		 * @param	xp	the X coordinate to assign
 		 * @param	yp	the Y coordinate to assign
 		 */
-		void update (TuioTime ttime, float xp, float yp) {
-			xpos = xp;
-			ypos = yp;
-			currentTime = ttime;
-		};
+		void update (TuioTime ttime, float xp, float yp);
 
 		
 		/**
 		 * Returns the X coordinate of this TuioPoint. 
 		 * @return	the X coordinate of this TuioPoint
 		 */
-		float getX() const{ 
-			return xpos;
-		};
+		float getX() const;
 		
 		/**
 		 * Returns the Y coordinate of this TuioPoint. 
 		 * @return	the Y coordinate of this TuioPoint
 		 */
-		float getY() const{
-			return ypos;
-		};
+		float getY() const;
 		
 		/**
 		 * Returns the distance to the provided coordinates 
@@ -164,11 +135,7 @@ namespace TUIO {
 		 * @param	yp	the Y coordinate of the distant point
 		 * @return	the distance to the provided coordinates
 		 */
-		float getDistance(float xp, float yp) const{
-			float dx = xpos-xp;
-			float dy = ypos-yp;
-			return sqrtf(dx*dx+dy*dy);
-		}
+		float getDistance(float xp, float yp) const;
 
 		/**
 		 * Returns the distance to the provided coordinates 
@@ -177,22 +144,14 @@ namespace TUIO {
 		 * @param	yp	the Y coordinate of the distant point
 		 * @return	the distance to the provided coordinates
 		 */
-		float getScreenDistance(float xp, float yp, int w, int h) const{
-			float dx = w*xpos-w*xp;
-			float dy = h*ypos-h*yp;
-			return sqrtf(dx*dx+dy*dy);
-		}
-		
+		float getScreenDistance(float xp, float yp, int w, int h) const;
 		/**
 		 * Returns the distance to the provided TuioPoint 
 		 *
 		 * @param	tpoint	the distant TuioPoint
 		 * @return	the distance to the provided TuioPoint
 		 */
-		float getDistance(TuioPoint *tpoint) const{
-			return getDistance(tpoint->getX(),tpoint->getY());
-		}
-		
+		float getDistance(TuioPoint *tpoint) const;
 		/**
 		 * Returns the angle to the provided coordinates 
 		 *
@@ -200,27 +159,14 @@ namespace TUIO {
 		 * @param	yp	the Y coordinate of the distant point
 		 * @return	the angle to the provided coordinates
 		 */
-		 float getAngle(float xp, float yp) const{
-			float side = xpos-xp;
-			float height = ypos-yp;
-			float distance = getDistance(xp,yp);
-			
-			float angle = (float)(asin(side/distance)+M_PI/2);
-			if (height<0) angle = 2.0f*(float)M_PI-angle;
-			
-			return angle;
-		}
-		
+		float getAngle(float xp, float yp) const;
 		/**
 		 * Returns the angle to the provided TuioPoint 
 		 *
 		 * @param	tpoint	the distant TuioPoint
 		 * @return	the angle to the provided TuioPoint
 		 */
-		float getAngle(TuioPoint *tpoint) const{
-			return getAngle(tpoint->getX(),tpoint->getY());
-		}
-
+		float getAngle(TuioPoint *tpoint) const;
 		/**
 		 * Returns the angle in degrees to the provided coordinates 
 		 *
@@ -228,57 +174,40 @@ namespace TUIO {
 		 * @param	yp	the Y coordinate of the distant point
 		 * @return	the angle in degrees to the provided TuioPoint
 		 */
-		float getAngleDegrees(float xp, float yp) const{
-			return ((getAngle(xp,yp)/(float)M_PI)*180.0f);
-		}
-
+		float getAngleDegrees(float xp, float yp) const;
 		/**
 		 * Returns the angle in degrees to the provided TuioPoint 
 		 *
 		 * @param	tpoint	the distant TuioPoint
 		 * @return	the angle in degrees to the provided TuioPoint
 		 */
-		float getAngleDegrees(TuioPoint *tpoint) const{
-			return ((getAngle(tpoint)/(float)M_PI)*180.0f);
-		}
-		
+		float getAngleDegrees(TuioPoint *tpoint) const;
 		/**
 		 * Returns the X coordinate in pixels relative to the provided screen width. 
 		 *
 		 * @param	width	the screen width
 		 * @return	the X coordinate of this TuioPoint in pixels relative to the provided screen width
 		 */
-		int getScreenX(int width) const{ 
-			return (int)floor(xpos*width+0.5f);
-		};
-		
-		/**
+		int getScreenX(int width) const;
+		/*
 		 * Returns the Y coordinate in pixels relative to the provided screen height. 
 		 *
 		 * @param	height	the screen height
 		 * @return	the Y coordinate of this TuioPoint in pixels relative to the provided screen height
 		 */
-		int getScreenY(int height) const{
-			return (int)floor(ypos*height+0.5f);
-		};
-		
+		int getScreenY(int height) const;
 		/**
 		 * Returns current time stamp of this TuioPoint as TuioTime 
 		 *
 		 * @return	the  time stamp of this TuioPoint as TuioTime
 		 */
-		TuioTime getTuioTime() const{ 
-			return currentTime;
-		};
-		
+		TuioTime getTuioTime() const;
 		/**
 		 * Returns the start time of this TuioPoint as TuioTime. 
 		 *
 		 * @return	the start time of this TuioPoint as TuioTime
 		 */
-		TuioTime getStartTime() const{
-			return startTime;
-		};
+		TuioTime getStartTime() const;
 	};
-};
+}
 #endif

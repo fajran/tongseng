@@ -30,7 +30,7 @@ namespace TUIO {
 	 * The TuioObject class encapsulates /tuio/2Dobj TUIO objects.
 	 *
 	 * @author Martin Kaltenbrunner
-	 * @version 1.4
+	 * @version 1.5
 	 */ 
 	class LIBDECL TuioObject: public TuioContainer {
 		
@@ -66,12 +66,7 @@ namespace TUIO {
 		 * @param	yp	the Y coordinate to assign
 		 * @param	a	the angle to assign
 		 */
-		TuioObject (TuioTime ttime, long si, int sym, float xp, float yp, float a):TuioContainer(ttime, si, xp, yp) {
-			symbol_id = sym;
-			angle = a;
-			rotation_speed = 0.0f;
-			rotation_accel = 0.0f;
-		};
+		TuioObject (TuioTime ttime, long si, int sym, float xp, float yp, float a);
 
 		/**
 		 * This constructor takes the provided Session ID, Symbol ID, X and Y coordinate 
@@ -83,12 +78,7 @@ namespace TUIO {
 		 * @param	yp	the Y coordinate to assign
 		 * @param	a	the angle to assign
 		 */	
-		TuioObject (long si, int sym, float xp, float yp, float a):TuioContainer(si, xp, yp) {
-			symbol_id = sym;
-			angle = a;
-			rotation_speed = 0.0f;
-			rotation_accel = 0.0f;
-		};
+		TuioObject (long si, int sym, float xp, float yp, float a);
 		
 		/**
 		 * This constructor takes the atttibutes of the provided TuioObject 
@@ -96,12 +86,7 @@ namespace TUIO {
 		 *
 		 * @param	tobj	the TuioObject to assign
 		 */
-		TuioObject (TuioObject *tobj):TuioContainer(tobj) {
-			symbol_id = tobj->getSymbolID();
-			angle = tobj->getAngle();
-			rotation_speed = 0.0f;
-			rotation_accel = 0.0f;
-		};
+		TuioObject (TuioObject *tobj);
 		
 		/**
 		 * The destructor is doing nothing in particular. 
@@ -123,13 +108,7 @@ namespace TUIO {
 		 * @param	ma	the motion acceleration to assign
 		 * @param	ra	the rotation acceleration to assign
 		 */
-		void update (TuioTime ttime, float xp, float yp, float a, float xs, float ys, float rs, float ma, float ra) {
-			TuioContainer::update(ttime,xp,yp,xs,ys,ma);
-			angle = a;
-			rotation_speed = rs;
-			rotation_accel = ra;
-			if ((rotation_accel!=0) && (state==TUIO_STOPPED)) state = TUIO_ROTATING;
-		};
+		void update (TuioTime ttime, float xp, float yp, float a, float xs, float ys, float rs, float ma, float ra);
 
 		/**
 		 * Assigns the provided X and Y coordinate, angle, X and Y velocity, motion acceleration
@@ -145,13 +124,7 @@ namespace TUIO {
 		 * @param	ma	the motion acceleration to assign
 		 * @param	ra	the rotation acceleration to assign
 		 */
-		void update (float xp, float yp, float a, float xs, float ys, float rs, float ma, float ra) {
-			TuioContainer::update(xp,yp,xs,ys,ma);
-			angle = a;
-			rotation_speed = rs;
-			rotation_accel = ra;
-			if ((rotation_accel!=0) && (state==TUIO_STOPPED)) state = TUIO_ROTATING;
-		};
+		void update (float xp, float yp, float a, float xs, float ys, float rs, float ma, float ra);
 		
 		/**
 		 * Takes a TuioTime argument and assigns it along with the provided 
@@ -163,33 +136,13 @@ namespace TUIO {
 		 * @param	yp	the Y coordinate to assign
 		 * @param	a	the angle coordinate to assign
 		 */
-		void update (TuioTime ttime, float xp, float yp, float a) {
-			TuioPoint lastPoint = path.back();
-			TuioContainer::update(ttime,xp,yp);
-
-			TuioTime diffTime = currentTime - lastPoint.getTuioTime();
-			float dt = diffTime.getTotalMilliseconds()/1000.0f;
-			float last_angle = angle;
-			float last_rotation_speed = rotation_speed;
-			angle = a;
-			
-			double da = (angle-last_angle)/(2*M_PI);
-			if (da > 0.75f) da-=1.0f;
-			else if (da < -0.75f) da+=1.0f;
-						
-			rotation_speed = (float)da/dt;
-			rotation_accel =  (rotation_speed - last_rotation_speed)/dt;
-		
-			if ((rotation_accel!=0) && (state==TUIO_STOPPED)) state = TUIO_ROTATING;
-		};
+		void update (TuioTime ttime, float xp, float yp, float a);
 
 		/**
 		 * This method is used to calculate the speed and acceleration values of a
 		 * TuioObject with unchanged position and angle.
 		 */
-		void stop (TuioTime ttime) {
-			update(ttime,xpos,ypos,angle);
-		};
+		void stop (TuioTime ttime);
 		
 		/**
 		 * Takes the atttibutes of the provided TuioObject 
@@ -198,62 +151,43 @@ namespace TUIO {
 		 *
 		 * @param	tobj	the TuioContainer to assign
 		 */	
-		void update (TuioObject *tobj) {
-			TuioContainer::update(tobj);
-			angle = tobj->getAngle();
-			rotation_speed = tobj->getRotationSpeed();
-			rotation_accel = tobj->getRotationAccel();
-			if ((rotation_accel!=0) && (state==TUIO_STOPPED)) state = TUIO_ROTATING;
-		};
+		void update (TuioObject *tobj);
 		
 		/**
 		 * Returns the symbol ID of this TuioObject.
 		 * @return	the symbol ID of this TuioObject
 		 */
-		int getSymbolID() const{ 
-			return symbol_id;
-		};
+		int getSymbolID() const;
 		
 		/**
 		 * Returns the rotation angle of this TuioObject.
 		 * @return	the rotation angle of this TuioObject
 		 */
-		float getAngle() const{
-			return angle;
-		};
+		float getAngle() const;
 		
 		/**
 		 * Returns the rotation angle in degrees of this TuioObject.
 		 * @return	the rotation angle in degrees of this TuioObject
 		 */
-		float getAngleDegrees() const{ 
-			return (float)(angle/M_PI*180);
-		};
+		float getAngleDegrees() const;
 		
 		/**
 		 * Returns the rotation speed of this TuioObject.
 		 * @return	the rotation speed of this TuioObject
 		 */
-		float getRotationSpeed() const{ 
-			return rotation_speed;
-		};
+		float getRotationSpeed() const;
 		
 		/**
 		 * Returns the rotation acceleration of this TuioObject.
 		 * @return	the rotation acceleration of this TuioObject
 		 */
-		float getRotationAccel() const{
-			return rotation_accel;
-		};
+		float getRotationAccel() const;
 
 		/**
 		 * Returns true of this TuioObject is moving.
 		 * @return	true of this TuioObject is moving
 		 */
-		virtual bool isMoving() const{ 
-			if ((state==TUIO_ACCELERATING) || (state==TUIO_DECELERATING) || (state==TUIO_ROTATING)) return true;
-			else return false;
-		};
+		bool isMoving() const;
 	};
-};
+}
 #endif

@@ -2,6 +2,8 @@
  TUIO C++ Library - part of the reacTIVision project
  http://reactivision.sourceforge.net/
  
+ Copyright (c) 2005-2009 Martin Kaltenbrunner <martin@tuio.org>
+ 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
  the Free Software Foundation; either version 2 of the License, or
@@ -17,20 +19,25 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef INCLUDED_LIBEXPORT_H
-#define INCLUDED_LIBEXPORT_H
+#include "TuioCursor.h"
 
-#ifdef WIN32
-	#pragma warning(disable: 4251) // disable annoying template exporting warnings
-	#pragma warning(disable: 4275) // disable warning caused by not exported OSC classes
+using namespace TUIO;
 
-	#ifdef LIB_EXPORT
-		#define LIBDECL __declspec(dllexport)
-	#else
-		#define LIBDECL __declspec(dllimport)
-	#endif
-#else
-	#define LIBDECL
-#endif
 
-#endif
+TuioCursor::TuioCursor (TuioTime ttime, long si, int ci, float xp, float yp):TuioContainer(ttime,si,xp,yp) {
+	cursor_id = ci;
+}
+
+TuioCursor::TuioCursor (long si, int ci, float xp, float yp):TuioContainer(si,xp,yp) {
+	cursor_id = ci;
+}
+
+TuioCursor::TuioCursor (TuioCursor *tcur):TuioContainer(tcur) {
+	cursor_id = tcur->getCursorID();
+}
+
+
+int TuioCursor::getCursorID() const{
+	return cursor_id;
+};
+

@@ -30,7 +30,7 @@ namespace TUIO {
 	 * The TuioCursor class encapsulates /tuio/2Dcur TUIO cursors.
 	 *
 	 * @author Martin Kaltenbrunner
-	 * @version 1.4
+	 * @version 1.5
 	 */ 
 	class LIBDECL TuioCursor: public TuioContainer {
 		
@@ -53,9 +53,7 @@ namespace TUIO {
 		 * @param	xp	the X coordinate to assign
 		 * @param	yp	the Y coordinate to assign
 		 */
-		TuioCursor (TuioTime ttime, long si, int ci, float xp, float yp):TuioContainer(ttime,si,xp,yp) {
-			cursor_id = ci;
-		};
+		TuioCursor (TuioTime ttime, long si, int ci, float xp, float yp);
 
 		/**
 		 * This constructor takes the provided Session ID, Cursor ID, X and Y coordinate 
@@ -66,9 +64,7 @@ namespace TUIO {
 		 * @param	xp	the X coordinate to assign
 		 * @param	yp	the Y coordinate to assign
 		 */
-		TuioCursor (long si, int ci, float xp, float yp):TuioContainer(si,xp,yp) {
-			cursor_id = ci;
-		};
+		TuioCursor (long si, int ci, float xp, float yp);
 		
 		/**
 		 * This constructor takes the atttibutes of the provided TuioCursor 
@@ -76,9 +72,7 @@ namespace TUIO {
 		 *
 		 * @param	tcur	the TuioCursor to assign
 		 */
-		TuioCursor (TuioCursor *tcur):TuioContainer(tcur) {
-			cursor_id = tcur->getCursorID();
-		};
+		TuioCursor (TuioCursor *tcur);
 		
 		/**
 		 * The destructor is doing nothing in particular. 
@@ -89,9 +83,7 @@ namespace TUIO {
 		 * Returns the Cursor ID of this TuioCursor.
 		 * @return	the Cursor ID of this TuioCursor
 		 */
-		int getCursorID() const{
-			return cursor_id;
-		};
+		int getCursorID() const;
 	};
-};
+}
 #endif

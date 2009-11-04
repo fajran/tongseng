@@ -31,32 +31,39 @@ UdpSender::UdpSender() {
 		socket = new UdpTransmitSocket(IpEndpointName(ip, 3333));
 		buffer_size = MAX_UDP_SIZE;
 	} catch (std::exception &e) { 
-		std::cout << "could not create socket" << std::endl;
+		std::cout << "could not create UDP socket" << std::endl;
 		socket = NULL;
 	}
 }
 
 UdpSender::UdpSender(const char *host, int port) {
 	try {
-		local = false;
+		if ((strcmp(host,"127.0.0.1")==0) || (strcmp(host,"localhost")==0)) {
+			local = true;
+			buffer_size = MAX_UDP_SIZE;
+		} else {
+			local = false;
+			buffer_size = IP_MTU_SIZE;
+		}
 		long unsigned int ip = GetHostByName(host);
 		socket = new UdpTransmitSocket(IpEndpointName(ip, port));
-		buffer_size = IP_MTU_SIZE;
 	} catch (std::exception &e) { 
-		std::cout << "could not create socket" << std::endl;
+		std::cout << "could not create UDP socket" << std::endl;
 		socket = NULL;
 	}
 }
 
 UdpSender::UdpSender(const char *host, int port, int size) {
 	try {
-		local = false;
+		if ((strcmp(host,"127.0.0.1")==0) || (strcmp(host,"localhost")==0)) {
+			local = true;
+		} else local = false;
 		long unsigned int ip = GetHostByName(host);
 		socket = new UdpTransmitSocket(IpEndpointName(ip, port));
 		if (buffer_size>MAX_UDP_SIZE) buffer_size = MAX_UDP_SIZE;
 		else if (buffer_size<MIN_UDP_SIZE) buffer_size = MIN_UDP_SIZE;
 	} catch (std::exception &e) { 
-		std::cout << "could not create socket" << std::endl;
+		std::cout << "could not create UDP socket" << std::endl;
 		socket = NULL;
 	}
 }
@@ -70,7 +77,7 @@ bool UdpSender::isConnected() {
 	return true;
 }
 
-bool UdpSender::sendOSC (osc::OutboundPacketStream *bundle) {
+bool UdpSender::sendOscPacket (osc::OutboundPacketStream *bundle) {
 	if (socket==NULL) return false; 
 	if ( bundle->Size() > buffer_size ) return false;
 	socket->Send( bundle->Data(), bundle->Size() );

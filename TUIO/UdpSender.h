@@ -26,11 +26,8 @@
 #include "ip/UdpSocket.h"
 
 #define IP_MTU_SIZE 1500
-#define MAX_UDP_SIZE 65536
+#define MAX_UDP_SIZE 4096
 #define MIN_UDP_SIZE 576
-#define OBJ_MESSAGE_SIZE 108	// setMessage + seqMessage size
-#define CUR_MESSAGE_SIZE 88
-#define BLB_MESSAGE_SIZE 118
 
 namespace TUIO {
 	
@@ -38,33 +35,33 @@ namespace TUIO {
 	 * The UdpSender implements the UDP transport method for OSC
 	 *
 	 * @author Martin Kaltenbrunner
-	 * @version 1.4
+	 * @version 1.5
 	 */ 
 	class LIBDECL UdpSender : public OscSender {
 				
 	public:
 
 		/**
-		 * The default constructor creates a UdpSender that sends to the default TUIO port 3333 on localhost
-		 * using the maximum packet size of 65536 bytes to use single packets on the loopback device
+		 * The default constructor creates a UdpSender that sends to the default UDP port 3333 on localhost
+		 * using the maximum packet size of 65536 bytes for single packets on the loopback device
 		 */
 		UdpSender();
 		
 		/**
 		 * This constructor creates a UdpSender that sends to the provided port on the the given host
-		 * using a default packet size of 1492 bytes to deliver unfragmented UDP packets on a LAN
+		 * using the default MTU size of 1500 bytes to deliver unfragmented UDP packets on a LAN
 		 *
 		 * @param  host  the receiving host name
-		 * @param  port  the outgoing TUIO UDP port number
+		 * @param  port  the outgoing UDP port number
 		 */
 		
 		UdpSender(const char *host, int port);		
 		/**
 		 * This constructor creates a UdpSender that sends to the provided port on the the given host
-		 * the packet UDP size can be set to a value between 576 and 65536 bytes
+		 * the UDP packet size can be set to a value between 576 and 65536 bytes
 		 *
 		 * @param  host  the receiving host name
-		 * @param  port  the outgoing TUIO UDP port number
+		 * @param  port  the outgoing UDP port number
 		 * @param  size  the maximum UDP packet size
 		 */
 		UdpSender(const char *host, int port, int size);
@@ -81,7 +78,7 @@ namespace TUIO {
 		 * @return true if the data was delivered successfully
 		 */
 		
-		bool sendOSC (osc::OutboundPacketStream *bundle);
+		bool sendOscPacket (osc::OutboundPacketStream *bundle);
 
 		/**
 		 * This method returns the connection state
@@ -93,5 +90,5 @@ namespace TUIO {
 	private:
 		UdpTransmitSocket *socket;
 	};
-};
+}
 #endif /* INCLUDED_UDPSENDER_H */

@@ -29,6 +29,7 @@
 #include <sys/time.h>
 #else
 #include <windows.h>
+#include <ctime>
 #endif
 
 #define MSEC_SECOND 1000
@@ -45,7 +46,7 @@ namespace TUIO {
 	 * The class also provides various addtional convience method, which allow some simple time arithmetics.
 	 *
 	 * @author Martin Kaltenbrunner
-	 * @version 1.4
+	 * @version 1.5
 	 */ 
 	class LIBDECL TuioTime {
 		
@@ -61,10 +62,7 @@ namespace TUIO {
 		 * The default constructor takes no arguments and sets   
 		 * the Seconds and Microseconds attributes of the newly created TuioTime both to zero.
 		 */
-		TuioTime () {
-			seconds = 0;
-			micro_seconds = 0;
-		};
+		TuioTime ():seconds(0),micro_seconds(0) {};
 
 		/**
 		 * The destructor is doing nothing in particular. 
@@ -77,10 +75,7 @@ namespace TUIO {
 		 *
 		 * @param  msec  the total time in Millseconds
 		 */
-		TuioTime (long msec) {
-			seconds = msec/MSEC_SECOND;
-			micro_seconds = USEC_MILLISECOND*(msec%MSEC_SECOND);
-		};
+		TuioTime (long msec);
 		
 		/**
 		 * This constructor takes the provided time represented in Seconds and Microseconds   
@@ -89,10 +84,7 @@ namespace TUIO {
 		 * @param  sec  the total time in seconds
 		 * @param  usec	the microseconds time component
 		 */	
-		TuioTime (long sec, long usec) {
-			seconds = sec;
-			micro_seconds = usec;
-		};
+		TuioTime (long sec, long usec);
 
 		/**
 		 * Sums the provided time value represented in total Microseconds to this TuioTime.
@@ -100,11 +92,7 @@ namespace TUIO {
 		 * @param  us	the total time to add in Microseconds
 		 * @return the sum of this TuioTime with the provided argument in microseconds
 		 */	
-		TuioTime operator+(long us) {
-			long sec = seconds + us/USEC_SECOND;
-			long usec = micro_seconds + us%USEC_SECOND;
-			return TuioTime(sec,usec);
-		};
+		TuioTime operator+(long us);
 		
 		/**
 		 * Sums the provided TuioTime to the private Seconds and Microseconds attributes.  
@@ -112,13 +100,7 @@ namespace TUIO {
 		 * @param  ttime	the TuioTime to add
 		 * @return the sum of this TuioTime with the provided TuioTime argument
 		 */
-		TuioTime operator+(TuioTime ttime) {
-			long sec = seconds + ttime.getSeconds();
-			long usec = micro_seconds + ttime.getMicroseconds();
-			sec += usec/USEC_SECOND;
-			usec = usec%USEC_SECOND;
-			return TuioTime(sec,usec);
-		};
+		TuioTime operator+(TuioTime ttime);
 
 		/**
 		 * Subtracts the provided time represented in Microseconds from the private Seconds and Microseconds attributes.
@@ -126,17 +108,7 @@ namespace TUIO {
 		 * @param  us	the total time to subtract in Microseconds
 		 * @return the subtraction result of this TuioTime minus the provided time in Microseconds
 		 */		
-		TuioTime operator-(long us) {
-			long sec = seconds - us/USEC_SECOND;
-			long usec = micro_seconds - us%USEC_SECOND;
-			
-			if (usec<0) {
-				usec += USEC_SECOND;
-				sec--;
-			}			
-			
-			return TuioTime(sec,usec);
-		};
+		TuioTime operator-(long us);
 
 		/**
 		 * Subtracts the provided TuioTime from the private Seconds and Microseconds attributes.
@@ -144,17 +116,7 @@ namespace TUIO {
 		 * @param  ttime	the TuioTime to subtract
 		 * @return the subtraction result of this TuioTime minus the provided TuioTime
 		 */	
-		TuioTime operator-(TuioTime ttime) {
-			long sec = seconds - ttime.getSeconds();
-			long usec = micro_seconds - ttime.getMicroseconds();
-			
-			if (usec<0) {
-				usec += USEC_SECOND;
-				sec--;
-			}
-			
-			return TuioTime(sec,usec);
-		};
+		TuioTime operator-(TuioTime ttime);
 
 		
 		/**
@@ -162,10 +124,7 @@ namespace TUIO {
 		 *
 		 * @param  ttime	the TuioTime to assign
 		 */	
-		void operator=(TuioTime ttime) {
-			seconds = ttime.getSeconds();
-			micro_seconds = ttime.getMicroseconds();
-		};
+		void operator=(TuioTime ttime);
 		
 		/**
 		 * Takes a TuioTime argument and compares the provided TuioTime to the private Seconds and Microseconds attributes.
@@ -173,10 +132,7 @@ namespace TUIO {
 		 * @param  ttime	the TuioTime to compare
 		 * @return true if the two TuioTime have equal Seconds and Microseconds attributes
 		 */	
-		bool operator==(TuioTime ttime) {
-			if ((seconds==(long)ttime.getSeconds()) && (micro_seconds==(long)ttime.getMicroseconds())) return true;
-			else return false;
-		};
+		bool operator==(TuioTime ttime);
 
 		/**
 		 * Takes a TuioTime argument and compares the provided TuioTime to the private Seconds and Microseconds attributes.
@@ -184,42 +140,30 @@ namespace TUIO {
 		 * @param  ttime	the TuioTime to compare
 		 * @return true if the two TuioTime have differnt Seconds or Microseconds attributes
 		 */	
-		bool operator!=(TuioTime ttime) {
-			if ((seconds!=(long)ttime.getSeconds()) || (micro_seconds!=(long)ttime.getMicroseconds())) return true;
-			else return false;
-		};
+		bool operator!=(TuioTime ttime);
 		
 		/**
 		 * Resets the seconds and micro_seconds attributes to zero.
 		 */
-		void reset() {
-			seconds = 0;
-			micro_seconds = 0;
-		};
+		void reset();
 		
 		/**
 		 * Returns the TuioTime Seconds component.
 		 * @return the TuioTime Seconds component
 		 */	
-		long getSeconds() const{
-			return seconds;
-		};
+		long getSeconds() const;
 		
 		/**
 		 * Returns the TuioTime Microseconds component.
 		 * @return the TuioTime Microseconds component
 		 */	
-		long getMicroseconds() const{
-			return micro_seconds;
-		};
+		long getMicroseconds() const;
 		
 		/**
 		 * Returns the total TuioTime in Milliseconds.
 		 * @return the total TuioTime in Milliseconds
 		 */	
-		long getTotalMilliseconds() const{
-			return seconds*MSEC_SECOND+micro_seconds/MSEC_SECOND;
-		};
+		long getTotalMilliseconds() const;
 		
 		/**
 		 * This static method globally resets the TUIO session time.
@@ -244,5 +188,5 @@ namespace TUIO {
 		 */	
 		static TuioTime getSystemTime();
 	};
-};
+}
 #endif /* INCLUDED_TUIOTIME_H */

@@ -4,6 +4,12 @@ SRC=main.cpp \
 	TUIO/TuioServer.cpp \
 	TUIO/TuioTime.cpp \
 	TUIO/TuioManager.cpp \
+	TUIO/TuioObject.cpp \
+	TUIO/TuioCursor.cpp \
+	TUIO/TuioContainer.cpp \
+	TUIO/TuioPoint.cpp \
+	TUIO/TuioBlob.cpp \
+	TUIO/TuioDispatcher.cpp \
 	TUIO/UdpSender.cpp \
 	oscpack/ip/posix/NetworkingUtils.cpp \
 	oscpack/ip/posix/UdpSocket.cpp \

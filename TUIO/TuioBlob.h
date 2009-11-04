@@ -30,7 +30,7 @@ namespace TUIO {
 	 * The TuioBlob class encapsulates /tuio/2Dblb TUIO objects.
 	 *
 	 * @author Martin Kaltenbrunner
-	 * @version 1.4
+	 * @version 1.5
 	 */ 
 	class LIBDECL TuioBlob: public TuioContainer {
 		
@@ -80,15 +80,7 @@ namespace TUIO {
 		 * @param	h	the height to assign
 		 * @param	f	the area to assign
 		 */
-		TuioBlob (TuioTime ttime, long si, int bi, float xp, float yp, float a, float w, float h, float f):TuioContainer(ttime, si, xp, yp) {
-			blob_id = bi;
-			angle = a;
-			width = w;
-			height = h;
-			area = f;
-			rotation_speed = 0.0f;
-			rotation_accel = 0.0f;
-		};
+		TuioBlob (TuioTime ttime, long si, int bi, float xp, float yp, float a, float w, float h, float f);
 
 		/**
 		 * This constructor takes the provided Session ID, X and Y coordinate 
@@ -102,15 +94,7 @@ namespace TUIO {
 		 * @param	h	the height to assign
 		 * @param	f	the area to assign
 		 */	
-		TuioBlob (long si, int bi, float xp, float yp, float a, float  w, float h, float f):TuioContainer(si, xp, yp) {
-			blob_id = bi;
-			angle = a;
-			width = w;
-			height = h; 
-			area = f;
-			rotation_speed = 0.0f;
-			rotation_accel = 0.0f;
-		};
+		TuioBlob (long si, int bi, float xp, float yp, float a, float  w, float h, float f);
 		
 		/**
 		 * This constructor takes the atttibutes of the provided TuioBlob 
@@ -118,15 +102,7 @@ namespace TUIO {
 		 *
 		 * @param	tblb	the TuioBlob to assign
 		 */
-		TuioBlob (TuioBlob *tblb):TuioContainer(tblb) {
-			blob_id = tblb->getBlobID();
-			angle = tblb->getAngle();
-			width = tblb->getWidth();
-			height = tblb->getHeight();
-			area = tblb->getArea();
-			rotation_speed = 0.0f;
-			rotation_accel = 0.0f;
-		};
+		TuioBlob (TuioBlob *tblb);
 		
 		/**
 		 * The destructor is doing nothing in particular. 
@@ -137,9 +113,7 @@ namespace TUIO {
 		 * Returns the Blob ID of this TuioBlob.
 		 * @return	the Blob ID of this TuioBlob
 		 */
-		int getBlobID() const{
-			return blob_id;
-		};
+		int getBlobID() const;
 		
 		/**
 		 * Takes a TuioTime argument and assigns it along with the provided 
@@ -159,16 +133,7 @@ namespace TUIO {
 		 * @param	ma	the motion acceleration to assign
 		 * @param	ra	the rotation acceleration to assign
 		 */
-		void update (TuioTime ttime, float xp, float yp, float a, float w, float h, float f, float xs, float ys, float rs, float ma, float ra) {
-			TuioContainer::update(ttime,xp,yp,xs,ys,ma);
-			angle = a;
-			width = w;
-			height = h;
-			area = f;
-			rotation_speed = rs;
-			rotation_accel = ra;
-			if ((rotation_accel!=0) && (state==TUIO_STOPPED)) state = TUIO_ROTATING;
-		};
+		void update (TuioTime ttime, float xp, float yp, float a, float w, float h, float f, float xs, float ys, float rs, float ma, float ra);
 
 		/**
 		 * Assigns the provided X and Y coordinate, angle, X and Y velocity, motion acceleration
@@ -187,16 +152,7 @@ namespace TUIO {
 		 * @param	ma	the motion acceleration to assign
 		 * @param	ra	the rotation acceleration to assign
 		 */
-		void update (float xp, float yp, float a, float w, float h, float f, float xs, float ys, float rs, float ma, float ra) {
-			TuioContainer::update(xp,yp,xs,ys,ma);
-			angle = a;
-			width = w;
-			height = h;
-			area = f;
-			rotation_speed = rs;
-			rotation_accel = ra;
-			if ((rotation_accel!=0) && (state==TUIO_STOPPED)) state = TUIO_ROTATING;
-		};
+		void update (float xp, float yp, float a, float w, float h, float f, float xs, float ys, float rs, float ma, float ra);
 		
 		/**
 		 * Takes a TuioTime argument and assigns it along with the provided 
@@ -211,37 +167,13 @@ namespace TUIO {
 		 * @param	h	the height to assign
 		 * @param	f	the area to assign
 		 */
-		void update (TuioTime ttime, float xp, float yp, float a, float w, float h, float f) {
-			TuioPoint lastPoint = path.back();
-			TuioContainer::update(ttime,xp,yp);
-			
-			TuioTime diffTime = currentTime - lastPoint.getTuioTime();
-			float dt = diffTime.getTotalMilliseconds()/1000.0f;
-			float last_angle = angle;
-			float last_rotation_speed = rotation_speed;
-			angle = a;
-			
-			double da = (angle-last_angle)/(2*M_PI);
-			if (da > 0.75f) da-=1.0f;
-			else if (da < -0.75f) da+=1.0f;
-
-			width = w;
-			height = h;
-			area = f;
-			
-			rotation_speed = (float)da/dt;
-			rotation_accel =  (rotation_speed - last_rotation_speed)/dt;
-		
-			if ((rotation_accel!=0) && (state==TUIO_STOPPED)) state = TUIO_ROTATING;
-		};
+		void update (TuioTime ttime, float xp, float yp, float a, float w, float h, float f);
 
 		/**
 		 * This method is used to calculate the speed and acceleration values of a
 		 * TuioBlob with unchanged position and angle.
 		 */
-		void stop (TuioTime ttime) {
-			update(ttime,xpos,ypos,width,height,angle);
-		};
+		void stop (TuioTime ttime);
 		
 		/**
 		 * Takes the atttibutes of the provided TuioBlob 
@@ -250,97 +182,67 @@ namespace TUIO {
 		 *
 		 * @param	tblb	the TuioContainer to assign
 		 */	
-		void update (TuioBlob *tblb) {
-			TuioContainer::update(tblb);
-			angle = tblb->getAngle();
-			width = tblb->getWidth();
-			height = tblb->getHeight();
-			area = tblb->getArea();
-			rotation_speed = tblb->getRotationSpeed();
-			rotation_accel = tblb->getRotationAccel();
-			if ((rotation_accel!=0) && (state==TUIO_STOPPED)) state = TUIO_ROTATING;
-		};
+		void update (TuioBlob *tblb);
 		
 		/**
 		 * Returns the width of this TuioBlob.
 		 * @return	the width of this TuioBlob
 		 */
-		float getWidth() const{ 
-			return width;
-		};
+		float getWidth() const;
 
 		/**
 		 * Returns the height of this TuioBlob.
 		 * @return	the height of this TuioBlob
 		 */
-		float getHeight() const{ 
-			return height;
-		};
+		float getHeight() const;
 
 		/**
 		 * Returns the width of this TuioBlob.
 		 * @return	the width of this TuioBlob
 		 */
-		int getScreenWidth(int w) const{ 
-			return (int)(w*width);
-		};
+		int getScreenWidth(int w) const;
 		
 		/**
 		 * Returns the height of this TuioBlob.
 		 * @return	the height of this TuioBlob
 		 */
-		int getScreenHeight(int h) const{ 
-			return (int)(h*height);
-		};
+		int getScreenHeight(int h) const;
 		
 		/**
 		 * Returns the area of this TuioBlob.
 		 * @return	the area of this TuioBlob
 		 */
-		float getArea() const{ 
-			return area;
-		};
+		float getArea() const;
 		
 		/**
 		 * Returns the rotation angle of this TuioBlob.
 		 * @return	the rotation angle of this TuioBlob
 		 */
-		float getAngle() const{
-			return angle;
-		};
+		float getAngle() const;
 		
 		/**
 		 * Returns the rotation angle in degrees of this TuioBlob.
 		 * @return	the rotation angle in degrees of this TuioBlob
 		 */
-		float getAngleDegrees() const{ 
-			return (float)(angle/M_PI*180);
-		};
+		float getAngleDegrees() const;
 		
 		/**
 		 * Returns the rotation speed of this TuioBlob.
 		 * @return	the rotation speed of this TuioBlob
 		 */
-		float getRotationSpeed() const{ 
-			return rotation_speed;
-		};
+		float getRotationSpeed() const;
 		
 		/**
 		 * Returns the rotation acceleration of this TuioBlob.
 		 * @return	the rotation acceleration of this TuioBlob
 		 */
-		float getRotationAccel() const{
-			return rotation_accel;
-		};
+		float getRotationAccel() const;
 
 		/**
 		 * Returns true of this TuioBlob is moving.
 		 * @return	true of this TuioBlob is moving
 		 */
-		virtual bool isMoving() const{ 
-			if ((state==TUIO_ACCELERATING) || (state==TUIO_DECELERATING) || (state==TUIO_ROTATING)) return true;
-			else return false;
-		};
+		bool isMoving() const;
 	};
-};
+}
 #endif

@@ -27,6 +27,7 @@ TuioManager::TuioManager()
 	: currentFrameTime(TuioTime::getSystemTime())
 	, currentFrame(-1)
 	, maxCursorID(-1)
+	, maxBlobID(-1)
 	, sessionID(-1)
 	, updateObject(false)
 	, updateCursor(false)
@@ -332,7 +333,7 @@ void TuioManager::removeTuioBlob(TuioBlob *tblb) {
 	blobList.remove(tblb);
 	tblb->remove(currentFrameTime);
 	updateBlob = true;
-	
+
 	for (std::list<TuioListener*>::iterator listener=listenerList.begin(); listener != listenerList.end(); listener++)
 		(*listener)->removeTuioBlob(tblb);
 	
@@ -369,6 +370,7 @@ void TuioManager::removeTuioBlob(TuioBlob *tblb) {
 	} else if (tblb->getBlobID()<maxBlobID) {
 		freeBlobList.push_back(tblb);	
 	}
+	
 }
 
 void TuioManager::removeExternalTuioBlob(TuioBlob *tblb) {
@@ -397,7 +399,7 @@ TuioTime TuioManager::getFrameTime() {
 }
 
 void TuioManager::initFrame(TuioTime ttime) {
-	currentFrameTime = ttime;
+	currentFrameTime = TuioTime(ttime);
 	currentFrame++;
 }
 

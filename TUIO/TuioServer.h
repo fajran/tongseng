@@ -24,6 +24,8 @@
 
 #include "TuioManager.h"
 #include "UdpSender.h"
+#include <iostream>
+#include <vector>
 #include <stdio.h>
 #ifndef WIN32
 #include <netdb.h>
@@ -33,42 +35,59 @@
 namespace TUIO {
 	/**
 	 * <p>The TuioServer class is the central TUIO protocol encoder component.
-	 * In order to encode and send TUIO messages an instance of TuioServer needs to be created. The TuioServer instance then generates TUIO messaged
-	 * which are sent via OSC over UDP to the configured IP address and port.</p> 
+	 * In order to encode and send TUIO messages an instance of TuioServer needs to be created. The TuioServer instance then generates TUIO messages
+	 * which are deliverered by the provided OSCSender. The shown UDPSender send OSC to UDP port 3333 on localhost or to the configured host and port.</p> 
 	 * <p>During runtime the each frame is marked with the initFrame and commitFrame methods, 
-	 * while the currently present TuioObjects are managed by the server with ADD, UPDATE and REMOVE methods in analogy to the TuioClient's TuioListener interface.</p> 
+	 * while the currently present TuioObjects are managed by the server with ADD, UPDATE and REMOVE methods in analogy to the TuioClient's TuioListener interface.</p>
+	 *<p>See the SimpleSimulator example project for further hints on how to use the TuioServer class and its various methods.
 	 * <p><code>
-	 * TuioClient *server = new TuioServer();<br/>
+	 * OscSender *sender = new UDPSender();</br>
+	 * TuioServer *server = new TuioServer(sender);<br/>
+	 * server->setSourceName("MyTuioSource"); // optional for TUIO 1.1<br/>	 
 	 * ...<br/>
 	 * server->initFrame(TuioTime::getSessionTime());<br/>
-	 * TuioObject *tobj = server->addTuioObject(xpos,ypos, angle);<br/>
-	 * TuioCursor *tcur = server->addTuioObject(xpos,ypos);<br/>
+	 * TuioObject *tobj = server->addTuioObject(xpos,ypos,angle);<br/>
+	 * TuioCursor *tcur = server->addTuiCursor(xpos,ypos);<br/>
+	 * TuioBlob *tblb = server->addTuioBlob(xpos,ypos,angle,width,height, area);<br/>
 	 * server->commitFrame();<br/>
 	 * ...<br/>
 	 * server->initFrame(TuioTime::getSessionTime());<br/>
-	 * server->updateTuioObject(tobj, xpos,ypos, angle);<br/>
-	 * server->updateTuioCursor(tcur, xpos,ypos);<br/>
+	 * server->updateTuioObject(tobj,xpos,ypos,angle);<br/>
+	 * server->updateTuioCursor(tcur,xpos,ypos);<br/>
+	 * server->updateTuioBlob(tblb,xpos,ypos,angle,width,height,area);<br/>
 	 * server->commitFrame();<br/>
 	 * ...<br/>
 	 * server->initFrame(TuioTime::getSessionTime());<br/>
 	 * server->removeTuioObject(tobj);<br/>
 	 * server->removeTuioCursor(tcur);<br/>
+	 * server->removeTuioBlob(tblb);<br/>
 	 * server->commitFrame();<br/>
 	 * </code></p>
 	 *
 	 * @author Martin Kaltenbrunner
-	 * @version 1.4
+	 * @version 1.5
 	 */ 
 	class LIBDECL TuioServer : public TuioManager { 
 	
 	public:
 
 		/**
-		 * This constructor creates a TuioServer that sends to the provided port on the the given host
-		 * using a default packet size of 1492 bytes to deliver unfragmented UDP packets on a LAN
+		 * This constructor creates a TuioServer that uses an internal UdpSender delivering the OSC data via UDP port 3333 on localhost
+		 */
+		TuioServer();
+
+		/**
+		 * This constructor creates a TuioServer that uses an internal UdpSender delivering the OSC data via the provided UDP port on the provided host
 		 *
-		 * @param  host  the receiving host name
-		 * @param  port  the outgoing TUIO UDP port number
+		 * @param  host  the host name for UDP deleivery
+		 * @param  port  the UDP port number on the provided host
+		 */
+		TuioServer(const char *host, int port);
+		
+		/**
+		 * This constructor creates a TuioServer that sends OSC data using the provided OscSender
+		 *
+		 * @param  sender  the OscSender used for OSC data delivery
 		 */
 		TuioServer(OscSender *sender);
 
@@ -77,6 +96,11 @@ namespace TUIO {
 		 */
 		~TuioServer();
 
+		/**
+		 * Generates and sends TUIO messages of all currently active TuioObjects, TuioCursors and TuioBlobs
+		 */
+		void sendFullMessages();
+		
 		/**
 		 * Enables the full update of all currently active and inactive TuioObjects, TuioCursors and TuioBlobs 
 		 *
@@ -150,17 +174,27 @@ namespace TUIO {
 		 * @param	src	the desired name of this TUIO source
 		 */
 		void setSourceName(const char *src);
+		void addOscSender(OscSender *sender);
 		
 		void enableObjectProfile(bool flag) { objectProfileEnabled = flag; };
 		void enableCursorProfile(bool flag) { cursorProfileEnabled = flag; };
 		void enableBlobProfile(bool flag) { blobProfileEnabled = flag; };
 				
 	private:
-				
-		OscSender *sender;	
+			
+		void initialize();
+		
+		OscSender *primary_sender;
+		bool local_sender;
+
+		std::vector<OscSender*> senderList;
+		void deliverOscPacket(osc::OutboundPacketStream  *packet);
+		
 		osc::OutboundPacketStream  *oscPacket;
 		char *oscBuffer; 
-				
+		osc::OutboundPacketStream  *fullPacket;
+		char *fullBuffer; 
+		
 		void startObjectBundle();
 		void addObjectMessage(TuioObject *tobj);
 		void sendObjectBundle(long fseq);
@@ -182,5 +216,5 @@ namespace TUIO {
 		bool objectProfileEnabled, cursorProfileEnabled, blobProfileEnabled;		
 		char *source_name;
 	};
-};
+}
 #endif /* INCLUDED_TuioServer_H */

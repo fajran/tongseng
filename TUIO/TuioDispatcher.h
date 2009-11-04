@@ -26,7 +26,6 @@
 
 #ifndef WIN32
 #include <pthread.h>
-#include <sys/time.h>
 #else
 #include <windows.h>
 #endif
@@ -38,7 +37,7 @@ namespace TUIO {
 	 * registered classes that implement the {@link TuioListener} interface.</p> 
 	 *
 	 * @author Martin Kaltenbrunner
-	 * @version 1.4
+	 * @version 1.5
 	 */ 
 	class LIBDECL TuioDispatcher { 
 		
@@ -47,32 +46,12 @@ namespace TUIO {
 		 * This constructor creates a TuioDispatcher
 		 *
 		 */
-		TuioDispatcher() {
-#ifndef WIN32	
-			pthread_mutex_init(&cursorMutex,NULL);
-			pthread_mutex_init(&objectMutex,NULL);	
-			pthread_mutex_init(&blobMutex,NULL);	
-#else
-			cursorMutex = CreateMutex(NULL,FALSE,"cursorMutex");
-			objectMutex = CreateMutex(NULL,FALSE,"objectMutex");
-			blobMutex = CreateMutex(NULL,FALSE,"blobMutex");
-#endif	
-		};
+		TuioDispatcher();
 
 		/**
 		 * The destructor is doing nothing in particular. 
 		 */
-		~TuioDispatcher() {
-#ifndef WIN32	
-			pthread_mutex_destroy(&cursorMutex);
-			pthread_mutex_destroy(&objectMutex);
-			pthread_mutex_destroy(&blobMutex);
-#else
-			CloseHandle(cursorMutex);
-			CloseHandle(objectMutex);
-			CloseHandle(blobMutex);
-#endif		
-		};
+		~TuioDispatcher();
 				
 		/**
 		 * Adds the provided TuioListener to the list of registered TUIO event listeners
@@ -91,16 +70,21 @@ namespace TUIO {
 		/**
 		 * Removes all TuioListener from the list of registered TUIO event listeners
 		 */
-		void removeAllTuioListeners() {	
-			listenerList.clear();
-		}
-
+		void removeAllTuioListeners();
+		
 		/**
 		 * Returns a List of all currently active TuioObjects
 		 *
 		 * @return  a List of all currently active TuioObjects
 		 */
 		std::list<TuioObject*> getTuioObjects();
+
+		/**
+		 * Returns a List with a copy of currently active TuioObjects
+		 *
+		 * @return  a List with a copy of all currently active TuioObjects
+		 */
+		std::list<TuioObject> copyTuioObjects();
 		
 		/**
 		 * Returns a List of all currently active TuioCursors
@@ -110,11 +94,25 @@ namespace TUIO {
 		std::list<TuioCursor*> getTuioCursors();
 
 		/**
+		 * Returns a List with a copy of currently active TuioCursors
+		 *
+		 * @return  a List with a copy of all currently active TuioCursors
+		 */
+		std::list<TuioCursor> copyTuioCursors();
+		
+		/**
 		 * Returns a List of all currently active TuioBlobs
 		 *
 		 * @return  a List of all currently active TuioBlobs
 		 */
 		std::list<TuioBlob*> getTuioBlobs();
+
+		/**
+		 * Returns a List with a copy of currently active TuioBlobs
+		 *
+		 * @return  a List with a copy of all currently active TuioBlobs
+		 */
+		std::list<TuioBlob> copyTuioBlobs();
 		
 		/**
 		 * Returns the TuioObject corresponding to the provided Session ID
@@ -188,5 +186,5 @@ namespace TUIO {
 #endif	
 				
 	};
-};
+}
 #endif /* INCLUDED_TUIODISPATCHER_H */
