@@ -6,10 +6,11 @@ static bool running = false;
 static bool verbose = false;
 static std::string host("localhost");
 static int port = 3333;
+static int deviceIndex = 0;
 
 static void show_help()
 {
-	std::cout << "Usage: tongseng [options] [host] [port]" << std::endl;
+	std::cout << "Usage: tongseng [options] [host] [port] [device index]" << std::endl;
 	std::cout << "        -v verbose" << std::endl;
 	std::cout << "        -h show help" << std::endl;
 }
@@ -51,6 +52,9 @@ static void init(int argc, char** argv)
 			case 1:
 				port = atoi(argv[index]);
 				break;
+			case 2:
+				deviceIndex = atoi(argv[index]);
+				break;
 			default:
 				break;
 		}
@@ -72,7 +76,7 @@ int main(int argc, char** argv)
 
 	tongseng_set_hostname_and_port(host.c_str(), port);
 	tongseng_set_verbose(verbose);
-	tongseng_start();
+	tongseng_start(deviceIndex);
 
 	// Loop until the program is stopped.
 	running = true;
