@@ -1,6 +1,7 @@
 #include "tongseng.h"
 #include <iostream>
 #include <signal.h>
+#include <unistd.h>
 
 static bool running = false;
 static bool verbose = false;
