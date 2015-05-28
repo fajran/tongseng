@@ -18,7 +18,7 @@ SRC=main.cpp \
 
 OBJS=$(SRC:.cpp=.o)
 CPPFLAGS=-ITUIO -Ioscpack
-LIBS=-F/System/Library/PrivateFrameworks -framework MultitouchSupport
+LIBS=-F/System/Library/PrivateFrameworks -framework MultitouchSupport -framework Carbon
 BIN=tongseng
 
 all : $(BIN)
@@ -32,3 +32,5 @@ $(BIN) : $(OBJS)
 clean :
 	rm -f $(BIN) $(OBJS)
 
+install:
+	cp tongseng /usr/bin

@@ -7,7 +7,7 @@ extern "C" {
 
 void tongseng_set_hostname_and_port(const char*, int);
 void tongseng_set_verbose(int);
-void tongseng_start();
+void tongseng_start(int);
 void tongseng_stop();
 
 #ifdef __cplusplus
