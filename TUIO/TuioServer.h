@@ -30,6 +30,7 @@
 #ifndef WIN32
 #include <netdb.h>
 #include <arpa/inet.h>
+#include <unistd.h>
 #endif
 
 namespace TUIO {
