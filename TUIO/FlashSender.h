@@ -20,7 +20,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with Touché. If not, see <http://www.gnu.org/licenses/>.
-//
+
 
 #if !defined(__TFFlashLCSHMEM_H__)
 #define __TFFlashLCSHMEM_H__ 1
@@ -32,10 +32,7 @@ extern "C"
 	
 #ifdef WIN32
 #include <windows.h>
-	
-	typedef	DWORD u_int32_t;
-	
-	
+typedef	DWORD u_int32_t;
 #else
 #include <sys/types.h>
 #include <semaphore.h>
@@ -140,25 +137,22 @@ extern "C"
 #endif //__TFFlashLCSHMEM_H__
 
 /*
- TUIO C++ Library - part of the reacTIVision project
- http://reactivision.sourceforge.net/
+ TUIO C++ Library
+ Copyright (c) 2005-2016 Martin Kaltenbrunner <martin@tuio.org>
  
- Copyright (c) 2005-2009 Martin Kaltenbrunner <martin@tuio.org>
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 3.0 of the License, or (at your option) any later version.
  
- This program is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
- 
- This program is distributed in the hope that it will be useful,
+ This library is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ Lesser General Public License for more details.
  
- You should have received a copy of the GNU General Public License
- along with this program; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library.
+*/
 
 #ifndef INCLUDED_FLASHSENDER_H
 #define INCLUDED_FLASHSENDER_H
@@ -175,7 +169,7 @@ namespace TUIO {
 	 * The FlashSender implements the Flash LocalConnection transport method for OSC
 	 *
 	 * @author Martin Kaltenbrunner
-	 * @version 1.5
+	 * @version 1.1.6
 	 */ 
 	class LIBDECL FlashSender : public OscSender {
 				
@@ -194,7 +188,7 @@ namespace TUIO {
 		/**
 		 * The destructor closes the connection. 
 		 */
-		~FlashSender();
+		virtual ~FlashSender();
 		
 		/**
 		 * This method delivers the provided OSC data
@@ -211,6 +205,8 @@ namespace TUIO {
 		 * @return true if the connection is alive
 		 */
 		bool isConnected ();
+		
+		const char* tuio_type() { return "TUIO/FLC"; }
 		
 	private:
 		TFLCSLocalConnection_t* lcConnection;

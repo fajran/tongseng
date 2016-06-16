@@ -1,22 +1,19 @@
 /*
-	TUIO Server Component - part of the reacTIVision project
-	http://reactivision.sourceforge.net/
-
-	Copyright (C) 2005-2009 Martin Kaltenbrunner <martin@tuio.org>
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ TUIO C++ Library
+ Copyright (c) 2005-2016 Martin Kaltenbrunner <martin@tuio.org>
+ 
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 3.0 of the License, or (at your option) any later version.
+ 
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ Lesser General Public License for more details.
+ 
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library.
 */
 
 #include "TuioServer.h"
@@ -26,48 +23,44 @@ using namespace TUIO;
 using namespace osc;
 
 TuioServer::TuioServer() 
-	:local_sender			(true)
-	,full_update			(false)	
+	:full_update			(false)
 	,periodic_update		(false)	
 	,objectProfileEnabled	(true)
 	,cursorProfileEnabled	(true)
 	,blobProfileEnabled		(true)
 	,source_name			(NULL)
 {
-	primary_sender = new UdpSender();
-	initialize();
+	OscSender *oscsend = new UdpSender();
+	initialize(oscsend);
 }
 
 TuioServer::TuioServer(const char *host, int port) 
-:local_sender			(true)
-,full_update			(false)	
+:full_update			(false)
 ,periodic_update		(false)	
 ,objectProfileEnabled	(true)
 ,cursorProfileEnabled	(true)
 ,blobProfileEnabled		(true)
 ,source_name			(NULL)
 {
-	primary_sender = new UdpSender(host,port);
-	initialize();
+	OscSender *oscsend = new UdpSender(host,port);
+	initialize(oscsend);
 }
 
 TuioServer::TuioServer(OscSender *oscsend)
-	:primary_sender					(oscsend)
-	,local_sender			(false)
-	,full_update			(false)	
+	:full_update			(false)
 	,periodic_update		(false)	
 	,objectProfileEnabled	(true)
 	,cursorProfileEnabled	(true)
 	,blobProfileEnabled		(true)
 	,source_name			(NULL)
 {
-	initialize();
+	initialize(oscsend);
 }
 
-void TuioServer::initialize() {
+void TuioServer::initialize(OscSender *oscsend) {
 	
-	senderList.push_back(primary_sender);
-	int size = primary_sender->getBufferSize();
+	senderList.push_back(oscsend);
+	int size = oscsend->getBufferSize();
 	oscBuffer = new char[size];
 	oscPacket = new osc::OutboundPacketStream(oscBuffer,size);
 	fullBuffer = new char[size];
@@ -77,9 +70,9 @@ void TuioServer::initialize() {
 	cursorUpdateTime = TuioTime(currentFrameTime);
 	blobUpdateTime = TuioTime(currentFrameTime);
 	
-	sendEmptyCursorBundle();
-	sendEmptyObjectBundle();
-	sendEmptyBlobBundle();
+	if (cursorProfileEnabled) sendEmptyCursorBundle();
+	if (objectProfileEnabled) sendEmptyObjectBundle();
+	if (blobProfileEnabled) sendEmptyBlobBundle();
 	
 	invert_x = false;
 	invert_y = false;
@@ -98,17 +91,18 @@ TuioServer::~TuioServer() {
 	removeUntouchedStoppedObjects();
 	removeUntouchedStoppedBlobs();
 	
-	sendEmptyCursorBundle();
-	sendEmptyObjectBundle();
-	sendEmptyBlobBundle();
-
+	if (cursorProfileEnabled) sendEmptyCursorBundle();
+	if (objectProfileEnabled) sendEmptyObjectBundle();
+	if (blobProfileEnabled) sendEmptyBlobBundle();
+	
 	delete []oscBuffer;
 	delete oscPacket;
 	delete []fullBuffer;
 	delete fullPacket;
 	
 	if (source_name) delete[] source_name;
-	if( local_sender) delete primary_sender;
+	for (unsigned int i=0;i<senderList.size();i++)
+		delete senderList[i];
 }
 
 
@@ -140,13 +134,19 @@ void TuioServer::deliverOscPacket(osc::OutboundPacketStream  *packet) {
 		senderList[i]->sendOscPacket(packet);
 }
 
+void TuioServer::setSourceName(const char *name, const char *ip) {
+	if (!source_name) source_name = new char[256];
+	sprintf(source_name,"%s@%s",name,ip);
+}
+
+
 void TuioServer::setSourceName(const char *src) {
 	
 	if (!source_name) source_name = new char[256];
 
-	if (primary_sender->isLocal()) {
+	/*if (senderList[0]->isLocal()) {
 		sprintf(source_name,"%s",src);
-	} else { 
+	} else {*/
 		char hostname[64];
 		char *source_addr = NULL;
 		struct hostent *hp = NULL;
@@ -174,9 +174,9 @@ void TuioServer::setSourceName(const char *src) {
 			source_addr = inet_ntoa(*addr);
 		}
 		sprintf(source_name,"%s@%s",src,source_addr);
-	} 
+	//}
 	
-	//std::cout << "source: " << source_name << std::endl;
+	std::cout << "tuio/src " << source_name << std::endl;
 }
 
 void TuioServer::commitFrame() {
@@ -302,12 +302,14 @@ void TuioServer::startCursorBundle() {
 	if (source_name) (*oscPacket) << osc::BeginMessage( "/tuio/2Dcur") << "source" << source_name << osc::EndMessage;
 	(*oscPacket) << osc::BeginMessage( "/tuio/2Dcur") << "alive";
 	for (std::list<TuioCursor*>::iterator tuioCursor = cursorList.begin(); tuioCursor!=cursorList.end(); tuioCursor++) {
-		(*oscPacket) << (int32)((*tuioCursor)->getSessionID());	
+		if ((*tuioCursor)->getTuioState()!=TUIO_ADDED) (*oscPacket) << (int32)((*tuioCursor)->getSessionID());
 	}
 	(*oscPacket) << osc::EndMessage;	
 }
 
 void TuioServer::addCursorMessage(TuioCursor *tcur) {
+	
+	if (tcur->getTuioState()==TUIO_ADDED) return;
 
 	float xpos = tcur->getX();
 	float xvel = tcur->getXSpeed();
@@ -405,12 +407,14 @@ void TuioServer::startBlobBundle() {
 	if (source_name) (*oscPacket) << osc::BeginMessage( "/tuio/2Dblb") << "source" << source_name << osc::EndMessage;
 	(*oscPacket) << osc::BeginMessage( "/tuio/2Dblb") << "alive";
 	for (std::list<TuioBlob*>::iterator tuioBlob = blobList.begin(); tuioBlob!=blobList.end(); tuioBlob++) {
-		(*oscPacket) << (int32)((*tuioBlob)->getSessionID());	
+		if ((*tuioBlob)->getTuioState()!=TUIO_ADDED) (*oscPacket) << (int32)((*tuioBlob)->getSessionID());
 	}
 	(*oscPacket) << osc::EndMessage;	
 }
 
 void TuioServer::addBlobMessage(TuioBlob *tblb) {
+	
+	if (tblb->getTuioState()==TUIO_ADDED) return;
 	
 	float xpos = tblb->getX();
 	float xvel = tblb->getXSpeed();

@@ -1,23 +1,20 @@
 /*
- TUIO C++ Library - part of the reacTIVision project
- http://reactivision.sourceforge.net/
+ TUIO C++ Library
+ Copyright (c) 2005-2016 Martin Kaltenbrunner <martin@tuio.org>
  
- Copyright (c) 2005-2009 Martin Kaltenbrunner <martin@tuio.org>
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 3.0 of the License, or (at your option) any later version.
  
- This program is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
- 
- This program is distributed in the hope that it will be useful,
+ This library is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ Lesser General Public License for more details.
  
- You should have received a copy of the GNU General Public License
- along with this program; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library.
+*/
 
 #ifndef INCLUDED_TCPSENDER_H
 #define INCLUDED_TCPSENDER_H
@@ -37,6 +34,7 @@ typedef int socklen_t;
 #include <unistd.h>
 #endif
 
+#include <list>
 #define MAX_TCP_SIZE 65536
 
 namespace TUIO {
@@ -45,7 +43,7 @@ namespace TUIO {
 	 * The TcpSender implements the TCP transport method for OSC
 	 *
 	 * @author Martin Kaltenbrunner
-	 * @version 1.5
+	 * @version 2.0.a0
 	 */ 
 	class LIBDECL TcpSender : public OscSender {
 				
@@ -67,14 +65,14 @@ namespace TUIO {
 		/**
 		 * This constructor creates a TcpSender that listens to the provided port
 		 *
-		 * @param  port  the incoming TUIO TCP port number
+		 * @param  port	the incoming TUIO TCP port number
 		 */
 		TcpSender(int port);	
 		
 		/**
 		 * The destructor closes the socket. 
 		 */
-		~TcpSender();
+		virtual ~TcpSender();
 		
 		/**
 		 * This method delivers the provided OSC data
@@ -92,20 +90,33 @@ namespace TUIO {
 		 */
 		bool isConnected ();
 
+		/**
+		 * This method is called whenever a new client connects
+		 *
+		 * @param tcp_client the socket handle of the new client
+		 */
+		virtual void newClient( int tcp_client );
+
+		int port_no;
 		
 #ifdef WIN32
-		SOCKET tcp_socket, tcp_client_connection;
+		SOCKET tcp_socket;
+		std::list<SOCKET> tcp_client_list;
 #else
-		int tcp_socket, tcp_client_connection;
+		int tcp_socket;
+		std::list<int> tcp_client_list;
 #endif
-
 		bool connected;
-	private:
+		const char* tuio_type() { return "TUIO/TCP"; }
+
+	protected:
 		char data_size[4];
+		char data_buffer[MAX_TCP_SIZE+4];
 		
 
 #ifdef WIN32
 		HANDLE server_thread;
+		DWORD ServerThreadId;
 #else
 		pthread_t server_thread;
 #endif

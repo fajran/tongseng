@@ -1,29 +1,27 @@
 /*
- TUIO C++ Library - part of the reacTIVision project
- http://reactivision.sourceforge.net/
+ TUIO C++ Library
+ Copyright (c) 2005-2016 Martin Kaltenbrunner <martin@tuio.org>
  
- Copyright (c) 2005-2009 Martin Kaltenbrunner <martin@tuio.org>
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 3.0 of the License, or (at your option) any later version.
  
- This program is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
- 
- This program is distributed in the hope that it will be useful,
+ This library is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ Lesser General Public License for more details.
  
- You should have received a copy of the GNU General Public License
- along with this program; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library.
+*/
 
 #ifndef INCLUDED_OSCSENDER_H
 #define INCLUDED_OSCSENDER_H
 
 #include "LibExport.h"
 #include "osc/OscOutboundPacketStream.h"
+#include "osc/OscHostEndianness.h"
 #include "ip/NetworkingUtils.h"
 #include <iostream>
 #include <cstring>
@@ -34,7 +32,7 @@ namespace TUIO {
 	 * The OscSender class is the base class for the various OSC transport methods such as UDP, TCP ...
 	 *
 	 * @author Martin Kaltenbrunner
-	 * @version 1.5
+	 * @version 1.1.6
 	 */ 
 	class LIBDECL OscSender {
 				
@@ -47,7 +45,7 @@ namespace TUIO {
 
 		/**
 		 * The destructor is doing nothing in particular. 
-		 */
+		 */ 
 		virtual ~OscSender() {}
 		
 		/**
@@ -78,10 +76,15 @@ namespace TUIO {
 		 * @return the maximum bundle size in bytes
 		 */
 		int getBufferSize () { return buffer_size; };
+	
+		virtual const char* tuio_type() = 0;
 		
 	protected:
 		unsigned int buffer_size;
 		bool local;
 	};
 }
+
+
 #endif /* INCLUDED_OSCSENDER_H */
+

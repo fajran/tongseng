@@ -228,7 +228,6 @@ static void tuio_stop()
 {
 	release_all_fingers();
 	delete server;
-	delete oscSender;
 }
 
 // Start handling multitouch events

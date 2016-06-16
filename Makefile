@@ -6,11 +6,13 @@ SRC=main.cpp \
 	TUIO/TuioManager.cpp \
 	TUIO/TuioObject.cpp \
 	TUIO/TuioCursor.cpp \
+	TUIO/TuioBlob.cpp \
 	TUIO/TuioContainer.cpp \
 	TUIO/TuioPoint.cpp \
 	TUIO/TuioBlob.cpp \
 	TUIO/TuioDispatcher.cpp \
 	TUIO/UdpSender.cpp \
+	TUIO/OneEuroFilter.cpp \
 	oscpack/ip/posix/NetworkingUtils.cpp \
 	oscpack/ip/posix/UdpSocket.cpp \
 	oscpack/osc/OscOutboundPacketStream.cpp \

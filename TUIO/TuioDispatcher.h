@@ -1,23 +1,20 @@
 /*
- TUIO C++ Library - part of the reacTIVision project
- http://reactivision.sourceforge.net/
+ TUIO C++ Library
+ Copyright (c) 2005-2016 Martin Kaltenbrunner <martin@tuio.org>
  
- Copyright (C) 2005-2009 Martin Kaltenbrunner <martin@tuio.org>
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 3.0 of the License, or (at your option) any later version.
  
- This program is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
- 
- This program is distributed in the hope that it will be useful,
+ This library is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ Lesser General Public License for more details.
  
- You should have received a copy of the GNU General Public License
- along with this program; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library.
+*/
 
 #ifndef INCLUDED_TUIODISPATCHER_H
 #define INCLUDED_TUIODISPATCHER_H
@@ -37,7 +34,7 @@ namespace TUIO {
 	 * registered classes that implement the {@link TuioListener} interface.</p> 
 	 *
 	 * @author Martin Kaltenbrunner
-	 * @version 1.5
+	 * @version 1.1.6
 	 */ 
 	class LIBDECL TuioDispatcher { 
 		

@@ -1,23 +1,20 @@
 /*
- TUIO C++ Library - part of the reacTIVision project
- http://reactivision.sourceforge.net/
+ TUIO C++ Library
+ Copyright (c) 2005-2016 Martin Kaltenbrunner <martin@tuio.org>
  
- Copyright (c) 2005-2009 Martin Kaltenbrunner <martin@tuio.org>
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 3.0 of the License, or (at your option) any later version.
  
- This program is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
- 
- This program is distributed in the hope that it will be useful,
+ This library is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ Lesser General Public License for more details.
  
- You should have received a copy of the GNU General Public License
- along with this program; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library.
+*/
 
 #include "TuioPoint.h"
 
@@ -28,6 +25,11 @@ TuioPoint::TuioPoint (float xp, float yp) {
 	ypos = yp;
 	currentTime = TuioTime::getSessionTime();
 	startTime = currentTime;
+
+	xposFilter = NULL;
+	yposFilter = NULL;
+	
+	posThreshold = 0.0f;
 }
 
 TuioPoint::TuioPoint (TuioTime ttime, float xp, float yp) {
@@ -35,6 +37,11 @@ TuioPoint::TuioPoint (TuioTime ttime, float xp, float yp) {
 	ypos = yp;
 	currentTime = ttime;
 	startTime = currentTime;
+
+	xposFilter = NULL;
+	yposFilter = NULL;
+	
+	posThreshold = 0.0f;
 }
 
 TuioPoint::TuioPoint (TuioPoint *tpoint) {
@@ -42,6 +49,11 @@ TuioPoint::TuioPoint (TuioPoint *tpoint) {
 	ypos = tpoint->getY();
 	currentTime = TuioTime::getSessionTime();
 	startTime = currentTime;
+
+	xposFilter = NULL;
+	yposFilter = NULL;
+	
+	posThreshold = 0.0f;
 }
 
 void TuioPoint::update (TuioPoint *tpoint) {
@@ -52,16 +64,30 @@ void TuioPoint::update (TuioPoint *tpoint) {
 void TuioPoint::update (float xp, float yp) {
 	xpos = xp;
 	ypos = yp;
-}		
+}
 
 void TuioPoint::update (TuioTime ttime, float xp, float yp) {
-	xpos = xp;
-	ypos = yp;
+	
+	if (xposFilter && yposFilter) {
+		TuioTime diffTime = ttime - startTime;
+		float dt = diffTime.getTotalMilliseconds()/1000.0f;
+		xp = xposFilter->filter(xp,dt);
+		yp = yposFilter->filter(yp,dt);
+		//std::cout << dt << " " << xp << " " << xpos << " " << yp << " " << ypos << std::endl;
+	}
+		
+	float dx = fabs(xpos - xp);
+	float dy = fabs(ypos - yp);
+	if ((dx>posThreshold) || (dy>posThreshold)) {
+		xpos = xp;
+		ypos = yp;
+	}
+
 	currentTime = ttime;
 }
 
 
-float TuioPoint::getX() const{ 
+float TuioPoint::getX() const{
 	return xpos;
 }
 
@@ -90,10 +116,10 @@ float TuioPoint::getAngle(float xp, float yp) const{
 	float side = xpos-xp;
 	float height = ypos-yp;
 	float distance = getDistance(xp,yp);
-	
+
 	float angle = (float)(asin(side/distance)+M_PI/2);
 	if (height<0) angle = 2.0f*(float)M_PI-angle;
-	
+
 	return angle;
 }
 
@@ -109,7 +135,7 @@ float TuioPoint::getAngleDegrees(TuioPoint *tpoint) const{
 	return ((getAngle(tpoint)/(float)M_PI)*180.0f);
 }
 
-int TuioPoint::getScreenX(int width) const{ 
+int TuioPoint::getScreenX(int width) const{
 	return (int)floor(xpos*width+0.5f);
 }
 
@@ -117,7 +143,7 @@ int TuioPoint::getScreenY(int height) const{
 	return (int)floor(ypos*height+0.5f);
 }
 
-TuioTime TuioPoint::getTuioTime() const{ 
+TuioTime TuioPoint::getTuioTime() const{
 	return currentTime;
 }
 
@@ -125,3 +151,26 @@ TuioTime TuioPoint::getStartTime() const{
 	return startTime;
 }
 
+void TuioPoint::addPositionThreshold(float thresh) {
+	posThreshold = thresh;
+}
+
+void TuioPoint::removePositionThreshold() {
+	posThreshold = 0.0f;
+}
+
+void TuioPoint::addPositionFilter(float mcut, float beta) {
+
+	if (xposFilter) delete xposFilter;
+	xposFilter = new OneEuroFilter(60.0f, mcut, beta, 1.0f);
+	if (yposFilter) delete yposFilter;
+	yposFilter = new OneEuroFilter(60.0f, mcut, beta, 1.0f);
+}
+
+void TuioPoint::removePositionFilter() {
+
+	if (xposFilter) delete xposFilter;
+	xposFilter = NULL;
+	if (yposFilter) delete yposFilter;
+	yposFilter = NULL;
+}
