@@ -47,7 +47,7 @@
 		3F45D5A910A0FEEB00139241 /* TuioPoint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TuioPoint.cpp; sourceTree = "<group>"; };
 		3F6CB36810374F0C00CFF31E /* tongseng.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tongseng.cpp; path = ../tongseng.cpp; sourceTree = SOURCE_ROOT; };
 		3F6CB36910374F0C00CFF31E /* tongseng.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tongseng.h; path = ../tongseng.h; sourceTree = SOURCE_ROOT; };
-		3F6CB36B10374F1600CFF31E /* mt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mt.h; path = ../mt.h; sourceTree = SOURCE_ROOT; };
+		3F6CB36B10374F1600CFF31E /* multitouch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = multitouch.h; path = ../multitouch.h; sourceTree = SOURCE_ROOT; };
 		3F6CB39010374FB900CFF31E /* NetworkingUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NetworkingUtils.cpp; sourceTree = "<group>"; };
 		3F6CB39210374FB900CFF31E /* UdpSocket.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UdpSocket.cpp; sourceTree = "<group>"; };
 		3F6CB39E10374FB900CFF31E /* OscOutboundPacketStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OscOutboundPacketStream.cpp; sourceTree = "<group>"; };
@@ -133,7 +133,7 @@
 			children = (
 				3F6CB3F31037541700CFF31E /* TUIO */,
 				3F6CB38710374FB900CFF31E /* oscpack */,
-				3F6CB36B10374F1600CFF31E /* mt.h */,
+				3F6CB36B10374F1600CFF31E /* multitouch.h */,
 				3F6CB36810374F0C00CFF31E /* tongseng.cpp */,
 				3F6CB36910374F0C00CFF31E /* tongseng.h */,
 				32CA4F630368D1EE00C91783 /* TongsengApp_Prefix.pch */,

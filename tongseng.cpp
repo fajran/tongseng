@@ -17,7 +17,7 @@
 // Based on multitouch code from http://www.steike.com/code/multitouch/
 
 #include "tongseng.h"
-#include "mt.h"
+#include "multitouch.h"
 #include <iostream>
 #include <math.h>
 #include <unistd.h>
@@ -148,11 +148,14 @@ static void tuio_frame_end()
 	server->commitFrame();
 }
 
+typedef void (*MTPathCallbackFunction)(MTDeviceRef device, long pathID, long state, MTTouch* touch);
+
+
 // Process incoming events
-static int callback(int device, Finger *data, int nFingers, double timestamp, int frame)
-{
+static void callback(MTDeviceRef device, MTTouch touches[], size_t numTouches, double timestamp, size_t frame) {
+	
 	if (!running || !sampling_interval_passed()) {
-		return 0;
+		return;
 	}
 
 	tuio_frame_begin();
@@ -161,12 +164,12 @@ static int callback(int device, Finger *data, int nFingers, double timestamp, in
 
 	// Process incoming events
 	int i;
-	for (i=0; i<nFingers; i++) {
-		Finger *f = &data[i];
-		int id = f->identifier;
+	for (i=0; i<numTouches; i++) {
+		MTTouch *f = &touches[i];
+		int id = f->pathIndex;
 
-		float x = f->normalized.pos.x;
-		float y = 1.0f - f->normalized.pos.y; // reverse y axis
+		float x = f->normalizedVector.position.x;
+		float y = 1.0f - f->normalizedVector.position.y; // reverse y axis
 		
 		if (EXISTS(currentFingers, id)) {
 			// update
@@ -194,8 +197,6 @@ static int callback(int device, Finger *data, int nFingers, double timestamp, in
 	currentFingers.insert(fingers.begin(), fingers.end());
 
 	tuio_frame_end();
-
-	return 0;
 }
 
 // Start TUIO server
