@@ -17,6 +17,9 @@
 #ifndef MULTITOUCH_H
 #define MULTITOUCH_H
 
+#ifdef __OBJC__
+#include <Cocoa/Cocoa.h>
+#endif
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
 
