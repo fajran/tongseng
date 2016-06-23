@@ -41,6 +41,7 @@ static bool running = false;
 static bool verbose = false;
 static std::string host("localhost");
 static int port = 3333;
+static int dev_id = 0;
 
 // Sensitivity
 #define MIN_DISTANCE 0.00001f
@@ -234,7 +235,12 @@ static void tuio_stop()
 // Start handling multitouch events
 static void mt_start()
 {
-	dev = MTDeviceCreateDefault();
+	CFArrayRef devList = MTDeviceCreateList();
+	if((CFIndex)CFArrayGetCount(devList) - 1 < dev_id) {
+		std::cout << "Could not find external trackpad, defaulting to internal!" << std::endl;
+		dev_id = 0;
+	}
+	dev = (MTDeviceRef)CFArrayGetValueAtIndex(devList, dev_id);
 	MTRegisterContactFrameCallback(dev, callback);
 	MTDeviceStart(dev, 0);
 }
@@ -258,6 +264,12 @@ void tongseng_set_hostname_and_port(const char* _hostname, int _port)
 void tongseng_set_verbose(int _verbose)
 {
 	verbose = _verbose != 0;
+}
+
+// Set TUIO server verbosity
+void tongseng_set_device(int id)
+{
+	dev_id = id;
 }
 
 // Start Tongseng

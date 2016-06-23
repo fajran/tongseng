@@ -20,13 +20,13 @@ SRC=main.cpp \
 
 OBJS=$(SRC:.cpp=.o)
 CPPFLAGS=-ITUIO -Ioscpack
-LIBS=-F/System/Library/PrivateFrameworks -framework MultitouchSupport
+LIBS=-F/System/Library/PrivateFrameworks -framework MultitouchSupport -framework CoreFoundation
 BIN=tongseng
 
 all : $(BIN)
 
 .cpp.o :
-	g++ -c $(CPPFLAGS) $< -o $@
+	g++ $(CPPFLAGS) -c $< -o $@
 
 $(BIN) : $(OBJS)
 	g++ -o $@ $(LIBS) $^
