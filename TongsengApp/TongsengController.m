@@ -13,17 +13,21 @@
 
 - (void)awakeFromNib
 {
-	[_device removeAllItems];
 	
 	CFArrayRef devList = MTDeviceCreateList();
 	CFIndex dev_count = (CFIndex)CFArrayGetCount(devList);
-	if(dev_count > 0) {
-		[_device addItemWithTitle:@"Default"];
-	}
 	
 	if(dev_count > 1) {
 		for (int i=1;i<=dev_count;i++)
 		[_device addItemWithTitle:@"External"];
+	} else if(dev_count == 0) {
+		[_device removeAllItems];
+		[_device addItemWithTitle:@"None"];
+		[_button setEnabled:false];
+		[_hostname setEnabled:false];
+		[_port setEnabled:false];
+		[_device setEnabled:false];
+		[_info setStringValue:@"Tongseng is disabled"];
 	}
 }
 
