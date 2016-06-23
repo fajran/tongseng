@@ -109,14 +109,12 @@
                                 <popUpButton verticalHuggingPriority="750" id="oSn-TT-DeO">
                                     <rect key="frame" x="90" y="25" width="124" height="26"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="WNd-bV-N8F" id="zf4-5x-RAS">
+                                    <popUpButtonCell key="cell" type="push" title="Default" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="WNd-bV-N8F" id="zf4-5x-RAS">
                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="menu"/>
                                         <menu key="menu" id="WVb-w9-SLk">
                                             <items>
-                                                <menuItem title="Item 1" state="on" id="WNd-bV-N8F"/>
-                                                <menuItem title="Item 2" id="EvQ-tn-7bc"/>
-                                                <menuItem title="Item 3" id="KIv-lD-txa"/>
+                                                <menuItem title="Default" state="on" id="WNd-bV-N8F"/>
                                             </items>
                                         </menu>
                                     </popUpButtonCell>
