@@ -4,6 +4,7 @@
     IBOutlet NSTextField *_hostname;
     IBOutlet NSTextField *_port;
 	IBOutlet NSTextField *_info;
+	IBOutlet NSPopUpButton *_device;
 	IBOutlet NSButton *_button;
 	bool _running;
 }

@@ -16,8 +16,8 @@
 
 // Based on multitouch code from http://www.steike.com/code/multitouch/
 
-#include "tongseng.h"
 #include "multitouch.h"
+#include "tongseng.h"
 #include <iostream>
 #include <math.h>
 #include <unistd.h>
@@ -267,9 +267,9 @@ void tongseng_set_verbose(int _verbose)
 }
 
 // Set TUIO server verbosity
-void tongseng_set_device(int id)
+void tongseng_set_device(int _id)
 {
-	dev_id = id;
+	dev_id = _id;
 }
 
 // Start Tongseng
