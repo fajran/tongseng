@@ -11,13 +11,10 @@ static int device = 0;
 
 static void show_help()
 {
-	std::cout << "Usage: tongseng [options]" << std::endl;
-	std::cout << "        -n [host name]" << std::endl;
-	std::cout << "        -p [udp port]" << std::endl;
-	std::cout << "        -d [device id]" << std::endl;
+	std::cout << "Usage: tongseng -n [host] -p [port] -d [device]" << std::endl;
 	std::cout << "        -l list devices" << std::endl;
-	std::cout << "        -v verbose" << std::endl;
-	std::cout << "        -h show help" << std::endl;
+	std::cout << "        -v verbose output" << std::endl;
+	std::cout << "        -h show this help" << std::endl;
 }
 
 static void stop(int param)
