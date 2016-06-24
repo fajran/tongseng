@@ -11,7 +11,11 @@ static int device = 0;
 
 static void show_help()
 {
-	std::cout << "Usage: tongseng [options] [host] [port] [device]" << std::endl;
+	std::cout << "Usage: tongseng [options]" << std::endl;
+	std::cout << "        -n [host name]" << std::endl;
+	std::cout << "        -p [udp port]" << std::endl;
+	std::cout << "        -d [device id]" << std::endl;
+	std::cout << "        -l list devices" << std::endl;
 	std::cout << "        -v verbose" << std::endl;
 	std::cout << "        -h show help" << std::endl;
 }
@@ -23,41 +27,40 @@ static void stop(int param)
 
 static void init(int argc, char** argv)
 {
-	int aflag = 0;
-	int bflag = 0;
-	char *cvalue = NULL;
-	int index;
-	int c;
+	char c;
 
-	opterr = 0;
-
-	while ((c = getopt(argc, argv, "v")) != -1) {
+	while ((c = getopt(argc, argv, "n:p:d:lvh")) != -1) {
 		switch (c) {
+			case 'n':
+				host = std::string(optarg);
+				break;
+			case 'p':
+				port = atoi(optarg);
+				break;
+			case 'd':
+				device = atoi(optarg);
+				break;
 			case 'v':
 				verbose = true;
 				break;
+			case 'l':
+				tongseng_list_devices();
+				exit(0);
 			case 'h':
 				show_help();
 				exit(0);
+			/*case '?':
+				if (optopt == 'n')
+					fprintf (stderr, "Option -n requires a host name.\n");
+				if (optopt == 'p')
+					fprintf (stderr, "Option -p requires a port number.\n");
+				if (optopt == 'd')
+					fprintf (stderr, "Option -d requires a device number.\n");
+				else if (isprint (optopt)) fprintf (stderr, "Unknown option '-%c'.\n", optopt);
+				else fprintf (stderr, "Unknown option character '\\x%x'.\n", optopt);*/
 			default:
 				show_help();
 				exit(1);
-		}
-	}
-
-	for (index=optind, c=0; index < argc; index++, c++) {
-		switch (c) {
-			case 0:
-				host = argv[index];
-				break;
-			case 1:
-				port = atoi(argv[index]);
-				break;
-			case 2:
-				device = atoi(argv[index]);
-				break;
-			default:
-				break;
 		}
 	}
 }

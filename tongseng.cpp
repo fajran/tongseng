@@ -290,3 +290,17 @@ void tongseng_stop()
 	}
 }
 
+// List devices
+void tongseng_list_devices()
+{
+	CFArrayRef devList = MTDeviceCreateList();
+	CFIndex dev_count = (CFIndex)CFArrayGetCount(devList);
+	
+	if (dev_count == 0) std::cout << "no devices found" << std::endl;
+	else std::cout << "0: default" << std::endl;
+
+	if(dev_count > 1) {
+		for (int i=1;i<=dev_count;i++)
+			std::cout << i << ": external" << std::endl;
+	}
+}

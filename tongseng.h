@@ -10,6 +10,7 @@ void tongseng_set_device(int);
 void tongseng_set_verbose(int);
 void tongseng_start();
 void tongseng_stop();
+void tongseng_list_devices();
 
 #ifdef __cplusplus
 }
