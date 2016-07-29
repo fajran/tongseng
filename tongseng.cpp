@@ -16,8 +16,8 @@
 
 // Based on multitouch code from http://www.steike.com/code/multitouch/
 
+#include "multitouch.h"
 #include "tongseng.h"
-#include "mt.h"
 #include <iostream>
 #include <math.h>
 #include <unistd.h>
@@ -41,6 +41,7 @@ static bool running = false;
 static bool verbose = false;
 static std::string host("localhost");
 static int port = 3333;
+static int dev_id = 0;
 
 // Sensitivity
 #define MIN_DISTANCE 0.00001f
@@ -148,11 +149,14 @@ static void tuio_frame_end()
 	server->commitFrame();
 }
 
+typedef void (*MTPathCallbackFunction)(MTDeviceRef device, long pathID, long state, MTTouch* touch);
+
+
 // Process incoming events
-static int callback(int device, Finger *data, int nFingers, double timestamp, int frame)
-{
+static void callback(MTDeviceRef device, MTTouch touches[], size_t numTouches, double timestamp, size_t frame) {
+	
 	if (!running || !sampling_interval_passed()) {
-		return 0;
+		return;
 	}
 
 	tuio_frame_begin();
@@ -161,12 +165,12 @@ static int callback(int device, Finger *data, int nFingers, double timestamp, in
 
 	// Process incoming events
 	int i;
-	for (i=0; i<nFingers; i++) {
-		Finger *f = &data[i];
-		int id = f->identifier;
+	for (i=0; i<numTouches; i++) {
+		MTTouch *f = &touches[i];
+		int id = f->pathIndex;
 
-		float x = f->normalized.pos.x;
-		float y = 1.0f - f->normalized.pos.y; // reverse y axis
+		float x = f->normalizedVector.position.x;
+		float y = 1.0f - f->normalizedVector.position.y; // reverse y axis
 		
 		if (EXISTS(currentFingers, id)) {
 			// update
@@ -194,8 +198,6 @@ static int callback(int device, Finger *data, int nFingers, double timestamp, in
 	currentFingers.insert(fingers.begin(), fingers.end());
 
 	tuio_frame_end();
-
-	return 0;
 }
 
 // Start TUIO server
@@ -228,13 +230,17 @@ static void tuio_stop()
 {
 	release_all_fingers();
 	delete server;
-	delete oscSender;
 }
 
 // Start handling multitouch events
 static void mt_start()
 {
-	dev = MTDeviceCreateDefault();
+	CFArrayRef devList = MTDeviceCreateList();
+	if((CFIndex)CFArrayGetCount(devList) - 1 < dev_id) {
+		std::cout << "Could not find external trackpad, defaulting to internal!" << std::endl;
+		dev_id = 0;
+	}
+	dev = (MTDeviceRef)CFArrayGetValueAtIndex(devList, dev_id);
 	MTRegisterContactFrameCallback(dev, callback);
 	MTDeviceStart(dev, 0);
 }
@@ -260,6 +266,12 @@ void tongseng_set_verbose(int _verbose)
 	verbose = _verbose != 0;
 }
 
+// Set TUIO server verbosity
+void tongseng_set_device(int _id)
+{
+	dev_id = _id;
+}
+
 // Start Tongseng
 void tongseng_start()
 {
@@ -278,3 +290,17 @@ void tongseng_stop()
 	}
 }
 
+// List devices
+void tongseng_list_devices()
+{
+	CFArrayRef devList = MTDeviceCreateList();
+	CFIndex dev_count = (CFIndex)CFArrayGetCount(devList);
+	
+	if (dev_count == 0) std::cout << "no devices found" << std::endl;
+	else std::cout << "0: default" << std::endl;
+
+	if(dev_count > 1) {
+		for (int i=1;i<=dev_count;i++)
+			std::cout << i << ": external" << std::endl;
+	}
+}

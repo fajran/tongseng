@@ -1,23 +1,20 @@
 /*
- TUIO C++ Library - part of the reacTIVision project
- http://reactivision.sourceforge.net/
+ TUIO C++ Library
+ Copyright (c) 2005-2016 Martin Kaltenbrunner <martin@tuio.org>
  
- Copyright (c) 2005-2009 Martin Kaltenbrunner <martin@tuio.org>
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 3.0 of the License, or (at your option) any later version.
  
- This program is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
- 
- This program is distributed in the hope that it will be useful,
+ This library is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ Lesser General Public License for more details.
  
- You should have received a copy of the GNU General Public License
- along with this program; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library.
+*/
 
 #ifndef INCLUDED_TUIOBLOB_H
 #define INCLUDED_TUIOBLOB_H
@@ -30,7 +27,7 @@ namespace TUIO {
 	 * The TuioBlob class encapsulates /tuio/2Dblb TUIO objects.
 	 *
 	 * @author Martin Kaltenbrunner
-	 * @version 1.5
+	 * @version 1.1.6
 	 */ 
 	class LIBDECL TuioBlob: public TuioContainer {
 		
@@ -43,6 +40,10 @@ namespace TUIO {
 		 * The rotation angle value.
 		 */ 
 		float angle;
+		/**
+		 * The accumulated angle value.
+		 */
+		float angle_sum;
 		/**
 		 * The width value.
 		 */ 
@@ -64,9 +65,15 @@ namespace TUIO {
 		 */ 
 		float rotation_accel;
 		
+		float angleThreshold;
+		OneEuroFilter *angleFilter;
+		float sizeThreshold;
+		OneEuroFilter *widthFilter;
+		OneEuroFilter *heightFilter;
+		
 	public:
 		using TuioContainer::update;
-		
+
 		/**
 		 * This constructor takes a TuioTime argument and assigns it along with the provided 
 		 * Session ID, X and Y coordinate, width, height and angle to the newly created TuioBlob.
@@ -107,13 +114,23 @@ namespace TUIO {
 		/**
 		 * The destructor is doing nothing in particular. 
 		 */
-		~TuioBlob() {};
+		virtual ~TuioBlob() {
+			if (widthFilter) delete widthFilter;
+			if (heightFilter) delete heightFilter;
+			if (angleFilter) delete angleFilter;
+		};
 
 		/**
 		 * Returns the Blob ID of this TuioBlob.
 		 * @return	the Blob ID of this TuioBlob
 		 */
 		int getBlobID() const;
+		
+		/**
+		 * Sets the Blob ID of this TuioBlob.
+		 * @param b_id	the new Blob ID for this TuioBlob
+		 */
+		void setBlobID(long b_id);
 		
 		/**
 		 * Takes a TuioTime argument and assigns it along with the provided 
@@ -221,6 +238,12 @@ namespace TUIO {
 		float getAngle() const;
 		
 		/**
+		 * Returns the accumulated rotation angle of this TuioBlob.
+		 * @return	the accumulated rotation angle of this TuioBlob
+		 */
+		float getAngleSum() const;
+		
+		/**
 		 * Returns the rotation angle in degrees of this TuioBlob.
 		 * @return	the rotation angle in degrees of this TuioBlob
 		 */
@@ -243,6 +266,22 @@ namespace TUIO {
 		 * @return	true of this TuioBlob is moving
 		 */
 		bool isMoving() const;
+		
+		void addAngleThreshold(float thresh);
+		
+		void removeAngleThreshold();
+		
+		void addAngleFilter(float mcut, float beta);
+		
+		void removeAngleFilter();
+		
+		void addSizeThreshold(float thresh);
+		
+		void removeSizeThreshold();
+		
+		void addSizeFilter(float mcut, float beta);
+		
+		void removeSizeFilter();
 	};
 }
 #endif

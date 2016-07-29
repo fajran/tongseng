@@ -1,23 +1,20 @@
 /*
- TUIO C++ Library - part of the reacTIVision project
- http://reactivision.sourceforge.net/
+ TUIO C++ Library
+ Copyright (c) 2005-2016 Martin Kaltenbrunner <martin@tuio.org>
  
- Copyright (c) 2005-2009 Martin Kaltenbrunner <martin@tuio.org>
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 3.0 of the License, or (at your option) any later version.
  
- This program is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
- 
- This program is distributed in the hope that it will be useful,
+ This library is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ Lesser General Public License for more details.
  
- You should have received a copy of the GNU General Public License
- along with this program; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library.
+*/
 
 #ifndef INCLUDED_TUIOCONTAINER_H
 #define INCLUDED_TUIOCONTAINER_H
@@ -34,15 +31,22 @@
 #define TUIO_STOPPED 5
 #define TUIO_REMOVED 6
 
+#define MAX_PATH_SIZE 128
+
 namespace TUIO {
 	
 	/**
 	 * The abstract TuioContainer class defines common attributes that apply to both subclasses {@link TuioObject} and {@link TuioCursor}.
 	 *
 	 * @author Martin Kaltenbrunner
-	 * @version 1.5
+	 * @version 1.1.6
 	 */ 
 	class LIBDECL TuioContainer: public TuioPoint {
+		
+		
+	private:
+		
+		TuioPoint *lastPoint;
 		
 	protected:
 		/**
@@ -65,6 +69,8 @@ namespace TUIO {
 		 * The motion acceleration value.
 		 */ 
 		float motion_accel;
+		float x_accel;
+		float y_accel;
 		/**
 		 * A List of TuioPoints containing all the previous positions of the TUIO component.
 		 */ 
@@ -266,6 +272,8 @@ namespace TUIO {
 		 * @return	true of this TuioContainer is moving
 		 */
 		virtual bool isMoving() const;
+
+		virtual TuioPoint predictPosition();
 	};
 }
 #endif

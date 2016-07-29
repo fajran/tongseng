@@ -1,23 +1,20 @@
 /*
- TUIO C++ Library - part of the reacTIVision project
- http://reactivision.sourceforge.net/
+ TUIO C++ Library
+ Copyright (c) 2005-2016 Martin Kaltenbrunner <martin@tuio.org>
  
- Copyright (c) 2005-2009 Martin Kaltenbrunner <martin@tuio.org>
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 3.0 of the License, or (at your option) any later version.
  
- This program is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
- 
- This program is distributed in the hope that it will be useful,
+ This library is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ Lesser General Public License for more details.
  
- You should have received a copy of the GNU General Public License
- along with this program; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library.
+*/
 
 #ifndef INCLUDED_TUIOOBJECT_H
 #define INCLUDED_TUIOOBJECT_H
@@ -30,7 +27,7 @@ namespace TUIO {
 	 * The TuioObject class encapsulates /tuio/2Dobj TUIO objects.
 	 *
 	 * @author Martin Kaltenbrunner
-	 * @version 1.5
+	 * @version 1.1.6
 	 */ 
 	class LIBDECL TuioObject: public TuioContainer {
 		
@@ -44,6 +41,10 @@ namespace TUIO {
 		 */ 
 		float angle;
 		/**
+		 * The accumulated angle value.
+		 */
+		float angle_sum;
+		/**
 		 * The rotation speed value.
 		 */ 
 		float rotation_speed;
@@ -51,6 +52,9 @@ namespace TUIO {
 		 * The rotation acceleration value.
 		 */ 
 		float rotation_accel;
+		
+		float angleThreshold;
+		OneEuroFilter *angleFilter;
 		
 	public:
 		using TuioContainer::update;
@@ -91,7 +95,9 @@ namespace TUIO {
 		/**
 		 * The destructor is doing nothing in particular. 
 		 */
-		~TuioObject() {};
+		virtual ~TuioObject() {
+			if (angleFilter) delete angleFilter;
+		};
 		
 		/**
 		 * Takes a TuioTime argument and assigns it along with the provided 
@@ -166,6 +172,12 @@ namespace TUIO {
 		float getAngle() const;
 		
 		/**
+		 * Returns the accumulated rotation angle of this TuioObject.
+		 * @return	the accumulated rotation angle of this TuioObject
+		 */
+		float getAngleSum() const;
+		
+		/**
 		 * Returns the rotation angle in degrees of this TuioObject.
 		 * @return	the rotation angle in degrees of this TuioObject
 		 */
@@ -188,6 +200,14 @@ namespace TUIO {
 		 * @return	true of this TuioObject is moving
 		 */
 		bool isMoving() const;
+		
+		void addAngleThreshold(float thresh);
+		
+		void removeAngleThreshold();
+		
+		void addAngleFilter(float mcut, float beta);
+		
+		void removeAngleFilter();
 	};
 }
 #endif
