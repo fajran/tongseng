@@ -61,6 +61,7 @@
 		case 0:
 		default:
 			[_hostname setStringValue:@"localhost"];
+			[_port setStringValue:@"3333"];
 			[_hostname setEnabled:true];
 			break;
 	}
