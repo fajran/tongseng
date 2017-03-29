@@ -79,6 +79,7 @@
 	tongseng_set_device(device);
 	tongseng_start();
 	
+	[_protocol setEnabled:false];
 	[_hostname setEnabled:false];
 	[_port setEnabled:false];
 	[_device setEnabled:false];
@@ -93,6 +94,7 @@
 	const int protocol = (int)[_protocol indexOfSelectedItem];
 
 	if (protocol==0)[_hostname setEnabled:true];
+	[_protocol setEnabled:true];
 	[_port setEnabled:true];
 	[_device setEnabled:true];
 	[_info setStringValue:@"Tongseng is stopped"];
