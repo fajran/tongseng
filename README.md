@@ -14,9 +14,11 @@ Usage
 2. Open it
 3. Run Tongseng
     
-    ![Tongseng](http://fajran.github.com/tongseng/img/tongseng.png)
+    ![Tongseng](tongseng.png)
     
-4. Click the Start button to activate Tongseng
+4. optionally change the TUIO/UDP port and host
+5. optionally select an internal or external trackpad
+6. Click the Start button to activate Tongseng
 
 Then..
 
