@@ -105,7 +105,7 @@ extern "C" {
 	void MTUnregisterContactFrameCallback(MTDeviceRef, MTFrameCallbackFunction);
 	
 	typedef void (*MTPathCallbackFunction)(MTDeviceRef device, long pathID, long state, MTTouch* touch);
-	MTPathCallbackFunction MTPathPrintCallback;
+	//MTPathCallbackFunction MTPathPrintCallback;
 	void MTRegisterPathCallback(MTDeviceRef, MTPathCallbackFunction);
 	void MTUnregisterPathCallback(MTDeviceRef, MTPathCallbackFunction);
 	

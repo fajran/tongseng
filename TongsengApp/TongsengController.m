@@ -42,12 +42,38 @@
 	[self stop:app];
 }
 
+
+- (IBAction)select:(id)sender {
+	const int protocol = (int)[_protocol indexOfSelectedItem];
+	
+	switch (protocol) {
+
+		case 1:
+			[_hostname setStringValue:@"incoming"];
+			[_hostname setEnabled:false];
+			[_port setStringValue:@"3334"];
+			break;
+		case 2:
+			[_hostname setStringValue:@"incoming"];
+			[_hostname setEnabled:false];
+			[_port setStringValue:@"8080"];
+			break;
+		case 0:
+		default:
+			[_hostname setStringValue:@"localhost"];
+			[_hostname setEnabled:true];
+			break;
+	}
+}
+
 - (IBAction)start:(id)sender {
 	const char *hostname = [[_hostname stringValue] UTF8String];
 	const char *strPort = [[_port stringValue] UTF8String];
 	const int port = atoi(strPort);
-	const int device = [_device indexOfSelectedItem];
-		
+	const int device = (int)[_device indexOfSelectedItem];
+	const int protocol = (int)[_protocol indexOfSelectedItem];
+
+	tongseng_set_protocol(protocol);
 	tongseng_set_hostname_and_port(hostname, port);
 	tongseng_set_device(device);
 	tongseng_start();
@@ -63,8 +89,9 @@
 
 - (IBAction)stop:(id)sender {
 	tongseng_stop();
-	
-	[_hostname setEnabled:true];
+	const int protocol = (int)[_protocol indexOfSelectedItem];
+
+	if (protocol==0)[_hostname setEnabled:true];
 	[_port setEnabled:true];
 	[_device setEnabled:true];
 	[_info setStringValue:@"Tongseng is stopped"];

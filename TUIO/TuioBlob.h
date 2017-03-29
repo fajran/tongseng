@@ -1,6 +1,6 @@
 /*
  TUIO C++ Library
- Copyright (c) 2005-2016 Martin Kaltenbrunner <martin@tuio.org>
+ Copyright (c) 2005-2017 Martin Kaltenbrunner <martin@tuio.org>
  
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -128,9 +128,9 @@ namespace TUIO {
 		
 		/**
 		 * Sets the Blob ID of this TuioBlob.
-		 * @param b_id	the new Blob ID for this TuioBlob
+		 * @param bi	the new Blob ID for this TuioBlob
 		 */
-		void setBlobID(long b_id);
+		void setBlobID(int bi);
 		
 		/**
 		 * Takes a TuioTime argument and assigns it along with the provided 

@@ -1,6 +1,6 @@
 /*
  TUIO C++ Library
- Copyright (c) 2005-2016 Martin Kaltenbrunner <martin@tuio.org>
+ Copyright (c) 2005-2017 Martin Kaltenbrunner <martin@tuio.org>
  
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -126,7 +126,7 @@ namespace TUIO {
 		}
 
 		/**
-		 * Disables the periodic full update of all currently active TuioObjects TuioObjects, TuioCursors and TuioBlobs
+		 * Enables the periodic full update of all currently active TuioObjects TuioObjects, TuioCursors and TuioBlobs
 		 *
 		 * @param	interval	update interval in seconds, defaults to one second
 		 */

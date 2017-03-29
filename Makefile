@@ -12,6 +12,8 @@ SRC=main.cpp \
 	TUIO/TuioBlob.cpp \
 	TUIO/TuioDispatcher.cpp \
 	TUIO/UdpSender.cpp \
+	TUIO/TcpSender.cpp \
+	TUIO/WebSockSender.cpp \
 	TUIO/OneEuroFilter.cpp \
 	oscpack/ip/posix/NetworkingUtils.cpp \
 	oscpack/ip/posix/UdpSocket.cpp \

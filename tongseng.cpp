@@ -41,6 +41,7 @@ static bool running = false;
 static bool verbose = false;
 static std::string host("localhost");
 static int port = 3333;
+static int protocol = 0;
 static int dev_id = 0;
 
 // Sensitivity
@@ -203,7 +204,11 @@ static void callback(MTDeviceRef device, MTTouch touches[], size_t numTouches, d
 // Start TUIO server
 static void tuio_start()
 {
-	oscSender = new TUIO::UdpSender((char*)host.c_str(), port);
+	switch (protocol) {
+		case 1: oscSender = new TUIO::TcpSender(port); break;
+		case 2: oscSender = new TUIO::WebSockSender(port); break;
+		default: oscSender = new TUIO::UdpSender((char*)host.c_str(), port); break;
+	}
 	server = new TUIO::TuioServer(oscSender);
 	server->setVerbose(verbose);
 	server->setSourceName("Tongseng");
@@ -258,6 +263,12 @@ void tongseng_set_hostname_and_port(const char* _hostname, int _port)
 {
 	host = _hostname;
 	port = _port;
+}
+
+// Set hostname and port that will be used by TUIO server
+void tongseng_set_protocol(int _protocol)
+{
+	protocol = _protocol;
 }
 
 // Set TUIO server verbosity
