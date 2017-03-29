@@ -10,7 +10,8 @@ Visit [TUIO.org](http://tuio.org) for more information about TUIO.
 Usage
 -----
 
-1. Download [the application package](http://cloud.github.com/downloads/fajran/tongseng/Tongseng-0.4.dmg) (Intel only)
+1. Download [the application package](https://github.com/fajran/tongseng/releases/download/0.5/Tonseng-0.5.zip) 
+   (Universal i386/x86_64 Binary, Minimum MacOS X version 10.6)
 2. Open it
 3. Run Tongseng
     
