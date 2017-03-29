@@ -48,17 +48,17 @@
 	
 	switch (protocol) {
 
-		case 1:
+		case TUIO_TCP:
 			[_hostname setStringValue:@"incoming"];
 			[_hostname setEnabled:false];
 			[_port setStringValue:@"3334"];
 			break;
-		case 2:
+		case TUIO_WEB:
 			[_hostname setStringValue:@"incoming"];
 			[_hostname setEnabled:false];
 			[_port setStringValue:@"8080"];
 			break;
-		case 0:
+		case TUIO_UDP:
 		default:
 			[_hostname setStringValue:@"localhost"];
 			[_port setStringValue:@"3333"];

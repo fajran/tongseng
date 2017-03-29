@@ -81,8 +81,8 @@ int main(int argc, char** argv)
 	signal(SIGTERM, stop);
 
 	tongseng_set_hostname_and_port(host.c_str(), port);
-	if ((host=="TCP") || (host=="tcp")) tongseng_set_protocol(1);
-	else if ((host=="WEB") || (host=="web")) tongseng_set_protocol(2);
+	if ((host=="TCP") || (host=="tcp")) tongseng_set_protocol(TUIO_TCP);
+	else if ((host=="WEB") || (host=="web")) tongseng_set_protocol(TUIO_WEB);
 	tongseng_set_verbose(verbose);
 	tongseng_set_device(device);
 	tongseng_start();

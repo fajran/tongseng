@@ -71,7 +71,7 @@
                             <rect key="frame" x="1" y="1" width="233" height="132"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
-                                <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="450">
+                                <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="450" userLabel="HostLabel">
                                     <rect key="frame" x="15" y="91" width="72" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Hostname:" id="451">
@@ -87,37 +87,6 @@
                                         <font key="font" metaFont="system"/>
                                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                </textField>
-                                <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="456">
-                                    <rect key="frame" x="92" y="57" width="119" height="22"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="3333" drawsBackground="YES" id="457">
-                                        <font key="font" metaFont="system"/>
-                                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                </textField>
-                                <popUpButton verticalHuggingPriority="750" id="oSn-TT-DeO">
-                                    <rect key="frame" x="90" y="25" width="124" height="26"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <popUpButtonCell key="cell" type="push" title="Default" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="WNd-bV-N8F" id="zf4-5x-RAS">
-                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                        <font key="font" metaFont="menu"/>
-                                        <menu key="menu" id="WVb-w9-SLk">
-                                            <items>
-                                                <menuItem title="Default" state="on" id="WNd-bV-N8F"/>
-                                            </items>
-                                        </menu>
-                                    </popUpButtonCell>
-                                </popUpButton>
-                                <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="ChW-WW-Hwr">
-                                    <rect key="frame" x="18" y="31" width="69" height="17"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Device:" id="Teo-OQ-hiL">
-                                        <font key="font" metaFont="system"/>
-                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
                                 <popUpButton verticalHuggingPriority="750" misplaced="YES" id="zTg-yY-5aJ" userLabel="Protocol">
@@ -137,6 +106,37 @@
                                     <connections>
                                         <action selector="select:" target="463" id="wgV-5G-ysY"/>
                                     </connections>
+                                </popUpButton>
+                                <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="456">
+                                    <rect key="frame" x="92" y="57" width="119" height="22"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="3333" drawsBackground="YES" id="457">
+                                        <font key="font" metaFont="system"/>
+                                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="ChW-WW-Hwr" userLabel="DevLabel">
+                                    <rect key="frame" x="18" y="31" width="69" height="17"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Device:" id="Teo-OQ-hiL">
+                                        <font key="font" metaFont="system"/>
+                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <popUpButton verticalHuggingPriority="750" id="oSn-TT-DeO">
+                                    <rect key="frame" x="90" y="25" width="124" height="26"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <popUpButtonCell key="cell" type="push" title="Default" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="WNd-bV-N8F" id="zf4-5x-RAS">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="menu"/>
+                                        <menu key="menu" id="WVb-w9-SLk">
+                                            <items>
+                                                <menuItem title="Default" state="on" id="WNd-bV-N8F"/>
+                                            </items>
+                                        </menu>
+                                    </popUpButtonCell>
                                 </popUpButton>
                             </subviews>
                         </view>

@@ -41,7 +41,7 @@ static bool running = false;
 static bool verbose = false;
 static std::string host("localhost");
 static int port = 3333;
-static int protocol = 0;
+static int protocol = TUIO_UDP;
 static int dev_id = 0;
 
 // Sensitivity
@@ -205,8 +205,8 @@ static void callback(MTDeviceRef device, MTTouch touches[], size_t numTouches, d
 static void tuio_start()
 {
 	switch (protocol) {
-		case 1: oscSender = new TUIO::TcpSender(port); break;
-		case 2: oscSender = new TUIO::WebSockSender(port); break;
+		case TUIO_TCP: oscSender = new TUIO::TcpSender(port); break;
+		case TUIO_WEB: oscSender = new TUIO::WebSockSender(port); break;
 		default: oscSender = new TUIO::UdpSender((char*)host.c_str(), port); break;
 	}
 	server = new TUIO::TuioServer(oscSender);

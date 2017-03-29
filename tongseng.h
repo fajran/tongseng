@@ -5,6 +5,10 @@
 extern "C" {
 #endif
 	
+#define TUIO_UDP 0
+#define TUIO_TCP 1
+#define TUIO_WEB 2
+
 void tongseng_set_protocol(int);
 void tongseng_set_hostname_and_port(const char*, int);
 void tongseng_set_device(int);
