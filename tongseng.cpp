@@ -43,6 +43,7 @@ static std::string host("localhost");
 static int port = 3333;
 static int protocol = TUIO_UDP;
 static int dev_id = 0;
+static float y_scale;
 
 // Sensitivity
 #define MIN_DISTANCE 0.00001f
@@ -156,6 +157,11 @@ typedef void (*MTPathCallbackFunction)(MTDeviceRef device, long pathID, long sta
 // Process incoming events
 static void callback(MTDeviceRef device, MTTouch touches[], size_t numTouches, double timestamp, size_t frame) {
 	
+	
+	/*int width,height;
+	MTDeviceGetSensorSurfaceDimensions(device, &width, &height);
+	std::cout << width << " " << height << std::endl;*/
+	
 	if (!running || !sampling_interval_passed()) {
 		return;
 	}
@@ -170,8 +176,9 @@ static void callback(MTDeviceRef device, MTTouch touches[], size_t numTouches, d
 		MTTouch *f = &touches[i];
 		int id = f->pathIndex;
 		
+		if (f->normalizedVector.position.y>y_scale) y_scale = f->normalizedVector.position.y;
 		float x = f->normalizedVector.position.x;
-		float y = 1.0f - f->normalizedVector.position.y/1.15f; // reverse y axis, work around scaling
+		float y = 1.0f - f->normalizedVector.position.y/y_scale; // reverse y axis, work around scaling
 		
 		if (x<0) x=0; else if (x>1) x=1;
 		if (y<0) y=0; else if (y>1) y=1;
@@ -251,6 +258,8 @@ static void mt_start()
 	dev = (MTDeviceRef)CFArrayGetValueAtIndex(devList, dev_id);
 	MTRegisterContactFrameCallback(dev, callback);
 	MTDeviceStart(dev, 0);
+	
+	y_scale = 1;
 }
 
 // Stop handling multitouch events
