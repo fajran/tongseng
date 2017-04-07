@@ -17,43 +17,71 @@
         <menu title="AMainMenu" systemMenu="main" id="29" userLabel="MainMenu">
             <items>
                 <menuItem title="Tongseng" id="56">
-                    <menu key="submenu" title="TongsengApp" systemMenu="apple" id="57">
+                    <menu key="submenu" title="TongsengApp" systemMenu="apple" id="n1J-gv-b3y">
                         <items>
-                            <menuItem title="About Tongseng" id="498">
+                            <menuItem title="About Tongseng" id="Dcy-Y5-5ZP">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="orderFrontStandardAboutPanel:" target="-3" id="501"/>
+                                    <action selector="orderFrontStandardAboutPanel:" target="-3" id="chk-fj-CVn"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="499"/>
-                            <menuItem title="Hide Tongseng" keyEquivalent="h" id="134">
+                            <menuItem isSeparatorItem="YES" id="NaX-4G-afT"/>
+                            <menuItem title="Hide Tongseng" keyEquivalent="h" id="Hls-lQ-efh">
                                 <connections>
-                                    <action selector="hide:" target="-1" id="367"/>
+                                    <action selector="hide:" target="-1" id="GKl-Xl-pfu"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Hide Others" keyEquivalent="h" id="145">
+                            <menuItem title="Hide Others" keyEquivalent="h" id="mSp-sB-u0F">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
-                                    <action selector="hideOtherApplications:" target="-1" id="368"/>
+                                    <action selector="hideOtherApplications:" target="-1" id="OAX-GG-MCZ"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Show All" id="150">
+                            <menuItem title="Show All" id="ht5-t4-ZHB">
                                 <connections>
-                                    <action selector="unhideAllApplications:" target="-1" id="370"/>
+                                    <action selector="unhideAllApplications:" target="-1" id="N8T-ZK-bvX"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="149">
+                            <menuItem isSeparatorItem="YES" id="1Ka-ix-ugA">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Quit Tongseng" keyEquivalent="q" id="136" userLabel="1111">
+                            <menuItem title="Quit Tongseng" keyEquivalent="q" id="xz5-lg-gfo" userLabel="1111">
                                 <connections>
-                                    <action selector="terminate:" target="-3" id="449"/>
+                                    <action selector="terminate:" target="-3" id="Z44-rR-Xgf"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+                <menuItem title="Edit" id="Ojv-nc-QPT">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Edit" id="pvP-Ya-FQ7">
+                        <items>
+                            <menuItem title="Cut" keyEquivalent="x" id="7Zi-QP-H5k">
+                                <connections>
+                                    <action selector="cut:" target="-1" id="lID-si-Wxw"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Copy" keyEquivalent="c" id="4Hs-WF-bVm">
+                                <connections>
+                                    <action selector="copy:" target="-1" id="Ssu-ZD-jea"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Paste" keyEquivalent="v" id="TJn-Ad-g9W">
+                                <connections>
+                                    <action selector="paste:" target="-1" id="IcL-f9-DO1"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Select All" keyEquivalent="a" id="opx-KY-D4J">
+                                <connections>
+                                    <action selector="selectAll:" target="-1" id="vVw-Dc-IEG"/>
                                 </connections>
                             </menuItem>
                         </items>
                     </menu>
                 </menuItem>
             </items>
+            <point key="canvasLocation" x="354" y="163"/>
         </menu>
         <window title="Tongseng" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="371" userLabel="Window (Window)">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
@@ -80,13 +108,16 @@
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="454">
+                                <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" textCompletion="NO" id="454">
                                     <rect key="frame" x="92" y="89" width="119" height="22"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="localhost" drawsBackground="YES" id="455">
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="localhost" drawsBackground="YES" usesSingleLineMode="YES" id="455">
                                         <font key="font" metaFont="system"/>
                                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        <allowedInputSourceLocales>
+                                            <string>NSAllRomanInputSourcesLocaleIdentifier</string>
+                                        </allowedInputSourceLocales>
                                     </textFieldCell>
                                 </textField>
                                 <popUpButton verticalHuggingPriority="750" misplaced="YES" id="zTg-yY-5aJ" userLabel="Protocol">
@@ -107,13 +138,16 @@
                                         <action selector="select:" target="463" id="wgV-5G-ysY"/>
                                     </connections>
                                 </popUpButton>
-                                <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="456">
+                                <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" textCompletion="NO" id="456">
                                     <rect key="frame" x="92" y="57" width="119" height="22"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="3333" drawsBackground="YES" id="457">
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="3333" drawsBackground="YES" usesSingleLineMode="YES" id="457">
                                         <font key="font" metaFont="system"/>
                                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        <allowedInputSourceLocales>
+                                            <string>NSAllRomanInputSourcesLocaleIdentifier</string>
+                                        </allowedInputSourceLocales>
                                     </textFieldCell>
                                 </textField>
                                 <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="ChW-WW-Hwr" userLabel="DevLabel">
