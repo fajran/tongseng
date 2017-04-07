@@ -169,9 +169,12 @@ static void callback(MTDeviceRef device, MTTouch touches[], size_t numTouches, d
 	for (i=0; i<numTouches; i++) {
 		MTTouch *f = &touches[i];
 		int id = f->pathIndex;
-
+		
 		float x = f->normalizedVector.position.x;
 		float y = 1.0f - f->normalizedVector.position.y; // reverse y axis
+		
+		if (x<0) x=0; else if (x>1) x=1;
+		if (y<0) y=0; else if (y>1) y=1;
 		
 		if (EXISTS(currentFingers, id)) {
 			// update
