@@ -9,7 +9,7 @@ The latest version also enables alternative TUIO/TCP and TUIO/WEB transport meth
 Usage
 -----
 
-1. Download [the application package](https://github.com/fajran/tongseng/releases/download/0.6/Tongseng-0.6.zip)  
+1. Download [the application package](https://github.com/fajran/tongseng/releases/download/0.7/Tongseng-0.7.zip)  
    (Universal i386/x86_64 binary, minimum MacOS X version 10.6)
 2. Open it
 3. Run Tongseng
