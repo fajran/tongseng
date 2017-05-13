@@ -32,6 +32,11 @@
 		B2A01DF71D1C1D5900EF381B /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2A01DF61D1C1D5900EF381B /* CoreFoundation.framework */; };
 		B2C9938C1E8BED980005A7FC /* TcpSender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B2C9938B1E8BED980005A7FC /* TcpSender.cpp */; };
 		B2C9938E1E8BEDA70005A7FC /* WebSockSender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B2C9938D1E8BEDA70005A7FC /* WebSockSender.cpp */; };
+		B2FE2AA21EC70CEB001950D5 /* OscReceiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B2FE2A8F1EC70CEB001950D5 /* OscReceiver.cpp */; };
+		B2FE2AA31EC70CEB001950D5 /* TcpReceiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B2FE2A921EC70CEB001950D5 /* TcpReceiver.cpp */; };
+		B2FE2AA41EC70CEB001950D5 /* TuioClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B2FE2A961EC70CEB001950D5 /* TuioClient.cpp */; };
+		B2FE2AA51EC70CEB001950D5 /* UdpReceiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B2FE2AA11EC70CEB001950D5 /* UdpReceiver.cpp */; };
+		B2FE2AA71EC70DB9001950D5 /* OscReceivedElements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B2FE2AA61EC70DB9001950D5 /* OscReceivedElements.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -65,6 +70,11 @@
 		B2A01DF61D1C1D5900EF381B /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = /System/Library/Frameworks/CoreFoundation.framework; sourceTree = "<absolute>"; };
 		B2C9938B1E8BED980005A7FC /* TcpSender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TcpSender.cpp; sourceTree = "<group>"; };
 		B2C9938D1E8BEDA70005A7FC /* WebSockSender.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebSockSender.cpp; sourceTree = "<group>"; };
+		B2FE2A8F1EC70CEB001950D5 /* OscReceiver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OscReceiver.cpp; sourceTree = "<group>"; };
+		B2FE2A921EC70CEB001950D5 /* TcpReceiver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TcpReceiver.cpp; sourceTree = "<group>"; };
+		B2FE2A961EC70CEB001950D5 /* TuioClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TuioClient.cpp; sourceTree = "<group>"; };
+		B2FE2AA11EC70CEB001950D5 /* UdpReceiver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UdpReceiver.cpp; sourceTree = "<group>"; };
+		B2FE2AA61EC70DB9001950D5 /* OscReceivedElements.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OscReceivedElements.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -181,6 +191,7 @@
 		3F6CB39A10374FB900CFF31E /* osc */ = {
 			isa = PBXGroup;
 			children = (
+				B2FE2AA61EC70DB9001950D5 /* OscReceivedElements.cpp */,
 				3F6CB39E10374FB900CFF31E /* OscOutboundPacketStream.cpp */,
 				3F6CB3A810374FB900CFF31E /* OscTypes.cpp */,
 			);
@@ -203,6 +214,10 @@
 				B2C9938D1E8BEDA70005A7FC /* WebSockSender.cpp */,
 				3F6CB3FD1037541700CFF31E /* TuioServer.cpp */,
 				3F6CB4001037541700CFF31E /* TuioTime.cpp */,
+				B2FE2A961EC70CEB001950D5 /* TuioClient.cpp */,
+				B2FE2A8F1EC70CEB001950D5 /* OscReceiver.cpp */,
+				B2FE2AA11EC70CEB001950D5 /* UdpReceiver.cpp */,
+				B2FE2A921EC70CEB001950D5 /* TcpReceiver.cpp */,
 			);
 			name = TUIO;
 			path = ../TUIO;
@@ -279,22 +294,27 @@
 				B2C9938C1E8BED980005A7FC /* TcpSender.cpp in Sources */,
 				8D11072D0486CEB800E47090 /* main.m in Sources */,
 				3F6CB36A10374F0C00CFF31E /* tongseng.cpp in Sources */,
+				B2FE2AA41EC70CEB001950D5 /* TuioClient.cpp in Sources */,
 				3F6CB3C010374FB900CFF31E /* NetworkingUtils.cpp in Sources */,
+				B2FE2AA31EC70CEB001950D5 /* TcpReceiver.cpp in Sources */,
 				3F6CB3C210374FB900CFF31E /* UdpSocket.cpp in Sources */,
 				3F6CB3C710374FB900CFF31E /* OscOutboundPacketStream.cpp in Sources */,
 				B26C5F031D12EDF500354F09 /* OneEuroFilter.cpp in Sources */,
 				3F6CB3CD10374FB900CFF31E /* OscTypes.cpp in Sources */,
 				3F6CB4061037541700CFF31E /* TuioServer.cpp in Sources */,
 				3F6CB4081037541700CFF31E /* TuioTime.cpp in Sources */,
+				B2FE2AA21EC70CEB001950D5 /* OscReceiver.cpp in Sources */,
 				3F6CB43A10375A6000CFF31E /* TongsengController.m in Sources */,
 				3FAF0802103963CD006DF045 /* TuioManager.cpp in Sources */,
 				3FAF0803103963CD006DF045 /* UdpSender.cpp in Sources */,
+				B2FE2AA71EC70DB9001950D5 /* OscReceivedElements.cpp in Sources */,
 				B2C9938E1E8BEDA70005A7FC /* WebSockSender.cpp in Sources */,
 				B26C5F051D12EF5300354F09 /* TuioObject.cpp in Sources */,
 				3F45D5AB10A0FEEB00139241 /* TuioContainer.cpp in Sources */,
 				3F45D5AC10A0FEEB00139241 /* TuioCursor.cpp in Sources */,
 				3F45D5AD10A0FEEB00139241 /* TuioDispatcher.cpp in Sources */,
 				3F45D5AF10A0FEEB00139241 /* TuioPoint.cpp in Sources */,
+				B2FE2AA51EC70CEB001950D5 /* UdpReceiver.cpp in Sources */,
 				B26C5F071D12EF5A00354F09 /* TuioBlob.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

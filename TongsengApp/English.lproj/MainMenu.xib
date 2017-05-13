@@ -17,7 +17,7 @@
         <menu title="AMainMenu" systemMenu="main" id="29" userLabel="MainMenu">
             <items>
                 <menuItem title="Tongseng" id="56">
-                    <menu key="submenu" title="TongsengApp" systemMenu="apple" id="n1J-gv-b3y">
+                    <menu key="submenu" title="Tongseng" systemMenu="apple" id="n1J-gv-b3y">
                         <items>
                             <menuItem title="About Tongseng" id="Dcy-Y5-5ZP">
                                 <modifierMask key="keyEquivalentModifierMask"/>
@@ -81,7 +81,7 @@
                     </menu>
                 </menuItem>
             </items>
-            <point key="canvasLocation" x="354" y="163"/>
+            <point key="canvasLocation" x="355" y="165"/>
         </menu>
         <window title="Tongseng" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="371" userLabel="Window (Window)">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
