@@ -19,9 +19,9 @@
 	<key>CFBundleShortVersionString</key>
 	<string>0.8</string>
 	<key>CFBundleSignature</key>
-	<string>????</string>
+	<string>TUIO</string>
 	<key>CFBundleVersion</key>
-	<string>1705</string>
+	<string>2210</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.developer-tools</string>
 	<key>NSMainNibFile</key>

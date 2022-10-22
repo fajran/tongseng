@@ -13,9 +13,9 @@ void tongseng_set_protocol(int);
 void tongseng_set_hostname_and_port(const char*, int);
 void tongseng_set_device(int);
 void tongseng_set_verbose(int);
-void tongseng_start();
-void tongseng_stop();
-void tongseng_list_devices();
+void tongseng_start(void);
+void tongseng_stop(void);
+void tongseng_list_devices(void);
 
 #ifdef __cplusplus
 }

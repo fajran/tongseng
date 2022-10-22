@@ -70,11 +70,11 @@ extern "C" {
 	
 	typedef void* MTDeviceRef;
 	
-	double MTAbsoluteTimeGetCurrent();
-	bool MTDeviceIsAvailable();		// true if can create default device
+    double MTAbsoluteTimeGetCurrent(void);
+    bool MTDeviceIsAvailable(void);		// true if can create default device
 	
-	CFArrayRef MTDeviceCreateList();		// creates for driver types 0, 1, 4, 2, 3
-	MTDeviceRef MTDeviceCreateDefault();
+    CFArrayRef MTDeviceCreateList(void);		// creates for driver types 0, 1, 4, 2, 3
+    MTDeviceRef MTDeviceCreateDefault(void);
 	MTDeviceRef MTDeviceCreateFromDeviceID(int64_t);
 	MTDeviceRef MTDeviceCreateFromService(io_service_t);
 	MTDeviceRef MTDeviceCreateFromGUID(uuid_t);		// GUID's compared by pointer, not value!
