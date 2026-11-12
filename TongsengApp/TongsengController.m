@@ -2,12 +2,14 @@
 #import "multitouch.h"
 #import "tongseng.h"
 #import <stdlib.h>
+#import <ApplicationServices/ApplicationServices.h>
 
 @implementation TongsengController
 
 - (id) init {
 	self = [super init];
 	_running = false;
+	_clientRunning = false;
 	return self;
 }
 
@@ -37,12 +39,14 @@
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)app
 {
 	[self stop:app];
+	if (_clientRunning) [self clientstop:app];
 	return YES;
 }
 
 - (void)applicationWillTerminate:(NSApplication *)app;
 {
 	[self stop:app];
+	if (_clientRunning) [self clientstop:app];
 }
 
 
@@ -112,6 +116,42 @@
 	}
 	else {
 		[self stop:sender];
+	}
+}
+
+- (IBAction)clientstart:(id)sender {
+	const int protocol = (int)[_clientProtocol indexOfSelectedItem];
+	const int port = atoi([[_clientPort stringValue] UTF8String]);
+
+	if (tongseng_client_start(protocol, port) == 0) {
+		[_clientProtocol setEnabled:false];
+		[_clientPort setEnabled:false];
+		[_clientInfo setStringValue:(tongseng_client_virtual_device() ?
+			@"Tongseng is injecting multitouch" :
+			(AXIsProcessTrusted() ? @"Tongseng is emulating input" :
+				@"Needs Accessibility permission"))];
+		[_clientButton setTitle:@"Stop"];
+		_clientRunning = true;
+	} else {
+		[_clientInfo setStringValue:@"Tongseng failed to listen"];
+	}
+}
+
+- (IBAction)clientstop:(id)sender {
+	tongseng_client_stop();
+	[_clientProtocol setEnabled:true];
+	[_clientPort setEnabled:true];
+	[_clientInfo setStringValue:@"Tongseng is stopped"];
+	[_clientButton setTitle:@"Start"];
+	_clientRunning = false;
+}
+
+- (IBAction)clientstartstop:(id)sender {
+	if (!_clientRunning) {
+		[self clientstart:sender];
+	}
+	else {
+		[self clientstop:sender];
 	}
 }
 

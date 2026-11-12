@@ -23,8 +23,13 @@
 #include <unistd.h>
 
 #include <TuioServer.h>
+#include <TuioClient.h>
 #include <TuioCursor.h>
 #include <TuioTime.h>
+#include <UdpReceiver.h>
+#include <TcpReceiver.h>
+
+#include "TouchInjector.h"
 
 #include <set>
 #include <map>
@@ -326,4 +331,58 @@ void tongseng_list_devices()
 		for (int i=1;i<=dev_count;i++)
 			std::cout << i << ": external" << std::endl;
 	}
+}
+
+// ---------------------------------------------------------------------------
+// TUIO client: receive TUIO messages and inject touches into macOS
+// ---------------------------------------------------------------------------
+
+static TUIO::TuioClient* client = NULL;
+static TUIO::OscReceiver* receiver = NULL;
+static TouchInjector* injector = NULL;
+static bool client_running = false;
+
+// Start TUIO client
+int tongseng_client_start(int _protocol, int _port)
+{
+	if (client_running) return -1;
+
+	switch (_protocol) {
+		case TUIO_TCP: receiver = new TUIO::TcpReceiver(_port); break;
+		default: receiver = new TUIO::UdpReceiver(_port); break;
+	}
+
+	injector = new TouchInjector();
+	client = new TUIO::TuioClient(receiver);
+	client->addTuioListener(injector);
+	client->connect();
+	client_running = client->isConnected();
+
+	if (!client_running) {
+		delete client; client = NULL;
+		delete injector; injector = NULL;
+		delete receiver; receiver = NULL;
+		return -1;
+	}
+
+	return 0;
+}
+
+// Stop TUIO client
+void tongseng_client_stop()
+{
+	if (client) {
+		client->disconnect();
+		delete client;
+		client = NULL;
+	}
+	if (injector) { delete injector; injector = NULL; }
+	if (receiver) { delete receiver; receiver = NULL; }
+	client_running = false;
+}
+
+// Whether the client is injecting via a virtual multitouch device
+int tongseng_client_virtual_device()
+{
+	return (injector && injector->usingVirtualDevice()) ? 1 : 0;
 }

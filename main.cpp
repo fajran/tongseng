@@ -4,6 +4,7 @@
 #include <unistd.h>
 
 static bool running = false;
+static bool receive = false;
 static bool verbose = false;
 static std::string host("localhost");
 static int port = 3333;
@@ -16,6 +17,7 @@ static void show_help()
 	std::cout << "        -t TCP for TUIO/TCP" << std::endl;
 	std::cout << "        -t WEB for TUIO/WEB" << std::endl;
 	std::cout << "        -p [port] for alternative port number" << std::endl;
+	std::cout << "        -r receive TUIO messages and inject input events" << std::endl;
 	std::cout << "        -l list available devices" << std::endl;
 	std::cout << "        -v verbose output" << std::endl;
 	std::cout << "        -h show this help" << std::endl;
@@ -30,7 +32,7 @@ static void init(int argc, char** argv)
 {
 	char c;
 
-	while ((c = getopt(argc, argv, "t:p:d:lvh")) != -1) {
+	while ((c = getopt(argc, argv, "t:p:d:rlvh")) != -1) {
 		switch (c) {
 			case 't':
 				host = std::string(optarg);
@@ -40,6 +42,9 @@ static void init(int argc, char** argv)
 				break;
 			case 'd':
 				device = atoi(optarg);
+				break;
+			case 'r':
+				receive = true;
 				break;
 			case 'v':
 				verbose = true;
@@ -80,12 +85,24 @@ int main(int argc, char** argv)
 	signal(SIGQUIT, stop);
 	signal(SIGTERM, stop);
 
-	tongseng_set_hostname_and_port(host.c_str(), port);
-	if ((host=="TCP") || (host=="tcp")) tongseng_set_protocol(TUIO_TCP);
-	else if ((host=="WEB") || (host=="web")) tongseng_set_protocol(TUIO_WEB);
-	tongseng_set_verbose(verbose);
-	tongseng_set_device(device);
-	tongseng_start();
+	if (receive) {
+		int protocol = ((host=="TCP") || (host=="tcp")) ? TUIO_TCP : TUIO_UDP;
+		std::cout << "Protocol: " << ((protocol==TUIO_TCP) ? "TCP" : "UDP") << std::endl;
+		if (tongseng_client_start(protocol, port)!=0) {
+			std::cout << "could not start TUIO client on port " << port << std::endl;
+			return 1;
+		}
+		if (tongseng_client_virtual_device())
+			std::cout << "injecting via virtual multitouch device" << std::endl;
+		else std::cout << "injecting via CGEvent emulation" << std::endl;
+	} else {
+		tongseng_set_hostname_and_port(host.c_str(), port);
+		if ((host=="TCP") || (host=="tcp")) tongseng_set_protocol(TUIO_TCP);
+		else if ((host=="WEB") || (host=="web")) tongseng_set_protocol(TUIO_WEB);
+		tongseng_set_verbose(verbose);
+		tongseng_set_device(device);
+		tongseng_start();
+	}
 
 	// Loop until the program is stopped.
 	running = true;
@@ -95,7 +112,8 @@ int main(int argc, char** argv)
 
 	std::cout << "Cleaning up.." << std::endl;
 
-	tongseng_stop();
+	if (receive) tongseng_client_stop();
+	else tongseng_stop();
 
 	std::cout << "Program stopped." << std::endl;
 

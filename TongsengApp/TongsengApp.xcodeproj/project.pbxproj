@@ -37,6 +37,8 @@
 		B2FE2AA41EC70CEB001950D5 /* TuioClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B2FE2A961EC70CEB001950D5 /* TuioClient.cpp */; };
 		B2FE2AA51EC70CEB001950D5 /* UdpReceiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B2FE2AA11EC70CEB001950D5 /* UdpReceiver.cpp */; };
 		B2FE2AA71EC70DB9001950D5 /* OscReceivedElements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B2FE2AA61EC70DB9001950D5 /* OscReceivedElements.cpp */; };
+		C1A2B3010000000000000001 /* TouchInjector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C1A2B3020000000000000002 /* TouchInjector.cpp */; };
+		C1A2B3040000000000000004 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C1A2B3050000000000000005 /* IOKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -77,6 +79,9 @@
 		B2FE2A961EC70CEB001950D5 /* TuioClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TuioClient.cpp; sourceTree = "<group>"; };
 		B2FE2AA11EC70CEB001950D5 /* UdpReceiver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UdpReceiver.cpp; sourceTree = "<group>"; };
 		B2FE2AA61EC70DB9001950D5 /* OscReceivedElements.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OscReceivedElements.cpp; sourceTree = "<group>"; };
+		C1A2B3020000000000000002 /* TouchInjector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TouchInjector.cpp; path = ../TouchInjector.cpp; sourceTree = SOURCE_ROOT; };
+		C1A2B3030000000000000003 /* TouchInjector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TouchInjector.h; path = ../TouchInjector.h; sourceTree = SOURCE_ROOT; };
+		C1A2B3050000000000000005 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = /System/Library/Frameworks/IOKit.framework; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +92,7 @@
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				3F6CB41F103754BC00CFF31E /* MultitouchSupport.framework in Frameworks */,
 				B2A01DF71D1C1D5900EF381B /* CoreFoundation.framework in Frameworks */,
+				C1A2B3040000000000000004 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -106,6 +112,7 @@
 			isa = PBXGroup;
 			children = (
 				B2A01DF61D1C1D5900EF381B /* CoreFoundation.framework */,
+				C1A2B3050000000000000005 /* IOKit.framework */,
 				3F6CB41E103754BC00CFF31E /* MultitouchSupport.framework */,
 				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
 			);
@@ -141,6 +148,8 @@
 				3F6CB36B10374F1600CFF31E /* multitouch.h */,
 				3F6CB36810374F0C00CFF31E /* tongseng.cpp */,
 				3F6CB36910374F0C00CFF31E /* tongseng.h */,
+				C1A2B3020000000000000002 /* TouchInjector.cpp */,
+				C1A2B3030000000000000003 /* TouchInjector.h */,
 				29B97316FDCFA39411CA2CEA /* main.m */,
 			);
 			name = "Other Sources";
@@ -293,6 +302,7 @@
 				B2C9938C1E8BED980005A7FC /* TcpSender.cpp in Sources */,
 				8D11072D0486CEB800E47090 /* main.m in Sources */,
 				3F6CB36A10374F0C00CFF31E /* tongseng.cpp in Sources */,
+				C1A2B3010000000000000001 /* TouchInjector.cpp in Sources */,
 				B2FE2AA41EC70CEB001950D5 /* TuioClient.cpp in Sources */,
 				3F6CB3C010374FB900CFF31E /* NetworkingUtils.cpp in Sources */,
 				B2FE2AA31EC70CEB001950D5 /* TcpReceiver.cpp in Sources */,
@@ -343,7 +353,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 2211;
+				CURRENT_PROJECT_VERSION = 2612;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -356,9 +366,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = TongSeng;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INSTALL_PATH = "$(HOME)/Applications";
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
-				MARKETING_VERSION = 0.8;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = org.tuio.Tongseng;
 				PRODUCT_NAME = Tongseng;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -375,7 +386,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 2211;
+				CURRENT_PROJECT_VERSION = 2612;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
@@ -387,9 +398,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = TongSeng;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INSTALL_PATH = "$(HOME)/Applications";
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
-				MARKETING_VERSION = 0.8;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = org.tuio.Tongseng;
 				PRODUCT_NAME = Tongseng;
 				PROVISIONING_PROFILE_SPECIFIER = "";

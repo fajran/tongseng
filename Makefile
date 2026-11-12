@@ -15,14 +15,20 @@ SRC=main.cpp \
 	TUIO/TcpSender.cpp \
 	TUIO/WebSockSender.cpp \
 	TUIO/OneEuroFilter.cpp \
+	TUIO/TuioClient.cpp \
+	TUIO/OscReceiver.cpp \
+	TUIO/UdpReceiver.cpp \
+	TUIO/TcpReceiver.cpp \
+	TouchInjector.cpp \
 	oscpack/ip/posix/NetworkingUtils.cpp \
 	oscpack/ip/posix/UdpSocket.cpp \
 	oscpack/osc/OscOutboundPacketStream.cpp \
+	oscpack/osc/OscReceivedElements.cpp \
 	oscpack/osc/OscTypes.cpp
 
 OBJS=$(SRC:.cpp=.o)
 CPPFLAGS=-ITUIO -Ioscpack
-LIBS=-F/System/Library/PrivateFrameworks -framework MultitouchSupport -framework CoreFoundation
+LIBS=-F/System/Library/PrivateFrameworks -framework MultitouchSupport -framework CoreFoundation -framework ApplicationServices -framework IOKit
 BIN=tongseng
 
 all : $(BIN)

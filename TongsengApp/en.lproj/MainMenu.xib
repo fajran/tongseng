@@ -91,7 +91,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="270" height="230"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <tabView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FnK-jo-h8z">
+                    <tabView id="FnK-jo-h8z">
                         <rect key="frame" x="-7" y="-10" width="284" height="236"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <font key="font" metaFont="system"/>
@@ -101,7 +101,7 @@
                                     <rect key="frame" x="10" y="33" width="264" height="190"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="458">
+                                        <button verticalHuggingPriority="750" id="458">
                                             <rect key="frame" x="12" y="3" width="90" height="32"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="push" title="Start" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="459">
@@ -112,14 +112,14 @@
                                                 <action selector="startstop:" target="463" id="464"/>
                                             </connections>
                                         </button>
-                                        <box autoresizesSubviews="NO" fixedFrame="YES" borderType="line" title="TUIO Server Configuration" translatesAutoresizingMaskIntoConstraints="NO" id="486">
+                                        <box autoresizesSubviews="NO" borderType="line" title="TUIO Server Configuration" id="486">
                                             <rect key="frame" x="15" y="41" width="235" height="148"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <view key="contentView" id="gRf-5x-wss">
                                                 <rect key="frame" x="0.0" y="0.0" width="235" height="136"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="450" userLabel="HostLabel">
+                                                    <textField verticalHuggingPriority="750" id="450" userLabel="HostLabel">
                                                         <rect key="frame" x="15" y="95" width="72" height="17"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Hostname:" id="451">
@@ -128,7 +128,7 @@
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                     </textField>
-                                                    <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="454">
+                                                    <textField verticalHuggingPriority="750" textCompletion="NO" id="454">
                                                         <rect key="frame" x="92" y="93" width="119" height="22"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="localhost" drawsBackground="YES" usesSingleLineMode="YES" id="455">
@@ -140,7 +140,7 @@
                                                             </allowedInputSourceLocales>
                                                         </textFieldCell>
                                                     </textField>
-                                                    <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zTg-yY-5aJ" userLabel="Protocol">
+                                                    <popUpButton verticalHuggingPriority="750" id="zTg-yY-5aJ" userLabel="Protocol">
                                                         <rect key="frame" x="14" y="58" width="73" height="26"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                         <popUpButtonCell key="cell" type="push" title="UDP" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="Zu6-8B-ES6" id="SLL-yo-4aF">
@@ -158,7 +158,7 @@
                                                             <action selector="select:" target="463" id="wgV-5G-ysY"/>
                                                         </connections>
                                                     </popUpButton>
-                                                    <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="456">
+                                                    <textField verticalHuggingPriority="750" textCompletion="NO" id="456">
                                                         <rect key="frame" x="92" y="61" width="119" height="22"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="3333" drawsBackground="YES" usesSingleLineMode="YES" id="457">
@@ -170,7 +170,7 @@
                                                             </allowedInputSourceLocales>
                                                         </textFieldCell>
                                                     </textField>
-                                                    <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ChW-WW-Hwr" userLabel="DevLabel">
+                                                    <textField verticalHuggingPriority="750" id="ChW-WW-Hwr" userLabel="DevLabel">
                                                         <rect key="frame" x="18" y="35" width="69" height="17"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Device:" id="Teo-OQ-hiL">
@@ -179,7 +179,7 @@
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                     </textField>
-                                                    <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oSn-TT-DeO">
+                                                    <popUpButton verticalHuggingPriority="750" id="oSn-TT-DeO">
                                                         <rect key="frame" x="90" y="29" width="124" height="26"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                         <popUpButtonCell key="cell" type="push" title="Default" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="WNd-bV-N8F" id="zf4-5x-RAS">
@@ -195,7 +195,7 @@
                                                 </subviews>
                                             </view>
                                         </box>
-                                        <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="469">
+                                        <textField verticalHuggingPriority="750" id="469">
                                             <rect key="frame" x="106" y="12" width="143" height="17"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Tongseng is stopped" id="470">
@@ -212,14 +212,14 @@
                                     <rect key="frame" x="10" y="33" width="264" height="190"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <box autoresizesSubviews="NO" misplaced="YES" borderType="line" title="TUIO Client Configuration" translatesAutoresizingMaskIntoConstraints="NO" id="t9d-dJ-i4f">
+                                        <box autoresizesSubviews="NO" misplaced="YES" borderType="line" title="TUIO Client Configuration" id="t9d-dJ-i4f">
                                             <rect key="frame" x="15" y="41" width="235" height="148"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <view key="contentView" id="kIu-gF-Yla">
                                                 <rect key="frame" x="0.0" y="0.0" width="235" height="136"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="WNt-pF-PNK" userLabel="Protocol">
+                                                    <popUpButton verticalHuggingPriority="750" id="WNt-pF-PNK" userLabel="Protocol">
                                                         <rect key="frame" x="14" y="58" width="73" height="26"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                         <popUpButtonCell key="cell" type="push" title="UDP" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="CCN-DZ-C7N" id="akR-Qf-SFi">
@@ -233,7 +233,7 @@
                                                             </menu>
                                                         </popUpButtonCell>
                                                     </popUpButton>
-                                                    <textField focusRingType="none" verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uaG-pz-6ci">
+                                                    <textField verticalHuggingPriority="750" textCompletion="NO" id="uaG-pz-6ci">
                                                         <rect key="frame" x="92" y="61" width="119" height="22"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="3333" drawsBackground="YES" usesSingleLineMode="YES" id="gzS-pY-Juy">
@@ -248,7 +248,7 @@
                                                 </subviews>
                                             </view>
                                         </box>
-                                        <textField focusRingType="none" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rDr-37-8Ab" userLabel="Info">
+                                        <textField verticalHuggingPriority="750" misplaced="YES" id="rDr-37-8Ab" userLabel="Info">
                                             <rect key="frame" x="106" y="12" width="143" height="17"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Tongseng is stopped" id="elR-9e-6YM">
@@ -257,13 +257,16 @@
                                                 <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
-                                        <button verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oFR-dJ-7Ax" userLabel="Button">
+                                        <button verticalHuggingPriority="750" misplaced="YES" id="oFR-dJ-7Ax" userLabel="Button">
                                             <rect key="frame" x="12" y="3" width="90" height="32"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="push" title="Start" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="wav-ja-rnu">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
+                                            <connections>
+                                                <action selector="clientstartstop:" target="463" id="clT-n5-005"/>
+                                            </connections>
                                         </button>
                                     </subviews>
                                 </view>
@@ -277,6 +280,10 @@
         <customObject id="463" customClass="TongsengController">
             <connections>
                 <outlet property="_button" destination="458" id="467"/>
+                <outlet property="_clientButton" destination="oFR-dJ-7Ax" id="clT-n4-004"/>
+                <outlet property="_clientInfo" destination="rDr-37-8Ab" id="clT-n3-003"/>
+                <outlet property="_clientPort" destination="uaG-pz-6ci" id="clT-n2-002"/>
+                <outlet property="_clientProtocol" destination="WNt-pF-PNK" id="clT-n1-001"/>
                 <outlet property="_device" destination="oSn-TT-DeO" id="Hav-fg-GBr"/>
                 <outlet property="_hostname" destination="454" id="465"/>
                 <outlet property="_info" destination="469" id="472"/>
