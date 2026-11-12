@@ -59,10 +59,13 @@ public:
 	// the CGEvent mouse/gesture fallback is active
 	bool usingVirtualDevice() const;
 
+	void setVerbose(bool _verbose) { verbose = _verbose; }
+
 private:
 	std::map<int,int> slots;	// session_id -> contact index
 	std::vector<InjectedTouch> active;
 	InjectorBackend *backend;
+	bool verbose;
 
 	int slotFor(int session_id);
 };

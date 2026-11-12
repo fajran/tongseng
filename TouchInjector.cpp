@@ -19,8 +19,11 @@
 #include <TuioTime.h>
 #include <ApplicationServices/ApplicationServices.h>
 #include <IOKit/IOKitLib.h>
+#include <dispatch/dispatch.h>
 #include <iostream>
 #include <math.h>
+#include <atomic>
+#include <memory>
 
 #define MAX_CONTACTS 10
 #define DIGITIZER_MAX 32767
@@ -30,8 +33,10 @@
 extern "C" {
 typedef struct __IOHIDUserDevice *IOHIDUserDeviceRef;
 IOHIDUserDeviceRef IOHIDUserDeviceCreateWithProperties(CFAllocatorRef allocator, CFDictionaryRef properties, IOOptionBits options);
-IOReturn IOHIDUserDeviceHandleReport(IOHIDUserDeviceRef device, uint8_t *report, CFIndex reportLength);
-void IOHIDUserDeviceScheduleWithRunLoop(IOHIDUserDeviceRef device, CFRunLoopRef runLoop, CFStringRef runLoopMode);
+void IOHIDUserDeviceSetDispatchQueue(IOHIDUserDeviceRef device, dispatch_queue_t queue);
+void IOHIDUserDeviceActivate(IOHIDUserDeviceRef device);
+void IOHIDUserDeviceCancel(IOHIDUserDeviceRef device);
+IOReturn IOHIDUserDeviceHandleReportAsync(IOHIDUserDeviceRef device, const uint8_t *report, CFIndex reportLength, IOReturn (*callback)(void *refcon, IOReturn result), void *refcon);
 }
 
 // ---------------------------------------------------------------------------
@@ -101,7 +106,10 @@ public:
 		CFRelease(props); CFRelease(rdesc);
 		CFRelease(nvid); CFRelease(npid); CFRelease(nver); CFRelease(nup); CFRelease(nu);
 		if (device) {
-			IOHIDUserDeviceScheduleWithRunLoop(device, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+			IOHIDUserDeviceSetDispatchQueue(device,
+				dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0));
+			IOHIDUserDeviceActivate(device);
+			reportPending.reset(new std::atomic<bool>(false));
 			std::cout << "virtual multitouch device created" << std::endl;
 		}
 	}
@@ -109,18 +117,38 @@ public:
 	~DigitizerInjector()
 	{
 		if (device) {
-			std::vector<InjectedTouch> none;
-			apply(none);	// release all contacts
+			IOHIDUserDeviceCancel(device);
 			CFRelease(device);
 		}
 	}
 
 	bool isValid() const { return device != NULL; }
 
+	struct AsyncReportCtx {
+		uint8_t *report;
+		std::shared_ptr<std::atomic<bool> > pending;
+	};
+
+	static IOReturn reportDone(void *refcon, IOReturn result)
+	{
+		AsyncReportCtx *ctx = (AsyncReportCtx*)refcon;
+		if (result != kIOReturnSuccess)
+			fprintf(stderr, "HID report failed: 0x%x\n", result);
+		free(ctx->report);
+		ctx->pending->store(false);
+		delete ctx;
+		return kIOReturnSuccess;
+	}
+
 	void apply(const std::vector<InjectedTouch>& touches)
 	{
-		uint8_t report[1 + MAX_CONTACTS*5 + 1];
-		memset(report, 0, sizeof(report));
+		// drop frames while a report is still in flight, so a congested
+		// kernel queue can never stall the receiver thread
+		bool expected = false;
+		if (!reportPending->compare_exchange_strong(expected, true)) return;
+
+		const CFIndex len = 1 + MAX_CONTACTS*6 + 1;
+		uint8_t *report = (uint8_t*)calloc(len, 1);
 		uint8_t *r = report;
 		*r++ = 1;	// report id
 		int n = (int)std::min(touches.size(), (size_t)MAX_CONTACTS);
@@ -128,18 +156,24 @@ public:
 			if (i<n) {
 				uint16_t x = (uint16_t)(touches[i].x * DIGITIZER_MAX);
 				uint16_t y = (uint16_t)(touches[i].y * DIGITIZER_MAX);
-				*r++ = 1;								// tip switch
+				*r++ = 1;								// tip switch + padding
 				*r++ = (uint8_t)touches[i].id;			// contact id
 				*r++ = x & 0xFF; *r++ = x >> 8;
 				*r++ = y & 0xFF; *r++ = y >> 8;
-			} else r += 5;
+			} else r += 6;
 		}
 		*r++ = (uint8_t)n;	// contact count
-		IOHIDUserDeviceHandleReport(device, report, sizeof(report));
+
+		AsyncReportCtx *ctx = new AsyncReportCtx;
+		ctx->report = report;
+		ctx->pending = reportPending;
+		IOReturn ret = IOHIDUserDeviceHandleReportAsync(device, report, len, reportDone, ctx);
+		if (ret != kIOReturnSuccess) reportDone(ctx, ret);
 	}
 
 private:
 	IOHIDUserDeviceRef device;
+	std::shared_ptr<std::atomic<bool> > reportPending;
 };
 
 // ---------------------------------------------------------------------------
@@ -263,7 +297,7 @@ private:
 // TouchInjector : TuioListener
 // ---------------------------------------------------------------------------
 
-TouchInjector::TouchInjector() : backend(NULL)
+TouchInjector::TouchInjector() : backend(NULL), verbose(false)
 {
 	DigitizerInjector *digitizer = new DigitizerInjector();
 	if (digitizer->isValid()) {
@@ -301,6 +335,8 @@ void TouchInjector::addTuioCursor(TUIO::TuioCursor *tcur)
 {
 	int slot = slotFor(tcur->getSessionID());
 	if (slot < 0) return;
+	if (verbose) std::cout << "cursor " << tcur->getSessionID() << " added as contact "
+		<< slot << " (" << tcur->getX() << "," << tcur->getY() << ")" << std::endl;
 	InjectedTouch t = { slot, tcur->getX(), tcur->getY() };
 	active.push_back(t);
 }
@@ -315,12 +351,16 @@ void TouchInjector::updateTuioCursor(TUIO::TuioCursor *tcur)
 			active[i].y = tcur->getY();
 			return;
 		}
+	if (verbose) std::cout << "cursor " << tcur->getSessionID()
+		<< " update for inactive contact " << it->second << std::endl;
 }
 
 void TouchInjector::removeTuioCursor(TUIO::TuioCursor *tcur)
 {
 	std::map<int,int>::iterator it = slots.find(tcur->getSessionID());
 	if (it == slots.end()) return;
+	if (verbose) std::cout << "cursor " << tcur->getSessionID() << " removed from contact "
+		<< it->second << std::endl;
 	for (size_t i=0;i<active.size();i++)
 		if (active[i].id == it->second) { active.erase(active.begin()+i); break; }
 	slots.erase(it);
@@ -328,5 +368,11 @@ void TouchInjector::removeTuioCursor(TUIO::TuioCursor *tcur)
 
 void TouchInjector::refresh(TUIO::TuioTime ftime)
 {
+	if (verbose) {
+		std::cout << "frame: " << active.size() << " touch(es)";
+		for (size_t i=0;i<active.size();i++)
+			std::cout << " #" << active[i].id << "(" << active[i].x << "," << active[i].y << ")";
+		std::cout << std::endl;
+	}
 	backend->apply(active);
 }
