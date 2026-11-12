@@ -88,6 +88,7 @@ int main(int argc, char** argv)
 	if (receive) {
 		int protocol = ((host=="TCP") || (host=="tcp")) ? TUIO_TCP : TUIO_UDP;
 		std::cout << "Protocol: " << ((protocol==TUIO_TCP) ? "TCP" : "UDP") << std::endl;
+		tongseng_set_verbose(verbose);
 		if (tongseng_client_start(protocol, port)!=0) {
 			std::cout << "could not start TUIO client on port " << port << std::endl;
 			return 1;

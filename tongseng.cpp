@@ -353,6 +353,7 @@ int tongseng_client_start(int _protocol, int _port)
 	}
 
 	injector = new TouchInjector();
+	injector->setVerbose(verbose);
 	client = new TUIO::TuioClient(receiver);
 	client->addTuioListener(injector);
 	client->connect();
