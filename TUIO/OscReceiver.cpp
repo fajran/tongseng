@@ -26,21 +26,24 @@ void OscReceiver::ProcessMessage( const ReceivedMessage& msg, const IpEndpointNa
 		(*client)->processOSC(msg);
 }
 void OscReceiver::ProcessBundle( const ReceivedBundle& b, const IpEndpointName& remoteEndpoint) {
-	
-	try {
-		for( ReceivedBundle::const_iterator i = b.ElementsBegin(); i != b.ElementsEnd(); ++i ){
+
+	// the element size table was already validated by the ReceivedBundle
+	// constructor — catch per element so one malformed message or nested
+	// bundle does not abort the remaining elements of this bundle
+	for( ReceivedBundle::const_iterator i = b.ElementsBegin(); i != b.ElementsEnd(); ++i ){
+		try {
 			if( i->IsBundle() )
 				ProcessBundle( ReceivedBundle(*i), remoteEndpoint);
 			else
 				ProcessMessage( ReceivedMessage(*i), remoteEndpoint);
+		} catch (Exception& e) {
+			std::cerr << "malformed OSC data: " << e.what() << std::endl;
 		}
-	} catch (MalformedBundleException& e) {
-		std::cerr << "malformed OSC bundle: " << e.what() << std::endl;
 	}
-	
 }
 
 void OscReceiver::ProcessPacket( const char *data, int size, const IpEndpointName& remoteEndpoint ) {
+	if (!data) return;
 	try {
 		for (std::list<OscClient*>::iterator client=clientList.begin(); client!= clientList.end(); client++)
 			(*client)->processBundleBegin();
@@ -48,8 +51,8 @@ void OscReceiver::ProcessPacket( const char *data, int size, const IpEndpointNam
 		ReceivedPacket p( data, size );
 		if(p.IsBundle()) ProcessBundle( ReceivedBundle(p), remoteEndpoint);
 		else ProcessMessage( ReceivedMessage(p), remoteEndpoint);
-	} catch (MalformedBundleException& e) {
-		std::cerr << "malformed OSC bundle: " << e.what() << std::endl;
+	} catch (Exception& e) {
+		std::cerr << "malformed OSC data: " << e.what() << std::endl;
 	}
 }
 
