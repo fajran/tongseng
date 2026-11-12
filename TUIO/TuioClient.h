@@ -1,6 +1,6 @@
 /*
  TUIO C++ Library
- Copyright (c) 2005-2017 Martin Kaltenbrunner <martin@tuio.org>
+ Copyright (c) 2005-2026 Martin Kaltenbrunner <martin@tuio.org>
  
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -35,9 +35,12 @@ namespace TUIO {
 	class OscReceiver; // Forward declaration
 	
 	/**
-	 * <p>The TuioClient class is the central TUIO protocol decoder component. It provides a simple callback infrastructure using the {@link TuioListener} interface.
+	 * <p>The TuioClient class is the central TUIO protocol decoder component. It provides a simple callback infrastructure using the TuioListener interface.
 	 * In order to receive and decode TUIO messages an instance of TuioClient needs to be created. The TuioClient instance then generates TUIO events
-	 * which are broadcasted to all registered classes that implement the {@link TuioListener} interface.</p> 
+	 * which are broadcasted to all registered classes that implement the TuioListener interface.</p>
+	 * <p>The TuioObject, TuioCursor and TuioBlob references returned by the list getter methods are only valid
+	 * until the referenced component is removed from the session. Use the copyTuioObjects(), copyTuioCursors()
+	 * and copyTuioBlobs() methods to retrieve an owned snapshot copy of the currently active components.</p> 
 	 * <p><code>
 	 * TuioClient *client = new TuioClient();<br/>
 	 * client->addTuioListener(myTuioListener);<br/>
@@ -47,7 +50,7 @@ namespace TUIO {
 	 * @author Martin Kaltenbrunner
 	 * @version 1.1.6
 	 */ 
-	class LIBDECL TuioClient : public TuioDispatcher { 
+	class LIBDECL TuioClient : public TuioDispatcher, public OscClient { 
 		
 	public:
 		/**
@@ -64,7 +67,8 @@ namespace TUIO {
 		TuioClient(int port);
 		
 		/**
-		 * This constructor creates a TuioClient that uses the provided OscReceiver for the incoming OSC data
+		 * This constructor creates a TuioClient that uses the provided OscReceiver for the incoming OSC data.
+		 * The OscReceiver instance remains owned by the caller and is not deleted by this TuioClient.
 		 *
 		 * @param  oscreceiver  the OscReceiver implementation for the chosen transport method (UDP, TCP ...)
 		 */
@@ -76,9 +80,11 @@ namespace TUIO {
 		~TuioClient();
 
 		/**
-		 * The TuioClient connects and starts receiving TUIO messages from its associated OscReceiver
+		 * The TuioClient connects and starts receiving TUIO messages from its associated OscReceiver.
+		 * With the default parameter the OSC receiver runs in a dedicated background thread,
+		 * when set to true the method blocks in the current thread until disconnect() is invoked.
 		 *
-		 * @param  lock  running in the background if set to false (default)
+		 * @param  lock  blocks in the current thread if set to true, runs in the background if set to false (default)
 		 */
 		void connect(bool lock=false);
 		
@@ -106,7 +112,7 @@ namespace TUIO {
 		 * Returns a List of all currently active TuioObjects
 		 * which are associated to the given Source ID
 		 *
-		 * @param  src_id  the source ID of the corresponding TUIO source
+		 * @param  source_id  the source ID of the corresponding TUIO source
 		 * @return  a List of TuioObjects
 		 */
 		std::list<TuioObject*> getTuioObjects(int source_id);
@@ -115,7 +121,7 @@ namespace TUIO {
 		 * Returns a List with a copy of all currently active TuioObjects
 		 * which are associated to the given Source ID
 		 *
-		 * @param  src_id  the source ID of the corresponding TUIO source
+		 * @param  source_id  the source ID of the corresponding TUIO source
 		 * @return  a List with a copy of TuioObjects
 		 */
 		std::list<TuioObject> copyTuioObjects(int source_id);
@@ -137,7 +143,7 @@ namespace TUIO {
 		 * @param  s_id  the session ID of the corresponding TuioObject
 		 * @return  an active TuioObject corresponding to the provided Session ID or NULL
 		 */
-		TuioObject* getTuioObject(long s_id) {
+		TuioObject* getTuioObject(int s_id) {
 			return getTuioObject(0,s_id);
 		};
 		
@@ -150,7 +156,7 @@ namespace TUIO {
 		 * @param  s_id  the session ID of the corresponding TuioObject
 		 * @return  an active TuioObject corresponding to the provided Session ID or NULL
 		 */
-		TuioObject* getTuioObject(int src_id, long s_id);
+		TuioObject* getTuioObject(int src_id, int s_id);
 
 		/**
 		 * Returns a List of all currently active TuioCursors
@@ -165,7 +171,7 @@ namespace TUIO {
 		 * Returns a List of all currently active TuioCursors
 		 * which are associated to the given Source ID
 		 *
-		 * @param  src_id  the source ID of the corresponding TUIO source
+		 * @param  source_id  the source ID of the corresponding TUIO source
 		 * @return  a List of TuioCursors
 		 */
 		std::list<TuioCursor*> getTuioCursors(int source_id);
@@ -183,7 +189,7 @@ namespace TUIO {
 		 * Returns a List with a copy of all currently active TuioCursors
 		 * which are associated to the given Source ID
 		 *
-		 * @param  src_id  the source ID of the corresponding TUIO source
+		 * @param  source_id  the source ID of the corresponding TUIO source
 		 * @return  a List with a copy of TuioCursors
 		 */
 		std::list<TuioCursor> copyTuioCursors(int source_id);
@@ -195,7 +201,7 @@ namespace TUIO {
 		 * @param  s_id  the session ID of the corresponding TuioCursor
 		 * @return  an active TuioCursor corresponding to the provided Session ID or NULL
 		 */
-		TuioCursor* getTuioCursor(long s_id) {
+		TuioCursor* getTuioCursor(int s_id) {
 			return getTuioCursor(0,s_id);
 		};
 		
@@ -208,7 +214,7 @@ namespace TUIO {
 		 * @param  s_id  the session ID of the corresponding TuioCursor
 		 * @return  an active TuioCursor corresponding to the provided Session ID or NULL
 		 */
-		TuioCursor* getTuioCursor(int src_id, long s_id);
+		TuioCursor* getTuioCursor(int src_id, int s_id);
 
 		/**
 		 * Returns a List of all currently active TuioBlobs
@@ -223,7 +229,7 @@ namespace TUIO {
 		 * Returns a List of all currently active TuioBlobs
 		 * which are associated to the given Source ID
 		 *
-		 * @param  src_id  the source ID of the corresponding TUIO source
+		 * @param  source_id  the source ID of the corresponding TUIO source
 		 * @return  a List of TuioBlobs
 		 */
 		std::list<TuioBlob*> getTuioBlobs(int source_id);
@@ -241,7 +247,7 @@ namespace TUIO {
 		 * Returns a List with a copy of all currently active TuioBlobs
 		 * which are associated to the given Source ID
 		 *
-		 * @param  src_id  the source ID of the corresponding TUIO source
+		 * @param  source_id  the source ID of the corresponding TUIO source
 		 * @return  a List with a copy of TuioBlobs
 		 */
 		std::list<TuioBlob> copyTuioBlobs(int source_id);
@@ -253,7 +259,7 @@ namespace TUIO {
 		 * @param  s_id  the session ID of the corresponding TuioBlob
 		 * @return  an active TuioBlob corresponding to the provided Session ID or NULL
 		 */
-		TuioBlob* getTuioBlob(long s_id) {
+		TuioBlob* getTuioBlob(int s_id) {
 			return getTuioBlob(0,s_id);
 		};
 		
@@ -266,21 +272,35 @@ namespace TUIO {
 		 * @param  s_id  the session ID of the corresponding TuioBlob
 		 * @return  an active TuioBlob corresponding to the provided Session ID or NULL
 		 */
-		TuioBlob* getTuioBlob(int src_id, long s_id);
+		TuioBlob* getTuioBlob(int src_id, int s_id);
 		
+		/**
+		 * Processes a single received OSC message. This method is invoked by the associated
+		 * OscReceiver for every incoming TUIO message and is usually not called directly.
+		 *
+		 * @param  message  the OSC message to process
+		 */
 		void processOSC( const osc::ReceivedMessage& message);
-		
+
+		/**
+		 * Resets the pending frame state before a new OSC packet is processed.
+		 * This method is invoked by the associated OscReceiver once per packet
+		 * and discards pending set data from an incomplete previous bundle.
+		 * It is usually not called directly.
+		 */
+		void processBundleBegin();
+
 	private:
 		void initialize();
 		
 		std::list<TuioObject*> frameObjects;
-		std::list<long> aliveObjectList;
+		std::list<int> aliveObjectList;
 		std::list<TuioCursor*> frameCursors;
-		std::list<long> aliveCursorList;
+		std::list<int> aliveCursorList;
 		std::list<TuioBlob*> frameBlobs;
-		std::list<long> aliveBlobList;
+		std::list<int> aliveBlobList;
 		
-		osc::int32 currentFrame;
+		int currentFrame;
 		TuioTime currentTime;
 			
 		std::list<TuioCursor*> freeCursorList, freeCursorBuffer;
@@ -291,8 +311,8 @@ namespace TUIO {
 		
 		std::map<std::string,int> sourceList;
 		int source_id;
-		char *source_name;
-		char *source_addr;
+		std::string source_name;
+		std::string source_addr;
 		
 		OscReceiver *receiver;
 		bool local_receiver;

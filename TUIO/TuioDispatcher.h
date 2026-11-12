@@ -1,6 +1,6 @@
 /*
  TUIO C++ Library
- Copyright (c) 2005-2017 Martin Kaltenbrunner <martin@tuio.org>
+ Copyright (c) 2005-2026 Martin Kaltenbrunner <martin@tuio.org>
  
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -31,7 +31,7 @@ namespace TUIO {
 	
 	/**
 	 * <p>The TuioDispatcher generates TUIO events which are broadcasted to all 
-	 * registered classes that implement the {@link TuioListener} interface.</p> 
+	 * registered classes that implement the TuioListener interface.</p> 
 	 *
 	 * @author Martin Kaltenbrunner
 	 * @version 1.1.6
@@ -77,6 +77,13 @@ namespace TUIO {
 		std::list<TuioObject*> getTuioObjects();
 
 		/**
+		* Returns the number of all currently active TuioObjects
+		*
+		* @return  the number of all currently active TuioObjects
+		*/
+		int getTuioObjectCount();
+
+		/**
 		 * Returns a List with a copy of currently active TuioObjects
 		 *
 		 * @return  a List with a copy of all currently active TuioObjects
@@ -89,6 +96,13 @@ namespace TUIO {
 		 * @return  a List of all currently active TuioCursors
 		 */
 		std::list<TuioCursor*> getTuioCursors();
+
+		/**
+		* Returns the number of all currently active TuioCursors
+		*
+		* @return  the number of all currently active TuioCursors
+		*/
+		int getTuioCursorCount();
 
 		/**
 		 * Returns a List with a copy of currently active TuioCursors
@@ -105,6 +119,13 @@ namespace TUIO {
 		std::list<TuioBlob*> getTuioBlobs();
 
 		/**
+		* Returns the number of all currently active TuioBlobs
+		*
+		* @return  the number of all currently active TuioBlobs
+		*/
+		int getTuioBlobCount();
+
+		/**
 		 * Returns a List with a copy of currently active TuioBlobs
 		 *
 		 * @return  a List with a copy of all currently active TuioBlobs
@@ -117,7 +138,7 @@ namespace TUIO {
 		 *
 		 * @return  an active TuioObject corresponding to the provided Session ID or NULL
 		 */
-		TuioObject* getTuioObject(long s_id);
+		TuioObject* getTuioObject(int s_id);
 
 		/**
 		 * Returns the TuioCursor corresponding to the provided Session ID
@@ -125,7 +146,7 @@ namespace TUIO {
 		 *
 		 * @return  an active TuioCursor corresponding to the provided Session ID or NULL
 		 */
-		TuioCursor* getTuioCursor(long s_id);
+		TuioCursor* getTuioCursor(int s_id);
 
 		/**
 		 * Returns the TuioBlob corresponding to the provided Session ID
@@ -133,7 +154,7 @@ namespace TUIO {
 		 *
 		 * @return  an active TuioBlob corresponding to the provided Session ID or NULL
 		 */
-		TuioBlob* getTuioBlob(long s_id);
+		TuioBlob* getTuioBlob(int s_id);
 		
 		/**
 		 * Locks the TuioObject list in order to avoid updates during access
@@ -166,19 +187,31 @@ namespace TUIO {
 		void unlockBlobList();
 		
 	protected:
+		/** The list of registered TuioListeners */
 		std::list<TuioListener*> listenerList;
 		
+		/** The list of currently active TuioObjects */
 		std::list<TuioObject*> objectList;
+		
+		/** The list of currently active TuioCursors */
 		std::list<TuioCursor*> cursorList;
+		
+		/** The list of currently active TuioBlobs */
 		std::list<TuioBlob*> blobList;
 		
 #ifdef WIN32
+		/** The mutex protecting objectList */
 		HANDLE objectMutex;
+		/** The mutex protecting cursorList */
 		HANDLE cursorMutex;
+		/** The mutex protecting blobList */
 		HANDLE blobMutex;
 #else
+		/** The mutex protecting objectList */
 		pthread_mutex_t objectMutex;
+		/** The mutex protecting cursorList */
 		pthread_mutex_t cursorMutex;
+		/** The mutex protecting blobList */
 		pthread_mutex_t blobMutex;
 #endif
 				

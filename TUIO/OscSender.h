@@ -1,6 +1,6 @@
 /*
  TUIO C++ Library
- Copyright (c) 2005-2017 Martin Kaltenbrunner <martin@tuio.org>
+ Copyright (c) 2005-2026 Martin Kaltenbrunner <martin@tuio.org>
  
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -64,7 +64,7 @@ namespace TUIO {
 		virtual bool isConnected () = 0;
 
 		/**
-		 * This method returns if this OscSender delivers locally
+		 * This method returns whether this OscSender delivers locally
 		 *
 		 * @return true if this OscSender delivers locally
 		 */
@@ -77,10 +77,18 @@ namespace TUIO {
 		 */
 		int getBufferSize () { return buffer_size; };
 	
+		/**
+		 * This method returns a string describing the OSC transport type of this OscSender
+		 *
+		 * @return the OSC transport type description string
+		 */
 		virtual const char* tuio_type() = 0;
 		
 	protected:
+		/** The size of the packet buffer */
 		unsigned int buffer_size;
+		
+		/** Whether the packet data is kept in a local buffer */
 		bool local;
 	};
 }

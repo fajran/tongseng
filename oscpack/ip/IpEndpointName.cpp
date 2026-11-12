@@ -38,6 +38,10 @@
 
 #include <cstdio>
 
+#if defined(_MSC_VER) && (_MSC_VER < 1900)
+#define snprintf _snprintf
+#endif
+
 #include "NetworkingUtils.h"
 
 
@@ -50,9 +54,9 @@ unsigned long IpEndpointName::GetHostByName( const char *s )
 void IpEndpointName::AddressAsString( char *s ) const
 {
 	if( address == ANY_ADDRESS ){
-		std::sprintf( s, "<any>" );
+		snprintf( s, ADDRESS_STRING_LENGTH, "<any>" );
 	}else{
-		std::sprintf( s, "%d.%d.%d.%d",
+		snprintf( s, ADDRESS_STRING_LENGTH, "%d.%d.%d.%d",
 				(int)((address >> 24) & 0xFF),
 				(int)((address >> 16) & 0xFF),
 				(int)((address >> 8) & 0xFF),
@@ -65,9 +69,9 @@ void IpEndpointName::AddressAndPortAsString( char *s ) const
 {
 	if( port == ANY_PORT ){
 		if( address == ANY_ADDRESS ){
-			std::sprintf( s, "<any>:<any>" );
+			snprintf( s, ADDRESS_AND_PORT_STRING_LENGTH, "<any>:<any>" );
 		}else{
-			std::sprintf( s, "%d.%d.%d.%d:<any>",
+			snprintf( s, ADDRESS_AND_PORT_STRING_LENGTH, "%d.%d.%d.%d:<any>",
 				(int)((address >> 24) & 0xFF),
 				(int)((address >> 16) & 0xFF),
 				(int)((address >> 8) & 0xFF),
@@ -75,9 +79,9 @@ void IpEndpointName::AddressAndPortAsString( char *s ) const
 		}
 	}else{
 		if( address == ANY_ADDRESS ){
-			std::sprintf( s, "<any>:%d", port );
+			snprintf( s, ADDRESS_AND_PORT_STRING_LENGTH, "<any>:%d", port );
 		}else{
-			std::sprintf( s, "%d.%d.%d.%d:%d",
+			snprintf( s, ADDRESS_AND_PORT_STRING_LENGTH, "%d.%d.%d.%d:%d",
 				(int)((address >> 24) & 0xFF),
 				(int)((address >> 16) & 0xFF),
 				(int)((address >> 8) & 0xFF),

@@ -1,6 +1,6 @@
 /*
  TUIO C++ Library
- Copyright (c) 2005-2017 Martin Kaltenbrunner <martin@tuio.org>
+ Copyright (c) 2005-2026 Martin Kaltenbrunner <martin@tuio.org>
  
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -25,6 +25,7 @@
 #define IP_MTU_SIZE 1500
 #define MAX_UDP_SIZE 4096
 #define MIN_UDP_SIZE 576
+#define MAX_LOCAL_UDP_SIZE 65507
 
 namespace TUIO {
 	
@@ -40,22 +41,25 @@ namespace TUIO {
 
 		/**
 		 * The default constructor creates a UdpSender that sends to the default UDP port 3333 on localhost
-		 * using the maximum packet size of 65536 bytes for single packets on the loopback device
+		 * using the maximum packet size of 65507 bytes (MAX_LOCAL_UDP_SIZE) on the loopback device
 		 */
 		UdpSender();
 		
 		/**
-		 * This constructor creates a UdpSender that sends to the provided port on the the given host
-		 * using the default MTU size of 1500 bytes to deliver unfragmented UDP packets on a LAN
+		 * This constructor creates a UdpSender that sends to the provided port on the given host
+		 * using the default MTU size of 1500 bytes to deliver unfragmented UDP packets on a LAN,
+		 * or the maximum packet size of 65507 bytes if the host is localhost or 127.0.0.1
 		 *
 		 * @param  host  the receiving host name
 		 * @param  port  the outgoing UDP port number
 		 */
+		UdpSender(const char *host, int port);
 		
-		UdpSender(const char *host, int port);		
 		/**
-		 * This constructor creates a UdpSender that sends to the provided port on the the given host
-		 * the UDP packet size can be set to a value between 576 and 65536 bytes
+		 * This constructor creates a UdpSender that sends to the provided port on the given host,
+		 * the UDP packet size is clamped to a value between 576 (MIN_UDP_SIZE) and 4096 (MAX_UDP_SIZE) bytes,
+		 * or to a value between 576 (MIN_UDP_SIZE) and 65507 (MAX_LOCAL_UDP_SIZE) bytes on the loopback device.
+		 * Note that packets larger than the MTU size of 1500 bytes may be fragmented on remote networks.
 		 *
 		 * @param  host  the receiving host name
 		 * @param  port  the outgoing UDP port number

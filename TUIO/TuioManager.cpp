@@ -1,6 +1,6 @@
 /*
  TUIO C++ Library
- Copyright (c) 2005-2017 Martin Kaltenbrunner <martin@tuio.org>
+ Copyright (c) 2005-2026 Martin Kaltenbrunner <martin@tuio.org>
  
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -58,7 +58,7 @@ TuioObject* TuioManager::addTuioObject(int f_id, float x, float y, float a) {
 
 void TuioManager::addExternalTuioObject(TuioObject *tobj) {
 	if (tobj==NULL) return;
-	tobj->setSessionID(sessionID++);
+	tobj->setSessionID(++sessionID);
 	objectList.push_back(tobj);
 	updateObject = true;
 
@@ -102,15 +102,17 @@ void TuioManager::updateExternalTuioObject(TuioObject *tobj) {
 void TuioManager::removeTuioObject(TuioObject *tobj) {
 	if (tobj==NULL) return;
 
+    objectList.remove(tobj);
+    tobj->remove(currentFrameTime);
+    updateObject = true;
+
 	for (std::list<TuioListener*>::iterator listener=listenerList.begin(); listener != listenerList.end(); listener++)
 		(*listener)->removeTuioObject(tobj);
 	
 	if (verbose)
 		std::cout << "del obj " << tobj->getSymbolID() << " (" << tobj->getSessionID() << ")" << std::endl;
     
-    objectList.remove(tobj);
     delete tobj;
-    updateObject = true;
 }
 
 void TuioManager::removeExternalTuioObject(TuioObject *tobj) {
@@ -130,16 +132,21 @@ TuioCursor* TuioManager::addTuioCursor(float x, float y) {
 	
 	int cursorID = (int)cursorList.size();
 	if ((int)(cursorList.size())<=maxCursorID) {
-		std::list<TuioCursor*>::iterator closestCursor = freeCursorList.begin();
-		
-		for(std::list<TuioCursor*>::iterator iter = freeCursorList.begin();iter!= freeCursorList.end(); iter++) {
-			if((*iter)->getDistance(x,y)<(*closestCursor)->getDistance(x,y)) closestCursor = iter;
+		if (!freeCursorList.empty()) {
+			std::list<TuioCursor*>::iterator closestCursor = freeCursorList.begin();
+			
+			for(std::list<TuioCursor*>::iterator iter = freeCursorList.begin();iter!= freeCursorList.end(); iter++) {
+				if((*iter)->getDistance(x,y)<(*closestCursor)->getDistance(x,y)) closestCursor = iter;
+			}
+			
+			TuioCursor *freeCursor = (*closestCursor);
+			cursorID = (*closestCursor)->getCursorID();
+			freeCursorList.erase(closestCursor);
+			delete freeCursor;
+		} else {
+			cursorID = maxCursorID+1;
+			maxCursorID = cursorID;
 		}
-		
-		TuioCursor *freeCursor = (*closestCursor);
-		cursorID = (*closestCursor)->getCursorID();
-		freeCursorList.erase(closestCursor);
-		delete freeCursor;
 	} else maxCursorID = cursorID;	
 	
 	TuioCursor *tcur = new TuioCursor(currentFrameTime, sessionID, cursorID, x, y);
@@ -149,7 +156,7 @@ TuioCursor* TuioManager::addTuioCursor(float x, float y) {
 	for (std::list<TuioListener*>::iterator listener=listenerList.begin(); listener != listenerList.end(); listener++)
 		(*listener)->addTuioCursor(tcur);
 	
-	if (verbose) 
+	if (verbose /*&& tcur->getTuioState()!=TUIO_ADDED*/)
 		std::cout << "add cur " << tcur->getCursorID() << " (" <<  tcur->getSessionID() << ") " << tcur->getX() << " " << tcur->getY() << std::endl;
 
 	return tcur;
@@ -157,7 +164,28 @@ TuioCursor* TuioManager::addTuioCursor(float x, float y) {
 
 void TuioManager::addExternalTuioCursor(TuioCursor *tcur) {
 	if (tcur==NULL) return;
-	tcur->setSessionID(sessionID++);
+	
+	int cursorID = (int)cursorList.size();
+	if (cursorID <= maxCursorID) {
+		if (!freeCursorList.empty()) {
+			std::list<TuioCursor*>::iterator closestCursor = freeCursorList.begin();
+			
+			for(std::list<TuioCursor*>::iterator iter = freeCursorList.begin();iter!= freeCursorList.end(); iter++) {
+				if((*iter)->getDistance(tcur->getX(),tcur->getY())<(*closestCursor)->getDistance(tcur->getX(),tcur->getY())) closestCursor = iter;
+			}
+			
+			TuioCursor *freeCursor = (*closestCursor);
+			cursorID = (*closestCursor)->getCursorID();
+			freeCursorList.erase(closestCursor);
+			delete freeCursor;
+		} else {
+			cursorID = maxCursorID+1;
+			maxCursorID = cursorID;
+		}
+	} else maxCursorID = cursorID;
+	
+	tcur->setSessionID(++sessionID);
+	tcur->setCursorID(cursorID);
 	cursorList.push_back(tcur);
 	updateCursor = true;
 
@@ -201,15 +229,15 @@ void TuioManager::updateExternalTuioCursor(TuioCursor *tcur) {
 void TuioManager::removeTuioCursor(TuioCursor *tcur) {
 	if (tcur==NULL) return;
 
+	if (verbose /*&& tcur->getTuioState()!=TUIO_ADDED*/)
+		std::cout << "del cur " << tcur->getCursorID() << " (" <<  tcur->getSessionID() << ")" << std::endl;
+	
 	cursorList.remove(tcur);
 	tcur->remove(currentFrameTime);
 	updateCursor = true;
 
 	for (std::list<TuioListener*>::iterator listener=listenerList.begin(); listener != listenerList.end(); listener++)
 		(*listener)->removeTuioCursor(tcur);
-
-	if (verbose)
-		std::cout << "del cur " << tcur->getCursorID() << " (" <<  tcur->getSessionID() << ")" << std::endl;
 
 	if (tcur->getCursorID()==maxCursorID) {
 		maxCursorID = -1;
@@ -245,14 +273,15 @@ void TuioManager::removeTuioCursor(TuioCursor *tcur) {
 
 void TuioManager::removeExternalTuioCursor(TuioCursor *tcur) {
 	if (tcur==NULL) return;
+	
+	if (verbose /*&& tcur->getTuioState()!=TUIO_ADDED*/)
+		std::cout << "del cur " << tcur->getCursorID() << " (" <<  tcur->getSessionID() << ")" << std::endl;
+	
 	cursorList.remove(tcur);
 	updateCursor = true;
 
 	for (std::list<TuioListener*>::iterator listener=listenerList.begin(); listener != listenerList.end(); listener++)
 		(*listener)->removeTuioCursor(tcur);
-
-	if (verbose)
-		std::cout << "del cur " << tcur->getCursorID() << " (" <<  tcur->getSessionID() << ")" << std::endl;
 }
 
 TuioBlob* TuioManager::addTuioBlob(float x, float y, float a, float w, float h, float f) {
@@ -260,16 +289,21 @@ TuioBlob* TuioManager::addTuioBlob(float x, float y, float a, float w, float h, 
 	
 	int blobID = (int)blobList.size();
 	if ((int)(blobList.size())<=maxBlobID) {
-		std::list<TuioBlob*>::iterator closestBlob = freeBlobList.begin();
-		
-		for(std::list<TuioBlob*>::iterator iter = freeBlobList.begin();iter!= freeBlobList.end(); iter++) {
-			if((*iter)->getDistance(x,y)<(*closestBlob)->getDistance(x,y)) closestBlob = iter;
+		if (!freeBlobList.empty()) {
+			std::list<TuioBlob*>::iterator closestBlob = freeBlobList.begin();
+			
+			for(std::list<TuioBlob*>::iterator iter = freeBlobList.begin();iter!= freeBlobList.end(); iter++) {
+				if((*iter)->getDistance(x,y)<(*closestBlob)->getDistance(x,y)) closestBlob = iter;
+			}
+			
+			TuioBlob *freeBlob = (*closestBlob);
+			blobID = (*closestBlob)->getBlobID();
+			freeBlobList.erase(closestBlob);
+			delete freeBlob;
+		} else {
+			blobID = maxBlobID+1;
+			maxBlobID = blobID;
 		}
-		
-		TuioBlob *freeBlob = (*closestBlob);
-		blobID = (*closestBlob)->getBlobID();
-		freeBlobList.erase(closestBlob);
-		delete freeBlob;
 	} else maxBlobID = blobID;	
 	
 	TuioBlob *tblb = new TuioBlob(currentFrameTime, sessionID, blobID, x, y, a, w, h, f);
@@ -279,7 +313,7 @@ TuioBlob* TuioManager::addTuioBlob(float x, float y, float a, float w, float h, 
 	for (std::list<TuioListener*>::iterator listener=listenerList.begin(); listener != listenerList.end(); listener++)
 		(*listener)->addTuioBlob(tblb);
 	
-	if (verbose) 
+	if (verbose /*&& tblb->getTuioState()!=TUIO_ADDED*/)
 		std::cout << "add blb " << tblb->getBlobID() << " (" <<  tblb->getSessionID() << ") " << tblb->getX() << " " << tblb->getY()  << " " << tblb->getAngle() << " " << tblb->getWidth() << " " << tblb->getHeight() << " " << tblb->getArea() << std::endl;
 	
 	return tblb;
@@ -290,19 +324,24 @@ void TuioManager::addExternalTuioBlob(TuioBlob *tblb) {
 	
 	int blobID = (int)blobList.size();
 	if (blobID <= maxBlobID) {
-		std::list<TuioBlob*>::iterator closestBlob = freeBlobList.begin();
-		
-		for(std::list<TuioBlob*>::iterator iter = freeBlobList.begin();iter!= freeBlobList.end(); iter++) {
-			if((*iter)->getDistance(tblb->getX(),tblb->getY())<(*closestBlob)->getDistance(tblb->getX(),tblb->getY())) closestBlob = iter;
+		if (!freeBlobList.empty()) {
+			std::list<TuioBlob*>::iterator closestBlob = freeBlobList.begin();
+			
+			for(std::list<TuioBlob*>::iterator iter = freeBlobList.begin();iter!= freeBlobList.end(); iter++) {
+				if((*iter)->getDistance(tblb->getX(),tblb->getY())<(*closestBlob)->getDistance(tblb->getX(),tblb->getY())) closestBlob = iter;
+			}
+			
+			TuioBlob *freeBlob = (*closestBlob);
+			blobID = (*closestBlob)->getBlobID();
+			freeBlobList.erase(closestBlob);
+			delete freeBlob;
+		} else {
+			blobID = maxBlobID+1;
+			maxBlobID = blobID;
 		}
-		
-		TuioBlob *freeBlob = (*closestBlob);
-		blobID = (*closestBlob)->getBlobID();
-		freeBlobList.erase(closestBlob);
-		delete freeBlob;
 	} else maxBlobID = blobID;
 	
-	tblb->setSessionID(sessionID++);
+	tblb->setSessionID(++sessionID);
 	tblb->setBlobID(blobID);
 	
 	blobList.push_back(tblb);
@@ -348,15 +387,15 @@ void TuioManager::updateExternalTuioBlob(TuioBlob *tblb) {
 void TuioManager::removeTuioBlob(TuioBlob *tblb) {
 	if (tblb==NULL) return;
 	
+	if (verbose /*&& tblb->getTuioState()!=TUIO_ADDED*/)
+		std::cout << "del blb " << tblb->getBlobID() << " (" <<  tblb->getSessionID() << ")" << std::endl;
+	
 	blobList.remove(tblb);
 	tblb->remove(currentFrameTime);
 	updateBlob = true;
 
 	for (std::list<TuioListener*>::iterator listener=listenerList.begin(); listener != listenerList.end(); listener++)
 		(*listener)->removeTuioBlob(tblb);
-	
-	if (verbose)
-		std::cout << "del blb " << tblb->getBlobID() << " (" <<  tblb->getSessionID() << ")" << std::endl;
 	
 	if (tblb->getBlobID()==maxBlobID) {
 		maxBlobID = -1;
@@ -393,22 +432,23 @@ void TuioManager::removeTuioBlob(TuioBlob *tblb) {
 
 void TuioManager::removeExternalTuioBlob(TuioBlob *tblb) {
 	if (tblb==NULL) return;
+	
+	if (verbose /*&& tblb->getTuioState()!=TUIO_ADDED*/)
+		std::cout << "del blb " << tblb->getBlobID() << " (" <<  tblb->getSessionID() << ")" << std::endl;
+	
 	blobList.remove(tblb);
 	updateBlob = true;
 	
 	for (std::list<TuioListener*>::iterator listener=listenerList.begin(); listener != listenerList.end(); listener++)
 		(*listener)->removeTuioBlob(tblb);
-	
-	if (verbose)
-		std::cout << "del blb " << tblb->getBlobID() << " (" <<  tblb->getSessionID() << ")" << std::endl;
 }
 
-long TuioManager::getSessionID() {
+int TuioManager::getSessionID() {
 	sessionID++;
 	return sessionID;
 }
 
-long TuioManager::getFrameID() {
+int TuioManager::getFrameID() {
 	return currentFrame;
 }
 

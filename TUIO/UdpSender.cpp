@@ -1,6 +1,6 @@
 /*
  TUIO C++ Library
- Copyright (c) 2005-2017 Martin Kaltenbrunner <martin@tuio.org>
+ Copyright (c) 2005-2026 Martin Kaltenbrunner <martin@tuio.org>
  
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -20,54 +20,40 @@
 
 using namespace TUIO;
 
-UdpSender::UdpSender() {
+static bool isLocalHost(const char *host) {
+	return ((strcmp(host,"127.0.0.1")==0) || (strcmp(host,"localhost")==0));
+}
+
+// creates the transmit socket, or throws an exception if the host cannot be resolved
+static UdpTransmitSocket* openSocket(const char *host, int port) {
 	try {
-		local = true;
-		long unsigned int ip = GetHostByName("localhost");
-		socket = new UdpTransmitSocket(IpEndpointName(ip, 3333));
-		buffer_size = MAX_UDP_SIZE;
-		std::cout << "TUIO/UDP messages to " << "127.0.0.1@3333" << std::endl;
+		UdpTransmitSocket *socket = new UdpTransmitSocket(IpEndpointName(GetHostByName(host), port));
+		std::cout << "TUIO/UDP messages to " << host << "@" << port << std::endl;
+		return socket;
 	} catch (std::exception &e) { 
 		std::cout << "could not create UDP socket" << std::endl;
-		socket = NULL;
 		throw std::exception();
 	}
+}
+
+UdpSender::UdpSender() {
+	local = true;
+	buffer_size = MAX_LOCAL_UDP_SIZE;
+	socket = openSocket("127.0.0.1",3333);
 }
 
 UdpSender::UdpSender(const char *host, int port) {
-	try {
-		if ((strcmp(host,"127.0.0.1")==0) || (strcmp(host,"localhost")==0)) {
-			local = true;
-			buffer_size = MAX_UDP_SIZE;
-		} else {
-			local = false;
-			buffer_size = IP_MTU_SIZE;
-		}
-		long unsigned int ip = GetHostByName(host);
-		socket = new UdpTransmitSocket(IpEndpointName(ip, port));
-		std::cout << "TUIO/UDP messages to " << host << "@" << port << std::endl;
-	} catch (std::exception &e) { 
-		std::cout << "could not create UDP socket" << std::endl;
-		socket = NULL;
-		throw std::exception();
-	}
+	local = isLocalHost(host);
+	buffer_size = local ? MAX_LOCAL_UDP_SIZE : IP_MTU_SIZE;
+	socket = openSocket(host,port);
 }
 
 UdpSender::UdpSender(const char *host, int port, int size) {
-	try {
-		if ((strcmp(host,"127.0.0.1")==0) || (strcmp(host,"localhost")==0)) {
-			local = true;
-		} else local = false;
-		long unsigned int ip = GetHostByName(host);
-		socket = new UdpTransmitSocket(IpEndpointName(ip, port));
-		if (buffer_size>MAX_UDP_SIZE) buffer_size = MAX_UDP_SIZE;
-		else if (buffer_size<MIN_UDP_SIZE) buffer_size = MIN_UDP_SIZE;
-		std::cout << "TUIO/UDP messages to " << host << "@" << port << std::endl;
-	} catch (std::exception &e) { 
-		std::cout << "could not create UDP socket" << std::endl;
-		socket = NULL;
-		throw std::exception();
-	}
+	local = isLocalHost(host);
+	if (size>(local?MAX_LOCAL_UDP_SIZE:MAX_UDP_SIZE)) size = local?MAX_LOCAL_UDP_SIZE:MAX_UDP_SIZE;
+	else if (size<MIN_UDP_SIZE) size = MIN_UDP_SIZE;
+	buffer_size = size;
+	socket = openSocket(host,port);
 }
 
 UdpSender::~UdpSender() {
@@ -75,8 +61,7 @@ UdpSender::~UdpSender() {
 }
 
 bool UdpSender::isConnected() { 
-	if (socket==NULL) return false; 
-	return true;
+	return (socket!=NULL);
 }
 
 bool UdpSender::sendOscPacket (osc::OutboundPacketStream *bundle) {

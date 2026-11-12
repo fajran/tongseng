@@ -1,6 +1,6 @@
 /*
  TUIO C++ Library
- Copyright (c) 2005-2017 Martin Kaltenbrunner <martin@tuio.org>
+ Copyright (c) 2005-2026 Martin Kaltenbrunner <martin@tuio.org>
  
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -50,22 +50,22 @@ namespace TUIO {
 		 * @param	xp	the X coordinate to assign
 		 * @param	yp	the Y coordinate to assign
 		 */
-		TuioCursor (TuioTime ttime, long si, int ci, float xp, float yp);
+		TuioCursor (TuioTime ttime, int si, int ci, float xp, float yp);
 
 		/**
 		 * This constructor takes the provided Session ID, Cursor ID, X and Y coordinate 
-		 * and assigs these values to the newly created TuioCursor.
+		 * and assigns these values to the newly created TuioCursor.
 		 *
 		 * @param	si	the Session ID  to assign
 		 * @param	ci	the Cursor ID  to assign
 		 * @param	xp	the X coordinate to assign
 		 * @param	yp	the Y coordinate to assign
 		 */
-		TuioCursor (long si, int ci, float xp, float yp);
+		TuioCursor (int si, int ci, float xp, float yp);
 		
 		/**
-		 * This constructor takes the atttibutes of the provided TuioCursor 
-		 * and assigs these values to the newly created TuioCursor.
+		 * This constructor takes the attributes of the provided TuioCursor 
+		 * and assigns these values to the newly created TuioCursor.
 		 *
 		 * @param	tcur	the TuioCursor to assign
 		 */
@@ -81,6 +81,12 @@ namespace TUIO {
 		 * @return	the Cursor ID of this TuioCursor
 		 */
 		int getCursorID() const;
+
+		/**
+		 * Sets the Cursor ID of this TuioCursor.
+		 * @param ci	the new Cursor ID for this TuioCursor
+		 */
+		void setCursorID(int ci);
 	};
 }
 #endif

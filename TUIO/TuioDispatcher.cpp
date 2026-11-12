@@ -1,6 +1,6 @@
 /*
  TUIO C++ Library
- Copyright (c) 2005-2017 Martin Kaltenbrunner <martin@tuio.org>
+ Copyright (c) 2005-2026 Martin Kaltenbrunner <martin@tuio.org>
  
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -111,7 +111,7 @@ void TuioDispatcher::removeAllTuioListeners() {
 	listenerList.clear();
 }
 
-TuioObject* TuioDispatcher::getTuioObject(long s_id) {
+TuioObject* TuioDispatcher::getTuioObject(int s_id) {
 	lockObjectList();
 	for (std::list<TuioObject*>::iterator iter=objectList.begin(); iter != objectList.end(); iter++) {
 		if((*iter)->getSessionID()==s_id) {
@@ -123,7 +123,7 @@ TuioObject* TuioDispatcher::getTuioObject(long s_id) {
 	return NULL;
 }
 
-TuioCursor* TuioDispatcher::getTuioCursor(long s_id) {
+TuioCursor* TuioDispatcher::getTuioCursor(int s_id) {
 	lockCursorList();
 	for (std::list<TuioCursor*>::iterator iter=cursorList.begin(); iter != cursorList.end(); iter++) {
 		if((*iter)->getSessionID()==s_id) {
@@ -135,7 +135,7 @@ TuioCursor* TuioDispatcher::getTuioCursor(long s_id) {
 	return NULL;
 }
 
-TuioBlob* TuioDispatcher::getTuioBlob(long s_id) {
+TuioBlob* TuioDispatcher::getTuioBlob(int s_id) {
 	lockBlobList();
 	for (std::list<TuioBlob*>::iterator iter=blobList.begin(); iter != blobList.end(); iter++) {
 		if((*iter)->getSessionID()==s_id) {
@@ -172,6 +172,27 @@ std::list<TuioBlob*> TuioDispatcher::getTuioBlobs() {
 	//std::list<TuioBlob*> listBuffer = blobList;
 	unlockBlobList();
 	return listBuffer;
+}
+
+int TuioDispatcher::getTuioObjectCount() {
+	lockObjectList();
+	int count = (int)objectList.size();
+	unlockObjectList();
+	return count;
+}
+
+int TuioDispatcher::getTuioCursorCount() {
+	lockCursorList();
+	int count = (int)cursorList.size();
+	unlockCursorList();
+	return count;
+}
+
+int TuioDispatcher::getTuioBlobCount() {
+	lockBlobList();
+	int count = (int)blobList.size();
+	unlockBlobList();
+	return count;
 }
 
 std::list<TuioObject> TuioDispatcher::copyTuioObjects() {

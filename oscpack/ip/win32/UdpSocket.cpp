@@ -112,6 +112,11 @@ public:
             throw std::runtime_error("unable to create udp socket\n");
         }
 
+		// raise the send buffer so large datagrams (up to the IPv4 maximum
+		// of 65507 bytes) can be sent on platforms with small defaults, e.g. macOS
+		int sendBufferSize = 65536;
+		setsockopt(socket_, SOL_SOCKET, SO_SNDBUF, (const char*)&sendBufferSize, sizeof(sendBufferSize));
+
 		std::memset( &sendToAddr_, 0, sizeof(sendToAddr_) );
         sendToAddr_.sin_family = AF_INET;
 	}
@@ -429,7 +434,7 @@ public:
 			timerQueue_.push_back( std::make_pair( currentTimeMs + i->initialDelayMs, *i ) );
 		std::sort( timerQueue_.begin(), timerQueue_.end(), CompareScheduledTimerCalls );
 
-		const int MAX_BUFFER_SIZE = 4098;
+		const int MAX_BUFFER_SIZE = 65536;
 		char *data = new char[ MAX_BUFFER_SIZE ];
 		IpEndpointName remoteEndpoint;
 

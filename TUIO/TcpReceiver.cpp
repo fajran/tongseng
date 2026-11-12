@@ -1,6 +1,6 @@
 /*
  TUIO C++ Library
- Copyright (c) 2005-2017 Martin Kaltenbrunner <martin@tuio.org>
+ Copyright (c) 2005-2026 Martin Kaltenbrunner <martin@tuio.org>
  
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,249 +17,224 @@
 */
 
 #include "TcpReceiver.h"
+#include "TcpUtils.h"
 
 using namespace TUIO;
 using namespace osc;
 
-// workaround for connect method name conflict
-int tcp_connect(int socket, const struct sockaddr *address, socklen_t address_len) {
-	return connect(socket, address, address_len);
-}
+namespace {
 
-#if defined (WIN32) && !defined (int32_t)
-typedef	DWORD int32_t;
-#endif
+/** Data passed to a per-client receiver thread */
+struct TcpClientData {
+	TcpReceiver *receiver; ///< the receiver owning the client thread
+	tuio_socket_t socket; ///< the accepted client socket
+};
 
-#ifdef WIN32
-static DWORD WINAPI ClientThreadFunc( LPVOID obj )
-#else
-static void* ClientThreadFunc( void* obj )
-#endif
+} // anonymous namespace
+
+TUIO_THREAD_FUNC(ClientThreadFunc)
 {
-	TcpReceiver *sender = static_cast<TcpReceiver*>(obj);
+	TcpClientData *client_data = static_cast<TcpClientData*>(obj);
+	TcpReceiver *receiver = client_data->receiver;
+	tuio_socket_t client = client_data->socket;
+	delete client_data;
+
 	char data_buffer[MAX_TCP_SIZE+4];
-	char data_size[4];
-	int32_t bundle_size;
+	int data_len = 0;
 
-#ifdef WIN32
-	SOCKET client = sender->tcp_client_list.back();
-#else
-	int client = sender->tcp_client_list.back();
-#endif
-
-	size_t bytes = 1;
-	while (bytes) {
-		bytes = recv(client, data_buffer, sizeof(data_buffer),0);
-
-		if (bytes>=4) {
-			memcpy(&data_size[0],&data_buffer[0], 4);
-#ifdef OSC_HOST_LITTLE_ENDIAN
-			bundle_size = 0xFF & data_size[3];
-			bundle_size |= (0xFF & data_size[2]) << 8;
-			bundle_size |= (0xFF & data_size[1]) << 16;
-			bundle_size |= (int32_t)(0xFF & data_size[0]) << 24;
-#else
-			bundle_size = (int32_t)(*data_size);
-#endif
-			if (bundle_size+4==bytes) {
-				sender->ProcessPacket(&data_buffer[4],(int)bundle_size,IpEndpointName());
+	int32_t bytes = 1;
+	while (bytes>0) {
+		bytes = (int32_t)recv(client, data_buffer+data_len, (int)sizeof(data_buffer)-data_len,0);
+		if (bytes<=0) break;
+		data_len += bytes;
+		
+		// extract all complete OSC frames from the received TCP stream
+		int offset = 0;
+		while ((data_len-offset)>=4) {
+			
+			// the frame size is a 32-bit big-endian integer
+			int32_t bundle_size = (int32_t)(0xFF & data_buffer[offset]) << 24;
+			bundle_size |= (0xFF & data_buffer[offset+1]) << 16;
+			bundle_size |= (0xFF & data_buffer[offset+2]) << 8;
+			bundle_size |= (0xFF & data_buffer[offset+3]);
+			
+			// abort the connection on a corrupt frame size
+			if ((bundle_size<0) || (bundle_size>MAX_TCP_SIZE)) {
+				offset = data_len;
+				data_len = 0;
+				bytes = 0;
+				break;
 			}
+			
+			// wait for more data on an incomplete frame
+			if ((data_len-offset)<(4+bundle_size)) break;
+			
+			receiver->ProcessPacket(&data_buffer[offset+4],(int)bundle_size,IpEndpointName());
+			offset += 4+bundle_size;
+		}
+		
+		// compact the remaining data to the front of the buffer
+		if (offset>0) {
+			memmove(data_buffer,data_buffer+offset,data_len-offset);
+			data_len -= offset;
 		}
 	}
 
-	sender->tcp_client_list.remove(client);
+	// the client thread owns and closes its socket, including the connected main socket
+	lockMutex(receiver->tcp_mutex);
+	receiver->tcp_client_list.remove(client);
+	if (client==receiver->tcp_socket) receiver->tcp_socket = TUIO_INVALID_SOCKET;
+	unlockMutex(receiver->tcp_mutex);
+	closeSocket(client);
 	std::cout << "closed TUIO/TCP connection" << std::endl;
 
-	//if (sender->tcp_client_list.size()==0) sender->connected=false;
-	//std::cout << sender->tcp_client_list.size() << " clients left"<< std::endl;	
-
 	return 0;
-};
+}
 
-#ifndef  WIN32
-static void* ServerThreadFunc( void* obj )
-#else
-static DWORD WINAPI ServerThreadFunc( LPVOID obj )
-#endif
+TUIO_THREAD_FUNC(ServerThreadFunc)
 {
-	TcpReceiver *sender = static_cast<TcpReceiver*>(obj);
-	struct sockaddr_in client_addr;
-	socklen_t len = sizeof(client_addr);
+	TcpReceiver *receiver = static_cast<TcpReceiver*>(obj);
 
-	while ((int)sender->tcp_socket>0) {
-#ifdef WIN32
-		SOCKET tcp_client = -1;
-#else
-		int tcp_client = -1;
-#endif
-		tcp_client = accept(sender->tcp_socket, (struct sockaddr*)&client_addr, &len);
+	while (isValidSocket(receiver->tcp_socket)) {
+		struct sockaddr_in client_addr;
+		socklen_t len = sizeof(client_addr);
+		tuio_socket_t tcp_client = accept(receiver->tcp_socket, (struct sockaddr*)&client_addr, &len);
+		if (!isValidSocket(tcp_client)) break;
 
-		if (tcp_client>0) { 
-			std::cout << "listening to TUIO/TCP messages from " << inet_ntoa(client_addr.sin_addr) << "@" << client_addr.sin_port << std::endl;
-			sender->tcp_client_list.push_back(tcp_client);
-			//sender->connected=true;
-			//std::cout << sender->tcp_client_list.size() << " clients connected"<< std::endl;	
-			
-#ifndef WIN32
-			pthread_t client_thread;
-			pthread_create(&client_thread , NULL, ClientThreadFunc,obj);
-#else
-			DWORD ClientThreadId;
-			HANDLE client_thread = CreateThread( 0, 0, ClientThreadFunc, obj, 0, &ClientThreadId );
-#endif
-		} else break;
+		// stop on the dummy self-connection used to unblock accept() during disconnect()
+		lockMutex(receiver->tcp_mutex);
+		bool stop = !receiver->isConnected();
+		if (!stop) receiver->tcp_client_list.push_back(tcp_client);
+		unlockMutex(receiver->tcp_mutex);
+		if (stop) {
+			closeSocket(tcp_client);
+			break;
+		}
 
+		std::cout << "listening to TUIO/TCP messages from " << inet_ntoa(client_addr.sin_addr) << "@" << client_addr.sin_port << std::endl;
+
+		TcpClientData *client_data = new TcpClientData;
+		client_data->receiver = receiver;
+		client_data->socket = tcp_client;
+		if (!startDetachedThread(ClientThreadFunc, client_data)) {
+			delete client_data;
+			lockMutex(receiver->tcp_mutex);
+			receiver->tcp_client_list.remove(tcp_client);
+			unlockMutex(receiver->tcp_mutex);
+			closeSocket(tcp_client);
+		}
 	}
 	
 	return 0;
-};
+}
 
 TcpReceiver::TcpReceiver(int port)
-: tcp_socket	(-1)
+: tcp_socket	(TUIO_INVALID_SOCKET)
+, server_thread	(0)
 , locked	(false)
+, local		(true)
 {
+	initMutex(tcp_mutex);
 
-	tcp_socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (tcp_socket < 0) std::cerr << "could not create TUIO/TCP socket" << std::endl;
-	
-	int optval = 1;
-#ifdef  WIN32
-	int ret = setsockopt(tcp_socket,SOL_SOCKET,SO_REUSEADDR, (const char *)&optval,  sizeof(int));
-#else
-	int ret = setsockopt(tcp_socket,SOL_SOCKET,SO_REUSEADDR, (const void *)&optval,  sizeof(int));
-#endif
-	if (ret < 0) {
-		std::cerr << "could not reuse TUIO/TCP socket address" << std::endl;
-		return;
-	}
-	
-	struct sockaddr_in tcp_server;
-	memset( &tcp_server, 0, sizeof (tcp_server));
-	
-	tcp_server.sin_family = AF_INET;
-	tcp_server.sin_addr.s_addr = htonl(INADDR_ANY);
-	tcp_server.sin_port = htons(port);
-	
-	socklen_t len = sizeof(tcp_server);
-	ret = bind(tcp_socket,(struct sockaddr*)&tcp_server,len);
-	if (ret < 0) {
-		std::cerr << "could not bind to TUIO/TCP socket on port " << port << std::endl;
-		return;
-	}
-	
-	ret =  listen(tcp_socket, 1);
-	if (ret < 0) {
-		std::cerr << "could not start listening to TUIO/TCP socket" << std::endl;
-#ifdef WIN32
-		closesocket(tcp_socket);
-#else
-		close(tcp_socket);
-#endif
-		tcp_socket=-1;
-		return;
-	}
-
-	std::cout << "TUIO/TCP socket created on port " << port << std::endl;
+	tcp_socket = openListenSocket(port);
+	if (isValidSocket(tcp_socket)) std::cout << "TUIO/TCP socket created on port " << port << std::endl;
 }
 
 TcpReceiver::TcpReceiver(const char *host, int port)
-: tcp_socket	(-1)
+: tcp_socket	(TUIO_INVALID_SOCKET)
+, server_thread	(0)
 , locked		(false)
+, local			(false)
 {
+	initMutex(tcp_mutex);
+
+	struct sockaddr_in tcp_server;
+	if (!resolveHost(host,port,tcp_server)) {
+		std::cerr << "unknown host name: " << host << std::endl;
+		return;
+	}
 
 	tcp_socket = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (tcp_socket < 0) {
+	if (!isValidSocket(tcp_socket)) {
 		std::cerr << "could not create TUIO/TCP socket" << std::endl;
 		return;
 	}
 
-	struct sockaddr_in tcp_server;
-	memset( &tcp_server, 0, sizeof (tcp_server));
-	unsigned long addr = inet_addr(host);
-	if (addr != INADDR_NONE) {
-		memcpy( (char *)&tcp_server.sin_addr, &addr, sizeof(addr));
-	} else {
-		struct hostent *host_info = gethostbyname(host);
-		if (host_info == NULL) std::cerr << "unknown host name: " << host << std::endl;
-		memcpy( (char *)&tcp_server.sin_addr, host_info->h_addr, host_info->h_length );
-	}
-	
-	tcp_server.sin_family = AF_INET;
-	tcp_server.sin_port = htons(port);
-
-	int ret = tcp_connect(tcp_socket,(struct sockaddr*)&tcp_server,sizeof(tcp_server));
-	if (ret<0) {
-#ifdef WIN32
-		closesocket(tcp_socket);
-#else
-		close(tcp_socket);
-#endif		
+	if (::connect(tcp_socket,(struct sockaddr*)&tcp_server,sizeof(tcp_server))<0) {
 		std::cerr << "could not connect to TUIO/TCP server at " << host << ":"<< port << std::endl;
-		tcp_socket=-1;
+		closeSocket(tcp_socket);
+		tcp_socket = TUIO_INVALID_SOCKET;
 		return;
-	} else {
-		tcp_client_list.push_back(tcp_socket);
-		std::cout << "listening to TUIO/TCP messages from " << host << ":" << port << std::endl;
 	}
+
+	tcp_client_list.push_back(tcp_socket);
+	std::cout << "listening to TUIO/TCP messages from " << host << ":" << port << std::endl;
 }
 
-TcpReceiver::~TcpReceiver() {	
+TcpReceiver::~TcpReceiver() {
+	disconnect();
 	
+	// close a socket that has never been handed over to a receiver thread
+	if (isValidSocket(tcp_socket)) closeSocket(tcp_socket);
+	destroyMutex(tcp_mutex);
 }
 
 void TcpReceiver::connect(bool lk) {
 	
 	if (connected) return;
-	if ((int)tcp_socket<0) return;
+	if (!isValidSocket(tcp_socket)) return;
 	locked = lk;
-	
-	if (tcp_client_list.size()>0) {
-		if (!locked) {
-#ifndef WIN32
-			pthread_create(&server_thread , NULL, ClientThreadFunc, this);
-#else
-			server_thread = CreateThread( 0, 0, ClientThreadFunc, this, 0, &ServerThreadId );
-#endif
-		} else ClientThreadFunc(this);		
-	} else {
-		if (!locked) {
-#ifndef WIN32
-			pthread_create(&server_thread , NULL, ServerThreadFunc, this);
-#else
-			server_thread = CreateThread( 0, 0, ServerThreadFunc, this, 0, &ServerThreadId );
-#endif
-		} else ServerThreadFunc(this);
-	}
-
 	connected = true;
+	server_thread = 0;
+
+	if (!local) {
+		// the connected main socket is handled by a single client thread
+		TcpClientData *client_data = new TcpClientData;
+		client_data->receiver = this;
+		client_data->socket = tcp_socket;
+		
+		if (locked) {
+			ClientThreadFunc(client_data);
+			connected = false;
+			locked = false;
+		} else if (!startThread(server_thread, ClientThreadFunc, client_data)) {
+			delete client_data;
+			connected = false;
+		}
+	} else {
+		if (locked) {
+			ServerThreadFunc(this);
+			connected = false;
+			locked = false;
+		} else if (!startThread(server_thread, ServerThreadFunc, this)) {
+			connected = false;
+		}
+	}
 }
 
 void TcpReceiver::disconnect() {
 	
 	if (!connected) return;
-	if ((int)tcp_socket<0) return;
 
-#ifdef WIN32
-	for (std::list<SOCKET>::iterator client = tcp_client_list.begin(); client!=tcp_client_list.end(); client++)
-		closesocket((*client));
-	closesocket(tcp_socket);
-	if( server_thread ) CloseHandle( server_thread );
-#else
-	for (std::list<int>::iterator client = tcp_client_list.begin(); client!=tcp_client_list.end(); client++)
-		close((*client));
-	close(tcp_socket);
-	server_thread = 0;
-#endif	
-	
-	tcp_client_list.clear();
-	if (!locked) {
-#ifdef WIN32
-		if( server_thread ) CloseHandle( server_thread );
-#endif
-		server_thread = 0;
-	} else locked = false;
-
+	// shut down all client sockets to unblock their threads, which then close them
+	tuio_socket_t listen_socket = TUIO_INVALID_SOCKET;
+	lockMutex(tcp_mutex);
 	connected = false;
+	for (std::list<tuio_socket_t>::iterator client = tcp_client_list.begin(); client!=tcp_client_list.end(); client++)
+		shutdownSocket(*client);
+	if (local) {
+		listen_socket = tcp_socket;
+		tcp_socket = TUIO_INVALID_SOCKET;
+	}
+	unlockMutex(tcp_mutex);
+
+	if (isValidSocket(listen_socket)) {
+		wakeAccept(listen_socket);
+		closeSocket(listen_socket);
+	}
+
+	if (!locked) joinThread(server_thread);
+	else locked = false;
+
+	waitForEmptyList(tcp_mutex,tcp_client_list);
 }
-
-

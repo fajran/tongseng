@@ -1,6 +1,6 @@
 /*
  TUIO C++ Library
- Copyright (c) 2009-2017 Martin Kaltenbrunner <martin@tuio.org>
+ Copyright (c) 2009-2026 Martin Kaltenbrunner <martin@tuio.org>
  WebSockSender (c) 2015 Florian Echtler <floe@butterbrot.org>
  
  This library is free software; you can redistribute it and/or
@@ -18,10 +18,14 @@
 */
 
 #include "WebSockSender.h"
+#include "TcpUtils.h"
 
-#if defined (WIN32) && !defined (_STDINT)
-	typedef DWORD int32_t;
-#endif
+/* All of these macros assume use on a 32-bit variable.
+ Additionally, SWAP assumes we're little-endian.	*/
+#define SWAP(a) ((((a) >> 24) & 0x000000ff) | (((a) >>	8) & 0x0000ff00) | \
+(((a) <<	8) & 0x00ff0000) | (((a) << 24) & 0xff000000))
+#define ROL(a, b) (((a) << (b)) | ((a) >> (32 - (b))))
+#define ROR(a, b) ROL((a), (32 - (b)))
 
 using namespace TUIO;
 
@@ -29,83 +33,77 @@ WebSockSender::WebSockSender()
 	:TcpSender( 8080 )
 {
 	local = true;
-	buffer_size = MAX_TCP_SIZE;
-	port_no = 8080;
 }
 
 WebSockSender::WebSockSender(int port)
 	:TcpSender( port )
 {
 	local = true;
-	buffer_size = MAX_TCP_SIZE;
-	port_no = port;
 }
 
 bool WebSockSender::sendOscPacket (osc::OutboundPacketStream *bundle) {
-	if (!connected) return false; 
-	if ( bundle->Size() > buffer_size ) return false;
-	if ( bundle->Size() == 0 ) return false;
-	
-#ifdef OSC_HOST_LITTLE_ENDIAN             
-	data_size[0] =  bundle->Size()>>24;
-	data_size[1] = (bundle->Size()>>16) & 255;
-	data_size[2] = (bundle->Size()>>8) & 255;
-	data_size[3] = (bundle->Size()) & 255;
-#else
-	*((int32_t*)data_size) = bundle->Size();
-#endif
+	if (!connected) return false;
+	if (bundle->Size() == 0 || bundle->Size() > buffer_size) return false;
 
-#ifdef WIN32
-	std::list<SOCKET>::iterator client;
-#else
-	std::list<int>::iterator client;
-#endif
+	int len = (int)bundle->Size();
 	
-	for (client = tcp_client_list.begin(); client!=tcp_client_list.end(); client++) {
-		size_t len = bundle->Size();
-		// add WebSocket header on top
-		uint8_t header[4] = {
-			0x82,
-			(uint8_t)( len & 0xFF), 
-			(uint8_t)((len >>8) & 0xFF),
-			(uint8_t)( len & 0xFF)
-		};
-		int hs = 2;
-		if (len > 125) { hs = 4; header[1] = 126; }
-		memcpy(&data_buffer[0], &header, hs);
-		memcpy(&data_buffer[hs], bundle->Data(), bundle->Size());
-		send((*client),data_buffer, hs+bundle->Size(),0);
+	// create the WebSocket frame header (RFC 6455)
+	uint8_t header[10];
+	int hs;
+	header[0] = 0x82; // FIN + binary frame
+	if (len <= 125) {
+		header[1] = (uint8_t)len;
+		hs = 2;
+	} else if (len <= 65535) {
+		header[1] = 126;
+		header[2] = (uint8_t)((len >> 8) & 0xFF);
+		header[3] = (uint8_t)(len & 0xFF);
+		hs = 4;
+	} else {
+		header[1] = 127;
+		header[2] = header[3] = header[4] = header[5] = 0;
+		header[6] = (uint8_t)((len >> 24) & 0xFF);
+		header[7] = (uint8_t)((len >> 16) & 0xFF);
+		header[8] = (uint8_t)((len >> 8) & 0xFF);
+		header[9] = (uint8_t)(len & 0xFF);
+		hs = 10;
 	}
 
-	return true;
+	// send the WebSocket header, followed by the OSC payload
+	return deliver((const char*)header,hs,bundle->Data(),len);
 }
 
 void WebSockSender::newClient( int tcp_client ) {
 
-	// socket -> file descriptor
-#ifdef WIN32
-	FILE* conn = _fdopen( tcp_client, "r+" );
-#else
-	FILE* conn = fdopen( tcp_client, "r+" );
-#endif
-
-	// websocket challenge-response
-	uint8_t digest[SHA1_HASH_SIZE];
-	char buf[1024] = "...";
-	char key[1024];
-
-	// read client handshake challenge
-	while ((buf[0] != 0) && (buf[0] != '\r')) {
-		fgets( buf, sizeof(buf), conn );
-		if (strncmp(buf,"Sec-WebSocket-Key: ",19) == 0) {
-			strncpy(key,buf+19,sizeof(key));
-			key[strlen(buf)-21] = 0;
-			break;
+	// read the client handshake request until the empty line,
+	// the client sends no further data before it receives the response
+	std::string request;
+	char buf[1024];
+	while (request.find("\r\n\r\n")==std::string::npos) {
+		int r = (request.size()>4096) ? 0 : (int)recv(tcp_client,buf,sizeof(buf),0);
+		if (r<=0) {
+			shutdownSocket(tcp_client);
+			return;
 		}
+		request.append(buf,r);
+	}
+	
+	// reject requests without a WebSocket upgrade header
+	const char KEY_HDR[] = "Sec-WebSocket-Key: ";
+	size_t kpos = request.find(KEY_HDR);
+	size_t kend = (kpos==std::string::npos) ? kpos : request.find("\r\n",kpos+sizeof(KEY_HDR)-1);
+	if (request.find("Upgrade: websocket")==std::string::npos ||
+	    kpos==std::string::npos || kend==std::string::npos) {
+		shutdownSocket(tcp_client);
+		return;
 	}
 
-	strncat(key,"258EAFA5-E914-47DA-95CA-C5AB0DC85B11",sizeof(key)-strlen(key)-1);
-	sha1(digest,(uint8_t*)key,strlen(key));
+	std::string key = request.substr(kpos+sizeof(KEY_HDR)-1,kend-kpos-sizeof(KEY_HDR)+1);
+	key += "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+
+	// websocket challenge-response
+	uint8_t digest[SHA1_HASH_SIZE] = {0};
+	sha1(digest,(uint8_t*)key.c_str(),key.size());
 
 	snprintf(buf, sizeof(buf),
 		"HTTP/1.1 101 Switching Protocols\r\n"
@@ -115,7 +113,7 @@ void WebSockSender::newClient( int tcp_client ) {
 		"Sec-WebSocket-Accept: %s\r\n\r\n",
 		base64( digest, SHA1_HASH_SIZE ).c_str() ); 
 
-	send(tcp_client,buf, strlen(buf),0);
+	if (!sendAll(tcp_client,buf,(int)strlen(buf))) shutdownSocket(tcp_client);
 }
 
 
@@ -167,7 +165,7 @@ void WebSockSender::sha1( uint8_t digest[SHA1_HASH_SIZE], const uint8_t* inbuf, 
 	 also be some zeroes in between the 0x80 and the bit count so that we
 	 operate on a multiple of 64 bytes; 9 bytes, though, is the minimal
 	 amount of extra data.)	*/
-	for (i = 0; i < length + 9; i += 64) {
+	for (i = 0; i < (int)length + 9; i += 64) {
 		
 		/* Perform any padding necessary. */
 		remaining_bytes = (int)length - i;

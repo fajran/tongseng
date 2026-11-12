@@ -1,6 +1,6 @@
 /*
  TUIO C++ Library
- Copyright (c) 2005-2017 Martin Kaltenbrunner <martin@tuio.org>
+ Copyright (c) 2005-2026 Martin Kaltenbrunner <martin@tuio.org>
  
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -24,6 +24,7 @@
 #ifdef WIN32
 #include <winsock.h>
 #include <io.h>
+#include <stdint.h>
 typedef int socklen_t;
 #else
 #include <sys/types.h>
@@ -35,6 +36,9 @@ typedef int socklen_t;
 #endif
 
 #include <list>
+#ifndef WIN32
+#include <pthread.h>
+#endif
 #define MAX_TCP_SIZE 65536
 
 namespace TUIO {
@@ -43,7 +47,7 @@ namespace TUIO {
 	 * The TcpSender implements the TCP transport method for OSC
 	 *
 	 * @author Martin Kaltenbrunner
-	 * @version 2.0.a0
+	 * @version 1.1.6
 	 */ 
 	class LIBDECL TcpSender : public OscSender {
 				
@@ -55,7 +59,7 @@ namespace TUIO {
 		TcpSender();
 		
 		/**
-		 * This constructor creates a TcpSender that sends to the provided port on the the given host
+		 * This constructor creates a TcpSender that sends to the provided port on the given host
 		 *
 		 * @param  host  the receiving host name
 		 * @param  port  the outgoing TUIO TCP port number
@@ -64,8 +68,9 @@ namespace TUIO {
 
 		/**
 		 * This constructor creates a TcpSender that listens to the provided port
+		 * and delivers OSC data to all connected TCP clients
 		 *
-		 * @param  port	the incoming TUIO TCP port number
+		 * @param  port	the listening TUIO TCP port number
 		 */
 		TcpSender(int port);	
 		
@@ -91,35 +96,77 @@ namespace TUIO {
 		bool isConnected ();
 
 		/**
-		 * This method is called whenever a new client connects
+		 * This method is called whenever a new client connects,
+		 * before the client is added to the delivery list
 		 *
 		 * @param tcp_client the socket handle of the new client
 		 */
 		virtual void newClient( int tcp_client );
 
+		/** The TCP port the sender is listening on */
 		int port_no;
 		
 #ifdef WIN32
+		/** The listening socket, public to be accessible from the thread function */
 		SOCKET tcp_socket;
+		/** The list of connected client sockets */
 		std::list<SOCKET> tcp_client_list;
+		/** The mutex protecting tcp_client_list */
+		HANDLE tcp_mutex;
 #else
+		/** The listening socket, public to be accessible from the thread function */
 		int tcp_socket;
+		/** The list of connected client sockets */
 		std::list<int> tcp_client_list;
+		/** The mutex protecting tcp_client_list */
+		pthread_mutex_t tcp_mutex;
 #endif
+		/** Whether the sender is currently connected */
 		bool connected;
+
+		/**
+		 * The accepted client socket during its protocol handshake,
+		 * only public to be accessible from the thread function
+		 */
+#ifdef WIN32
+		SOCKET pending_socket;
+#else
+		int pending_socket;
+#endif
+
 		const char* tuio_type() { return "TUIO/TCP"; }
 
 	protected:
+		/**
+		 * Delivers a packet header followed by its payload to all connected clients.
+		 * Clients that fail to receive the data are shut down and removed by their thread.
+		 *
+		 * @param header  the packet header
+		 * @param header_size  the size of the packet header
+		 * @param data  the packet payload
+		 * @param data_len  the size of the packet payload
+		 * @return true after the data has been delivered to all clients
+		 */
+		bool deliver(const char *header, int header_size, const char *data, int data_len);
+
+		/** Buffer holding the big-endian packet size header */
 		char data_size[4];
+		
+		/** Buffer holding the packet payload during delivery */
 		char data_buffer[MAX_TCP_SIZE+4];
 		
 
 #ifdef WIN32
+		/** The thread accepting new client connections */
 		HANDLE server_thread;
 		DWORD ServerThreadId;
 #else
+		/** The thread accepting new client connections */
 		pthread_t server_thread;
 #endif
+
+	private:
+		bool connectTo(const char *host, int port);
 		
 	};
 }

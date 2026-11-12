@@ -1,6 +1,6 @@
 /*
  TUIO C++ Library
- Copyright (c) 2005-2017 Martin Kaltenbrunner <martin@tuio.org>
+ Copyright (c) 2005-2026 Martin Kaltenbrunner <martin@tuio.org>
  
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -20,11 +20,11 @@
 
 using namespace TUIO;
 
-TuioCursor::TuioCursor (TuioTime ttime, long si, int ci, float xp, float yp):TuioContainer(ttime,si,xp,yp) {
+TuioCursor::TuioCursor (TuioTime ttime, int si, int ci, float xp, float yp):TuioContainer(ttime,si,xp,yp) {
 	cursor_id = ci;
 }
 
-TuioCursor::TuioCursor (long si, int ci, float xp, float yp):TuioContainer(si,xp,yp) {
+TuioCursor::TuioCursor (int si, int ci, float xp, float yp):TuioContainer(si,xp,yp) {
 	cursor_id = ci;
 }
 
@@ -35,4 +35,8 @@ TuioCursor::TuioCursor (TuioCursor *tcur):TuioContainer(tcur) {
 int TuioCursor::getCursorID() const{
 	return cursor_id;
 };
+
+void TuioCursor::setCursorID(int ci) {
+	cursor_id = ci;
+}
 
