@@ -90,7 +90,7 @@
 	[_hostname setEnabled:false];
 	[_port setEnabled:false];
 	[_device setEnabled:false];
-	[_info setStringValue:@"Tongseng is running"];
+	[_info setStringValue:@"Tongseng is sending"];
 	[_button setTitle:@"Stop"];
 	
 	_running = true;
@@ -127,9 +127,9 @@
 		[_clientProtocol setEnabled:false];
 		[_clientPort setEnabled:false];
 		[_clientInfo setStringValue:(tongseng_client_virtual_device() ?
-			@"Tongseng is injecting multitouch" :
-			(AXIsProcessTrusted() ? @"Tongseng is emulating input" :
-				@"Needs Accessibility permission"))];
+			@"Tongseng is injecting" :
+			(AXIsProcessTrusted() ? @"Tongseng is emulating" :
+				@"Needs Accessibility"))];
 		[_clientButton setTitle:@"Stop"];
 		_clientRunning = true;
 	} else {
