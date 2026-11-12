@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21225" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="25408" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21225"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="25408"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -86,7 +86,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="529" y="292" width="270" height="230"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="875"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1470" height="923"/>
             <view key="contentView" id="372">
                 <rect key="frame" x="0.0" y="0.0" width="270" height="230"/>
                 <autoresizingMask key="autoresizingMask"/>
@@ -116,11 +116,11 @@
                                             <rect key="frame" x="15" y="41" width="235" height="148"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <view key="contentView" id="gRf-5x-wss">
-                                                <rect key="frame" x="3" y="3" width="229" height="130"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="235" height="136"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="450" userLabel="HostLabel">
-                                                        <rect key="frame" x="15" y="89" width="72" height="17"/>
+                                                    <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="450" userLabel="HostLabel">
+                                                        <rect key="frame" x="15" y="95" width="72" height="17"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Hostname:" id="451">
                                                             <font key="font" metaFont="system"/>
@@ -128,8 +128,8 @@
                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                         </textFieldCell>
                                                     </textField>
-                                                    <textField verticalHuggingPriority="750" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="454">
-                                                        <rect key="frame" x="92" y="87" width="119" height="22"/>
+                                                    <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="454">
+                                                        <rect key="frame" x="92" y="93" width="119" height="22"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="localhost" drawsBackground="YES" usesSingleLineMode="YES" id="455">
                                                             <font key="font" metaFont="system"/>
@@ -141,11 +141,11 @@
                                                         </textFieldCell>
                                                     </textField>
                                                     <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zTg-yY-5aJ" userLabel="Protocol">
-                                                        <rect key="frame" x="14" y="52" width="73" height="26"/>
+                                                        <rect key="frame" x="14" y="58" width="73" height="26"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                         <popUpButtonCell key="cell" type="push" title="UDP" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="Zu6-8B-ES6" id="SLL-yo-4aF">
                                                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                                            <font key="font" metaFont="menu"/>
+                                                            <font key="font" metaFont="message"/>
                                                             <menu key="menu" id="yoa-4v-ItP">
                                                                 <items>
                                                                     <menuItem title="UDP" state="on" id="Zu6-8B-ES6"/>
@@ -158,8 +158,8 @@
                                                             <action selector="select:" target="463" id="wgV-5G-ysY"/>
                                                         </connections>
                                                     </popUpButton>
-                                                    <textField verticalHuggingPriority="750" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="456">
-                                                        <rect key="frame" x="92" y="55" width="119" height="22"/>
+                                                    <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="456">
+                                                        <rect key="frame" x="92" y="61" width="119" height="22"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="3333" drawsBackground="YES" usesSingleLineMode="YES" id="457">
                                                             <font key="font" metaFont="system"/>
@@ -170,8 +170,8 @@
                                                             </allowedInputSourceLocales>
                                                         </textFieldCell>
                                                     </textField>
-                                                    <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ChW-WW-Hwr" userLabel="DevLabel">
-                                                        <rect key="frame" x="18" y="29" width="69" height="17"/>
+                                                    <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ChW-WW-Hwr" userLabel="DevLabel">
+                                                        <rect key="frame" x="18" y="35" width="69" height="17"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Device:" id="Teo-OQ-hiL">
                                                             <font key="font" metaFont="system"/>
@@ -180,11 +180,11 @@
                                                         </textFieldCell>
                                                     </textField>
                                                     <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oSn-TT-DeO">
-                                                        <rect key="frame" x="90" y="23" width="124" height="26"/>
+                                                        <rect key="frame" x="90" y="29" width="124" height="26"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                         <popUpButtonCell key="cell" type="push" title="Default" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="WNd-bV-N8F" id="zf4-5x-RAS">
                                                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                                            <font key="font" metaFont="menu"/>
+                                                            <font key="font" metaFont="message"/>
                                                             <menu key="menu" id="WVb-w9-SLk">
                                                                 <items>
                                                                     <menuItem title="Default" state="on" id="WNd-bV-N8F"/>
@@ -195,7 +195,7 @@
                                                 </subviews>
                                             </view>
                                         </box>
-                                        <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="469">
+                                        <textField focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="469">
                                             <rect key="frame" x="106" y="12" width="143" height="17"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Tongseng is stopped" id="470">
@@ -216,15 +216,15 @@
                                             <rect key="frame" x="15" y="41" width="235" height="148"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <view key="contentView" id="kIu-gF-Yla">
-                                                <rect key="frame" x="3" y="3" width="229" height="130"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="235" height="136"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="WNt-pF-PNK" userLabel="Protocol">
-                                                        <rect key="frame" x="14" y="52" width="73" height="26"/>
+                                                        <rect key="frame" x="14" y="58" width="73" height="26"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                         <popUpButtonCell key="cell" type="push" title="UDP" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="CCN-DZ-C7N" id="akR-Qf-SFi">
                                                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                                            <font key="font" metaFont="menu"/>
+                                                            <font key="font" metaFont="message"/>
                                                             <menu key="menu" id="Wkz-2I-jP8">
                                                                 <items>
                                                                     <menuItem title="UDP" state="on" id="CCN-DZ-C7N"/>
@@ -233,8 +233,8 @@
                                                             </menu>
                                                         </popUpButtonCell>
                                                     </popUpButton>
-                                                    <textField verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uaG-pz-6ci">
-                                                        <rect key="frame" x="92" y="55" width="119" height="22"/>
+                                                    <textField focusRingType="none" verticalHuggingPriority="750" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uaG-pz-6ci">
+                                                        <rect key="frame" x="92" y="61" width="119" height="22"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="3333" drawsBackground="YES" usesSingleLineMode="YES" id="gzS-pY-Juy">
                                                             <font key="font" metaFont="system"/>
@@ -248,7 +248,7 @@
                                                 </subviews>
                                             </view>
                                         </box>
-                                        <textField verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rDr-37-8Ab" userLabel="Info">
+                                        <textField focusRingType="none" verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rDr-37-8Ab" userLabel="Info">
                                             <rect key="frame" x="106" y="12" width="143" height="17"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Tongseng is stopped" id="elR-9e-6YM">
