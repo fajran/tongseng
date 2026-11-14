@@ -22,11 +22,24 @@
 #include <dispatch/dispatch.h>
 #include <iostream>
 #include <math.h>
+#include <unistd.h>
 #include <atomic>
 #include <memory>
 
 #define MAX_CONTACTS 10
 #define DIGITIZER_MAX 32767
+
+// Resolve a requested CGDirectDisplayID: honor it when still active, otherwise
+// the built-in display, otherwise the main display.
+static uint32_t ResolveDisplay(uint32_t displayId)
+{
+	CGDirectDisplayID ids[16];
+	uint32_t count = 0;
+	CGGetActiveDisplayList(16, ids, &count);
+	for (uint32_t i=0;i<count;i++) if (ids[i]==displayId) return displayId;
+	for (uint32_t i=0;i<count;i++) if (CGDisplayIsBuiltin(ids[i])) return ids[i];
+	return CGMainDisplayID();
+}
 
 // IOHIDUserDevice is exported by IOKit but has no public SDK header.
 // Creating a device requires com.apple.developer.hid.virtual.device.
@@ -37,33 +50,92 @@ void IOHIDUserDeviceSetDispatchQueue(IOHIDUserDeviceRef device, dispatch_queue_t
 void IOHIDUserDeviceActivate(IOHIDUserDeviceRef device);
 void IOHIDUserDeviceCancel(IOHIDUserDeviceRef device);
 IOReturn IOHIDUserDeviceHandleReportAsync(IOHIDUserDeviceRef device, const uint8_t *report, CFIndex reportLength, IOReturn (*callback)(void *refcon, IOReturn result), void *refcon);
+typedef struct __IOHIDEventSystemClient *IOHIDEventSystemClientRef;
+typedef struct __IOHIDServiceClient *IOHIDServiceClientRef;
+IOHIDEventSystemClientRef IOHIDEventSystemClientCreateSimpleClient(CFAllocatorRef allocator);
+CFArrayRef IOHIDEventSystemClientCopyServices(IOHIDEventSystemClientRef client);
+Boolean IOHIDServiceClientSetProperty(IOHIDServiceClientRef service, CFStringRef key, CFTypeRef property);
+CFTypeRef IOHIDServiceClientCopyProperty(IOHIDServiceClientRef service, CFStringRef key);
 }
 
 // ---------------------------------------------------------------------------
 // Virtual HID digitizer backend (system-level multitouch, macOS 27+)
 // ---------------------------------------------------------------------------
 
-static void appendFinger(uint8_t *&d, int usage_page)
+static void appendFinger(uint8_t *&d, uint16_t physx, uint16_t physy)
 {
-	static const uint8_t finger[] = {
+	static const uint8_t finger1[] = {
 		0x09, 0x22, 0xA1, 0x02,					// Usage (Finger), Collection (Logical)
-		0x09, 0x42, 0x15, 0x00, 0x25, 0x01,	//   Tip Switch, 0..1
-		0x75, 0x01, 0x95, 0x01, 0x81, 0x02,	//   1 bit input
-		0x75, 0x07, 0x95, 0x01, 0x81, 0x03,	//   7 bits padding
+		0x09, 0x42, 0x09, 0x32, 0x09, 0x47,	//   Tip Switch, In Range, Confidence
+		0x15, 0x00, 0x25, 0x01,				//   0..1
+		0x75, 0x01, 0x95, 0x03, 0x81, 0x02,	//   3 bit input
+		0x75, 0x05, 0x95, 0x01, 0x81, 0x03,	//   5 bits padding
 		0x09, 0x51, 0x75, 0x08, 0x95, 0x01, 0x81, 0x02,	//   Contact ID
-		0x05, 0x01, 0x09, 0x30, 0x09, 0x31,	//   Generic Desktop X, Y
-		0x16, 0x00, 0x00, 0x26, 0xFF, 0x7F,	//   0..32767
-		0x75, 0x10, 0x95, 0x02, 0x81, 0x02,	//   2x16 bit input
+		0x05, 0x01,								//   Generic Desktop
+		0x09, 0x30,								//   X
+		0x16, 0x00, 0x00, 0x26, 0xFF, 0x7F,	//   logical 0..32767
+		0x35, 0x00, 0x46,						//   physical 0..
+	};
+	static const uint8_t finger2[] = {
+		0x55, 0x0E, 0x65, 0x11,				//   unit exp -2, unit cm (0.1mm)
+		0x75, 0x10, 0x95, 0x01, 0x81, 0x02,	//   16 bit X input
+		0x09, 0x31, 0x46,						//   Y, physical 0..
+	};
+	static const uint8_t finger3[] = {
+		0x75, 0x10, 0x95, 0x01, 0x81, 0x02,	//   16 bit Y input
+		0x55, 0x00, 0x65, 0x00,				//   reset unit
 		0xC0									// End Collection
 	};
-	memcpy(d, finger, sizeof(finger));
-	d += sizeof(finger);
+	memcpy(d, finger1, sizeof(finger1)); d += sizeof(finger1);
+	*d++ = physx & 0xFF; *d++ = physx >> 8;
+	memcpy(d, finger2, sizeof(finger2)); d += sizeof(finger2);
+	*d++ = physy & 0xFF; *d++ = physy >> 8;
+	memcpy(d, finger3, sizeof(finger3)); d += sizeof(finger3);
+}
+
+// The multitouch pipeline (HSTouchHIDService plugin) binds a digitizer
+// service to a display via the "displayUUID" service property. It is not
+// propagated from the virtual device, so we set it on the event service
+// once it registers.
+static void bindServiceToDisplay(uint32_t displayId)
+{
+	IOHIDEventSystemClientRef client = IOHIDEventSystemClientCreateSimpleClient(NULL);
+	if (!client) return;
+	CFUUIDRef uuid = CGDisplayCreateUUIDFromDisplayID(displayId);
+	CFStringRef uuidStr = uuid ? CFUUIDCreateString(NULL, uuid) : NULL;
+	for (int attempt=0; attempt<40 && uuidStr; attempt++) {
+		CFArrayRef services = IOHIDEventSystemClientCopyServices(client);
+		if (services) {
+			bool found = false;
+			for (CFIndex i=0;i<CFArrayGetCount(services);i++) {
+				IOHIDServiceClientRef s = (IOHIDServiceClientRef)CFArrayGetValueAtIndex(services,i);
+				CFTypeRef prod = IOHIDServiceClientCopyProperty(s, CFSTR("Product"));
+				bool match = prod && CFEqual(prod, CFSTR("TongsengTouch"));
+				if (prod) CFRelease(prod);
+				if (match) {
+					IOHIDServiceClientSetProperty(s, CFSTR("displayUUID"), uuidStr);
+					found = true;
+				}
+			}
+			CFRelease(services);
+			if (found) break;
+		}
+		usleep(250000);
+	}
+	if (uuidStr) CFRelease(uuidStr);
+	if (uuid) CFRelease(uuid);
+	CFRelease(client);
 }
 
 class DigitizerInjector : public InjectorBackend {
 public:
-	DigitizerInjector() : device(NULL)
+	DigitizerInjector(uint32_t displayId) : device(NULL)
 	{
+		display = ResolveDisplay(displayId);
+		CGSize mm = CGDisplayScreenSize(display);
+		if (mm.width < 1 || mm.height < 1) mm = CGSizeMake(300, 200);
+		uint16_t physx = (uint16_t)std::min(mm.width * 10, 65535.0);	// 0.1mm units
+		uint16_t physy = (uint16_t)std::min(mm.height * 10, 65535.0);
 		uint8_t desc[1024];
 		uint8_t *d = desc;
 		static const uint8_t head[] = {
@@ -73,10 +145,12 @@ public:
 		memcpy(d, head, sizeof(head)); d += sizeof(head);
 		for (int i=0;i<MAX_CONTACTS;i++) {
 			if (i) { *d++ = 0x05; *d++ = 0x0D; }
-			appendFinger(d, 0x0D);
+			appendFinger(d, physx, physy);
 		}
 		static const uint8_t tail[] = {
-			0x05, 0x0D, 0x09, 0x55, 0x15, 0x00, 0x25, MAX_CONTACTS,
+			0x05, 0x0D, 0x09, 0x56, 0x16, 0x00, 0x00, 0x27, 0xFF, 0xFF, 0x00, 0x00,
+			0x75, 0x10, 0x95, 0x01, 0x81, 0x02,	// Scan Time (0..65535)
+			0x09, 0x55, 0x15, 0x00, 0x25, MAX_CONTACTS,
 			0x75, 0x08, 0x95, 0x01, 0x81, 0x02,	// Contact Count
 			0x09, 0x55, 0x25, MAX_CONTACTS,
 			0x75, 0x08, 0x95, 0x01, 0xB1, 0x02,	// Contact Count Max (feature)
@@ -91,24 +165,35 @@ public:
 		CFNumberRef nver  = CFNumberCreate(NULL, kCFNumberIntType, &ver);
 		CFNumberRef nup   = CFNumberCreate(NULL, kCFNumberIntType, &upage);
 		CFNumberRef nu    = CFNumberCreate(NULL, kCFNumberIntType, &usage);
+		// bind the touchscreen to the selected display so WindowServer
+		// can hit-test contacts and dispatch direct-touch NSEvents
+		CFUUIDRef uuid = CGDisplayCreateUUIDFromDisplayID(display);
+		CFStringRef uuidStr = CFUUIDCreateString(NULL, uuid);
 		const void *keys[] = {
 			CFSTR("ReportDescriptor"), CFSTR("VendorID"), CFSTR("ProductID"),
 			CFSTR("Product"), CFSTR("Manufacturer"), CFSTR("Transport"),
-			CFSTR("PrimaryUsagePage"), CFSTR("PrimaryUsage"), CFSTR("VersionNumber")
+			CFSTR("PrimaryUsagePage"), CFSTR("PrimaryUsage"), CFSTR("VersionNumber"),
+			CFSTR("DisplayIntegrated"), CFSTR("displayUUID"), CFSTR("Built-In")
 		};
 		const void *vals[] = {
 			rdesc, nvid, npid, CFSTR("TongsengTouch"), CFSTR("tongseng"),
-			CFSTR("Virtual"), nup, nu, nver
+			CFSTR("Virtual"), nup, nu, nver,
+			kCFBooleanTrue, uuidStr, kCFBooleanTrue
 		};
-		CFDictionaryRef props = CFDictionaryCreate(NULL, keys, vals, 9,
+		CFDictionaryRef props = CFDictionaryCreate(NULL, keys, vals, 12,
 			&kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
 		device = IOHIDUserDeviceCreateWithProperties(NULL, props, 0);
 		CFRelease(props); CFRelease(rdesc);
 		CFRelease(nvid); CFRelease(npid); CFRelease(nver); CFRelease(nup); CFRelease(nu);
+		CFRelease(uuid); CFRelease(uuidStr);
 		if (device) {
 			IOHIDUserDeviceSetDispatchQueue(device,
 				dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0));
 			IOHIDUserDeviceActivate(device);
+			uint32_t target = display;
+			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+				bindServiceToDisplay(target);
+			});
 			reportPending.reset(new std::atomic<bool>(false));
 			std::cout << "virtual multitouch device created" << std::endl;
 		}
@@ -147,7 +232,7 @@ public:
 		bool expected = false;
 		if (!reportPending->compare_exchange_strong(expected, true)) return;
 
-		const CFIndex len = 1 + MAX_CONTACTS*6 + 1;
+		const CFIndex len = 1 + MAX_CONTACTS*6 + 2 + 1;
 		uint8_t *report = (uint8_t*)calloc(len, 1);
 		uint8_t *r = report;
 		*r++ = 1;	// report id
@@ -156,12 +241,16 @@ public:
 			if (i<n) {
 				uint16_t x = (uint16_t)(touches[i].x * DIGITIZER_MAX);
 				uint16_t y = (uint16_t)(touches[i].y * DIGITIZER_MAX);
-				*r++ = 1;								// tip switch + padding
+				*r++ = 7;								// tip switch + in range + confidence
 				*r++ = (uint8_t)touches[i].id;			// contact id
 				*r++ = x & 0xFF; *r++ = x >> 8;
 				*r++ = y & 0xFF; *r++ = y >> 8;
 			} else r += 6;
 		}
+		struct timespec ts;
+		clock_gettime(CLOCK_MONOTONIC, &ts);
+		uint16_t scan = (uint16_t)(ts.tv_sec * 1000 + ts.tv_nsec / 1000000);
+		*r++ = scan & 0xFF; *r++ = scan >> 8;	// scan time (ms)
 		*r++ = (uint8_t)n;	// contact count
 
 		AsyncReportCtx *ctx = new AsyncReportCtx;
@@ -173,6 +262,7 @@ public:
 
 private:
 	IOHIDUserDeviceRef device;
+	uint32_t display;
 	std::shared_ptr<std::atomic<bool> > reportPending;
 };
 
@@ -182,9 +272,10 @@ private:
 
 class CGEventInjector : public InjectorBackend {
 public:
-	CGEventInjector() : mouseDown(false), magnifying(false), prevCount(0),
+	CGEventInjector(uint32_t displayId) : mouseDown(false), magnifying(false), prevCount(0),
 		prevDist(0), lastPoint(CGPointZero)
 	{
+		display = ResolveDisplay(displayId);
 		// synthetic events are silently dropped without Accessibility permission
 		if (!AXIsProcessTrusted()) {
 			const void *keys[] = { kAXTrustedCheckOptionPrompt };
@@ -252,11 +343,13 @@ private:
 	bool mouseDown, magnifying;
 	int prevCount;
 	float prevDist;
+	uint32_t display;
 	CGPoint prevCentroid, lastPoint;
 
-	static CGPoint toScreen(const InjectedTouch& t)
+	CGPoint toScreen(const InjectedTouch& t) const
 	{
-		CGRect b = CGDisplayBounds(CGMainDisplayID());
+		CGRect b = CGDisplayBounds(display);
+		if (CGRectIsEmpty(b)) b = CGDisplayBounds(CGMainDisplayID());
 		return CGPointMake(b.origin.x + t.x * b.size.width,
 						   b.origin.y + t.y * b.size.height);
 	}
@@ -297,16 +390,19 @@ private:
 // TouchInjector : TuioListener
 // ---------------------------------------------------------------------------
 
-TouchInjector::TouchInjector() : backend(NULL), verbose(false)
+TouchInjector::TouchInjector(bool emulate, uint32_t displayId)
+	: backend(NULL), verbose(false)
 {
-	DigitizerInjector *digitizer = new DigitizerInjector();
-	if (digitizer->isValid()) {
-		backend = digitizer;
-	} else {
-		delete digitizer;
-		backend = new CGEventInjector();
-		std::cout << "virtual device unavailable, using CGEvent fallback" << std::endl;
+	if (!emulate) {
+		DigitizerInjector *digitizer = new DigitizerInjector(displayId);
+		if (digitizer->isValid()) {
+			backend = digitizer;
+		} else {
+			delete digitizer;
+			std::cout << "virtual device unavailable, using CGEvent fallback" << std::endl;
+		}
 	}
+	if (!backend) backend = new CGEventInjector(displayId);
 }
 
 TouchInjector::~TouchInjector()

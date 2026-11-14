@@ -34,6 +34,41 @@
 		[_device setEnabled:false];
 		[_info setStringValue:@"Tongseng is disabled"];
 	}
+	
+	// native touch injection requires macOS 27 and the hid.virtual.device
+	// entitlement; older systems only support CGEvent emulation
+	NSOperatingSystemVersion ver = [[NSProcessInfo processInfo] operatingSystemVersion];
+	if (ver.majorVersion < 27) {
+		[_clientInjection removeAllItems];
+		[_clientInjection addItemWithTitle:@"Emulation"];
+		[_clientInjection setEnabled:false];
+	}
+	[self rebuildClientScreens];
+}
+
+// refresh the destination screen list; defaults to the internal display and
+// keeps a previously chosen display selected while it stays connected
+- (void)rebuildClientScreens
+{
+	NSInteger prev = [_clientScreen selectedItem].tag;
+	[_clientScreen removeAllItems];
+	CGDirectDisplayID ids[16];
+	uint32_t count = 0;
+	CGGetActiveDisplayList(16, ids, &count);
+	NSInteger sel = 0;
+	int ext = 0;
+	for (uint32_t i=0;i<count;i++) {
+		BOOL builtin = CGDisplayIsBuiltin(ids[i]) != 0;
+		[_clientScreen addItemWithTitle:
+			(builtin ? @"Internal" : [NSString stringWithFormat:@"External %d", ++ext])];
+		_clientScreen.lastItem.tag = (NSInteger)ids[i];
+		if (builtin || (CGDirectDisplayID)prev == ids[i]) sel = (NSInteger)i;
+	}
+	if (count == 0) {
+		[_clientScreen addItemWithTitle:@"Internal"];
+		_clientScreen.lastItem.tag = 0;
+	}
+	[_clientScreen selectItemAtIndex:sel];
 }
 
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)app
@@ -123,8 +158,16 @@
 	const int protocol = (int)[_clientProtocol indexOfSelectedItem];
 	const int port = atoi([[_clientPort stringValue] UTF8String]);
 
+	tongseng_client_set_injection(([_clientInjection numberOfItems]>1 &&
+		[_clientInjection indexOfSelectedItem]==0) ?
+		TUIO_INJECT_TOUCH : TUIO_INJECT_CGEVENT);
+	[self rebuildClientScreens];
+	tongseng_client_set_display((unsigned int)[[_clientScreen selectedItem] tag]);
+
 	if (tongseng_client_start(protocol, port) == 0) {
 		[_clientProtocol setEnabled:false];
+		[_clientInjection setEnabled:false];
+		[_clientScreen setEnabled:false];
 		[_clientPort setEnabled:false];
 		[_clientInfo setStringValue:(tongseng_client_virtual_device() ?
 			@"Tongseng is injecting" :
@@ -140,6 +183,8 @@
 - (IBAction)clientstop:(id)sender {
 	tongseng_client_stop();
 	[_clientProtocol setEnabled:true];
+	if ([_clientInjection numberOfItems] > 1) [_clientInjection setEnabled:true];
+	[_clientScreen setEnabled:true];
 	[_clientPort setEnabled:true];
 	[_clientInfo setStringValue:@"Tongseng is stopped"];
 	[_clientButton setTitle:@"Start"];

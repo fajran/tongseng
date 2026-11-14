@@ -341,6 +341,20 @@ static TUIO::TuioClient* client = NULL;
 static TUIO::OscReceiver* receiver = NULL;
 static TouchInjector* injector = NULL;
 static bool client_running = false;
+static int injection_mode = TUIO_INJECT_TOUCH;
+static unsigned int target_display = 0;
+
+// Select TUIO client injection mode
+void tongseng_client_set_injection(int _mode)
+{
+	injection_mode = _mode;
+}
+
+// Select TUIO client destination display
+void tongseng_client_set_display(unsigned int _display)
+{
+	target_display = _display;
+}
 
 // Start TUIO client
 int tongseng_client_start(int _protocol, int _port)
@@ -352,7 +366,7 @@ int tongseng_client_start(int _protocol, int _port)
 		default: receiver = new TUIO::UdpReceiver(_port); break;
 	}
 
-	injector = new TouchInjector();
+	injector = new TouchInjector(injection_mode==TUIO_INJECT_CGEVENT, target_display);
 	injector->setVerbose(verbose);
 	client = new TUIO::TuioClient(receiver);
 	client->addTuioListener(injector);

@@ -8,6 +8,8 @@
 	IBOutlet NSPopUpButton *_protocol;
 	IBOutlet NSButton *_button;
 	IBOutlet NSPopUpButton *_clientProtocol;
+	IBOutlet NSPopUpButton *_clientInjection;
+	IBOutlet NSPopUpButton *_clientScreen;
 	IBOutlet NSTextField *_clientPort;
 	IBOutlet NSTextField *_clientInfo;
 	IBOutlet NSButton *_clientButton;

@@ -41,7 +41,7 @@ public:
 class TouchInjector : public TUIO::TuioListener {
 
 public:
-	TouchInjector();
+	TouchInjector(bool emulate = false, unsigned display = 0);
 	~TouchInjector();
 
 	void addTuioObject(TUIO::TuioObject *tobj) {}
