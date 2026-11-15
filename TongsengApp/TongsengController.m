@@ -46,6 +46,155 @@
 	[self rebuildClientScreens];
 }
 
+- (void)applicationDidFinishLaunching:(NSNotification *)notification
+{
+	// the tray menu covers all app-level actions; drop the app menubar
+	// before creating the status item — replacing it afterwards tears the
+	// status item scene down on macOS 27
+	NSApp.mainMenu = [[[NSMenu alloc] init] autorelease];
+	[self setupStatusItem];
+	[self installKeyMonitor];
+
+	// tray app: present the main window on launch
+	[self showStatusWindow];
+}
+
+// menu bar status item: About, window toggle and quit — the app's only UI
+// surface once it runs as a tray app (LSUIElement, no Dock icon)
+- (void)setupStatusItem
+{
+	// MRC target: statusItemWithLength returns an autoreleased object,
+	// keep an owning reference or the item is uninstalled on pool drain
+	_statusItem = [[[NSStatusBar systemStatusBar]
+		statusItemWithLength:NSVariableStatusItemLength] retain];
+
+	NSString *iconPath = [[NSBundle mainBundle]
+		pathForResource:@"TUIO" ofType:@"icns"];
+	NSImage *icon = [NSImage imageNamed:@"TUIO"];
+	if (!icon && iconPath) {
+		icon = [[NSImage alloc] initWithContentsOfFile:iconPath];
+	}
+	NSLog(@"Tongseng status item: iconPath=%@ reps=%lu size=%@",
+		iconPath, (unsigned long)(icon ? [icon.representations count] : 0),
+		NSStringFromSize(icon ? icon.size : NSZeroSize));
+	if (icon && icon.representations.count > 0) {
+		[icon setSize:NSMakeSize(18, 18)];
+		_statusItem.button.image = icon;
+	} else {
+		_statusItem.button.title = @"TUIO";
+	}
+	_statusItem.visible = YES;
+
+	_statusMenu = [[NSMenu alloc] init];
+	_statusMenu.delegate = self;
+	NSMenuItem *aboutItem = [_statusMenu addItemWithTitle:@"About Tongseng"
+		action:@selector(showAbout:) keyEquivalent:@""];
+	aboutItem.target = self;
+	[_statusMenu addItem:[NSMenuItem separatorItem]];
+	NSMenuItem *winItem = [_statusMenu addItemWithTitle:@"Show Tongseng"
+		action:@selector(toggleStatusWindow:) keyEquivalent:@"w"];
+	winItem.target = self;
+	[_statusMenu addItem:[NSMenuItem separatorItem]];
+	NSMenuItem *quitItem = [_statusMenu addItemWithTitle:@"Quit Tongseng"
+		action:@selector(terminate:) keyEquivalent:@"q"];
+	quitItem.target = NSApp;
+
+	_statusItem.menu = _statusMenu;
+}
+
+#pragma mark - NSMenuDelegate
+- (void)menuNeedsUpdate:(NSMenu *)menu
+{
+    // Update "Tongseng Window" menu item title
+    for (NSMenuItem *item in menu.itemArray) {
+        if (item.action == @selector(toggleStatusWindow:)) {
+            NSWindow *w = [self statusWindow];
+            BOOL visible = w && [w isVisible];
+            item.title = visible ? @"Hide Tongseng" : @"Show Tongseng";
+        }
+    }
+}
+
+- (NSWindow *)statusWindow
+{
+	for (NSWindow *w in [NSApp windows]) {
+		if (![w isKindOfClass:[NSPanel class]] && [w canBecomeKeyWindow]) return w;
+	}
+	return nil;
+}
+
+- (void)activateApp
+{
+	if ([NSApp respondsToSelector:@selector(activate)]) {
+		[NSApp activate];
+	} else {
+		[NSApp activateIgnoringOtherApps:YES];
+	}
+}
+
+- (void)showStatusWindow
+{
+	NSWindow *w = [self statusWindow];
+	if (!w) return;
+	[w makeKeyAndOrderFront:nil];
+	[self activateApp];
+}
+
+- (IBAction)toggleStatusWindow:(id)sender
+{
+	NSWindow *w = [self statusWindow];
+	if (!w) return;
+	if ([w isVisible]) {
+		[w orderOut:nil];
+	} else {
+		[self showStatusWindow];
+	}
+}
+
+// orderFrontStandardAboutPanel alone leaves the panel behind for an
+// accessory app — order it front explicitly and activate
+- (IBAction)showAbout:(id)sender
+{
+	[NSApp orderFrontStandardAboutPanel:sender];
+	// the standard panel can still order behind other apps for an
+	// accessory app — pull it to the front explicitly
+	for (NSWindow *w in [[NSApp windows] reverseObjectEnumerator]) {
+		if ([w isKindOfClass:[NSPanel class]] && [w isVisible]
+			&& [[w title] hasPrefix:@"About"]) {
+			[w makeKeyAndOrderFront:nil];
+			break;
+		}
+	}
+	[self activateApp];
+}
+
+// key equivalents on a status-item menu never fire on their own — the
+// menu is not the main menu. A local monitor gives ⌘W / ⌘Q real
+// function whenever the app is active (its window is key).
+- (void)installKeyMonitor
+{
+	[NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskKeyDown
+		handler:^NSEvent *(NSEvent *event) {
+			if (!(event.modifierFlags & NSEventModifierFlagCommand)) return event;
+			switch (event.keyCode) {
+				case 13: [self toggleStatusWindow:nil]; break; // W
+				case 12: [NSApp terminate:nil]; break;         // Q
+				default: return event;
+			}
+			return nil;
+		}];
+}
+
+// - (BOOL)validateMenuItem:(NSMenuItem *)item
+// {
+// 	if (item.action == @selector(toggleStatusWindow:)) {
+// 		NSWindow *w = [self statusWindow];
+// 		BOOL visible = w && [w isVisible];
+// 		[item setTitle:visible ? @"Hide Tongseng Window" : @"Tongseng Window"];
+// 	}
+// 	return YES;
+// }
+
 // refresh the destination screen list; defaults to the internal display and
 // keeps a previously chosen display selected while it stays connected
 - (void)rebuildClientScreens
@@ -73,9 +222,9 @@
 
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)app
 {
-	[self stop:app];
-	if (_clientRunning) [self clientstop:app];
-	return YES;
+	// tray app stays resident; sender/receiver keep running until Quit,
+	// which is handled by applicationWillTerminate:
+	return NO;
 }
 
 - (void)applicationWillTerminate:(NSApplication *)app;

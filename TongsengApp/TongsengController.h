@@ -1,6 +1,6 @@
 #import <Cocoa/Cocoa.h>
 
-@interface TongsengController : NSObject {
+@interface TongsengController : NSObject <NSMenuDelegate> {
     IBOutlet NSTextField *_hostname;
     IBOutlet NSTextField *_port;
 	IBOutlet NSTextField *_info;
@@ -13,6 +13,8 @@
 	IBOutlet NSTextField *_clientPort;
 	IBOutlet NSTextField *_clientInfo;
 	IBOutlet NSButton *_clientButton;
+	NSStatusItem *_statusItem;
+	NSMenu *_statusMenu;
 	bool _running;
 	bool _clientRunning;
 }
@@ -27,4 +29,8 @@
 - (IBAction)clientstart:(id)sender;
 - (IBAction)clientstop:(id)sender;
 - (IBAction)clientstartstop:(id)sender;
+
+- (void)setupStatusItem;
+- (IBAction)toggleStatusWindow:(id)sender;
+- (IBAction)showAbout:(id)sender;
 @end
