@@ -28,16 +28,20 @@ SRC=main.cpp \
 
 OBJS=$(SRC:.cpp=.o)
 CPPFLAGS=-ITUIO -Ioscpack
+# keep the binary runnable on pre-macOS 27 systems; without an explicit
+# floor ld stamps the build OS version and the binary refuses to launch
+# on anything older
+CXXFLAGS=-mmacosx-version-min=14.6
 LIBS=-F/System/Library/PrivateFrameworks -framework MultitouchSupport -framework CoreFoundation -framework ApplicationServices -framework IOKit
 BIN=tongseng
 
 all : $(BIN)
 
 .cpp.o :
-	g++ $(CPPFLAGS) -c $< -o $@
+	g++ $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 $(BIN) : $(OBJS)
-	g++ -o $@ $(LIBS) $^
+	g++ $(CXXFLAGS) -o $@ $(LIBS) $^
 
 clean :
 	rm -f $(BIN) $(OBJS)
