@@ -136,8 +136,10 @@
 {
 	NSWindow *w = [self statusWindow];
 	if (!w) return;
-	[w makeKeyAndOrderFront:nil];
+	// activate first: ordering the window while the app is inactive
+	// leaves it behind other apps' windows
 	[self activateApp];
+	[w makeKeyAndOrderFront:nil];
 }
 
 - (IBAction)toggleStatusWindow:(id)sender
