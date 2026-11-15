@@ -110,6 +110,7 @@
 }
 
 - (IBAction)start:(id)sender {
+	if (_clientRunning) [self clientstop:sender];
 	const char *hostname = [[_hostname stringValue] UTF8String];
 	const char *strPort = [[_port stringValue] UTF8String];
 	const int port = atoi(strPort);
@@ -155,6 +156,7 @@
 }
 
 - (IBAction)clientstart:(id)sender {
+	if (_running) [self stop:sender];
 	const int protocol = (int)[_clientProtocol indexOfSelectedItem];
 	const int port = atoi([[_clientPort stringValue] UTF8String]);
 
