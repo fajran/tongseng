@@ -103,6 +103,16 @@
 }
 
 #pragma mark - NSMenuDelegate
+
+// clicking the status item opens its menu — button.action is swallowed
+// while a menu is attached, so the menuWillOpen: delegate hook is the
+// place to also bring the window forward (if it is currently visible)
+- (void)menuWillOpen:(NSMenu *)menu
+{
+	NSWindow *w = [self statusWindow];
+	if (w && [w isVisible]) [self showStatusWindow];
+}
+
 - (void)menuNeedsUpdate:(NSMenu *)menu
 {
     // Update "Tongseng Window" menu item title
